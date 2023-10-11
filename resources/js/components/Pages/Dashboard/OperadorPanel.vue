@@ -129,7 +129,7 @@
                                 <div>
                                     <form @submit.prevent="CancelBill">
                                         <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
-                                        <input class="btn rounded-0 border mt-4 w-50 bg-warning" type="submit" value="Ok">
+                                        <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
                                     </form>
                                 </div>
                             </div>
@@ -162,8 +162,8 @@ export default {
             cancel: {
                 password: null,
             },
-            item_id: localStorage.getItem('item_id'),
-            item_pedido: localStorage.getItem('OrderId')
+            item_id: null,
+            item_pedido: null,
             
         }
     },
@@ -219,16 +219,20 @@ export default {
         },
 
         StorParams(OrderId, item_id){
-            localStorage.setItem('OrderId', OrderId)
-            localStorage.setItem('item_id', item_id)
-            console.log(item_id)
+            localStorage.setItem('OrderId', OrderId);
+            localStorage.setItem('item_id', item_id);
+            this.item_id = localStorage.getItem('item_id');
+            this.item_pedido = localStorage.getItem('OrderId');
+            console.log(`${this.item_id} and ${this.item_pedido}`)
         },
 
         CancelBill(){
             axios.post(`/api/dashboard/cancela/${this.item_pedido}/${this.item_id}`, this.cancel).then((response) => {
-                //localStorage.removeItem('OrderId')
-                //localStorage.removeItem('item_id')
+                this.$toast.success(response.data)
                 console.log(response.data)
+                location.reaload()
+            }).catch((errors) => {
+                console.log(errors)
             })
         }
 

@@ -93,12 +93,12 @@ class UserController extends Controller
                     ->where('item_id', $item_id)
                         ->update([
                             'item_delete'=> self::IS_CANCEL,
-                            'item_total' => $item->item_total * (-1)
+                            'item_total' => $item->item_total * 0
                         ]);
 
             return response()->json("Item cancelado com sucesso");
         endif;
 
-        return response()->json("{$request->password}");
+        return response()->json("Senha invalida !");
     }
 }
