@@ -60,4 +60,5 @@ Route::post('/create/user', [UserController::class, 'create']);
 Route::post('login', [UserController::class, 'login']);
 Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/dashboard/cancela/{item_pedido}/{item_id}', [UserController::class, 'CancelPermission']);
+Route::post('/editorder/stat/{item_pedido}', [UserController::class, 'EditOrderStat']);
 

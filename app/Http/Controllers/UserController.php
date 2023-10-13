@@ -101,4 +101,36 @@ class UserController extends Controller
 
         return response()->json("Senha invalida !");
     }
+
+    public function EditOrderStat(Request $request, $item_pedido)
+    {
+
+        $request->validate([
+            'password' => ['required']
+        ]);
+        
+        $password = User::where('id', self::USER_ID)
+            ->first();
+
+        if ($request->status_id != 5 && $request->status_id != 6):
+            if (Hash::check($request->password, $password->password)):
+                DB::table('pedidos')
+                    ->where('id', $item_pedido)
+                        ->update([
+                            'status_id' => $request->status_id
+                        ]);
+                return response()
+                        ->json([
+                            "msg" =>"Modo de pagamento editado com sucesso ! ",
+                            "statut" => 200
+                        ]);
+            endif;
+        endif;
+
+        return response()
+            ->json([
+                    "msg"=>"This status is not allowed for this action !",
+                    "statut" => 404
+                ]);
+    }
 }

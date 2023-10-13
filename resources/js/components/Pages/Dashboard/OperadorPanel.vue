@@ -20,6 +20,7 @@
                 <div class="py-2">
                     <button class="btn">Todos</button>
                     <button class="btn">Pagou</button>
+                    <button class="btn">Sell report</button>
                 </div>
                <table class="table">
                     <thead>
@@ -52,7 +53,8 @@
                                         <h6 class="text-capitalize fw-medium">pagamento</h6>
                                         <div class="">
                                             <li v-for="stat in status">
-                                                <button class="btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-if="stat.id != 5">{{ stat.stat_desc }}</button>
+                                                <button class="btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-if="pedido.status_id != 5 && pedido.status_id != 6"></button>
+                                                <button class="btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-else-if="stat.id != 5">{{ stat.stat_desc }}</button>
                                             </li>
                                         </div>
                                     </ul>
@@ -71,6 +73,13 @@
                                          y="14" width="12" height="8"></rect>
                                     </svg>
                                 </router-link>
+                                <button v-if="pedido.status_id != 5 && pedido.status_id != 6" @click="StorParams(pedido.id, a = 0)" data-bs-toggle="modal" data-bs-target="#OrderStat" class="btn" data-bs-toggl="tooltip" data-bs-placement="top" title="Change payment method">   
+                                    <svg 
+                                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
+                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3">
+                                        <path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                                    </svg>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -136,6 +145,37 @@
                         </div>
                     </div>                    
                 </div>
+                <div class="modal fade" id="OrderStat" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-sm">
+                    <div class="modal-content rounded-0 border-0">          
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito</h1>
+                                <span class="px-4"> 
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
+                                        stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
+                                        <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                        <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                    </svg>
+                                </span>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="fs-5">Manager Password needed</p>
+                                <div>
+                                    <form @submit.prevent="EditOrderStat">
+                                        <input class="form-control rounded-0 border-secondary" type="password" v-model="orderStat.password" placeholder="password here...">
+                                        <select class="form-select mt-3 border-secondary rounded-0" v-model="orderStat.status_id">
+                                            <option v-for="stat in status" :value="stat.id">
+                                                {{ stat.stat_desc }}
+                                            </option>
+                                        </select>
+                                        <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
         </div>
     </div>
 </template>
@@ -164,6 +204,10 @@ export default {
             },
             item_id: null,
             item_pedido: null,
+            orderStat: {
+                password: null,
+                status_id: null
+            }
             
         }
     },
@@ -223,7 +267,7 @@ export default {
             localStorage.setItem('item_id', item_id);
             this.item_id = localStorage.getItem('item_id');
             this.item_pedido = localStorage.getItem('OrderId');
-            console.log(`${this.item_id} and ${this.item_pedido}`)
+            console.log(`${this.item_pedido} and ${this.item_id}`)
         },
 
         CancelBill(){
@@ -234,6 +278,24 @@ export default {
             }).catch((errors) => {
                 console.log(errors)
             })
+        },
+
+        EditOrderStat(){
+            axios.post(`/api/editorder/stat/${this.item_pedido}`, this.orderStat)
+                .then((response) => {
+
+                    if (response.data.statut === 200) {
+
+                        this.$toast.success(response.data.msg)
+                    }else{
+                        if (response.data.statut === 404){
+                            this.$toast.error(response.data.msg)
+                        }
+                    }
+                    
+                }).catch((errors) => {
+                    console.log(errors.response.data.errors.password)
+                })
         }
 
     },
