@@ -1,7 +1,6 @@
 <template>
     <div class="container-fluid p-4">
-        <h4 v-if="cart == 0" class="text-center text-capitalize p-4"> Your Order is processing</h4>
-        <h4 v-else class="text-center text-capitalize p-4">Your Food Cart !</h4>
+        <h4 class="text-center text-capitalize p-4">Your Food Cart !</h4>
         <div class="row">
             <div v-if="ShowCard" class="col-lg-4 col-md-12 position-relative">
                 <div class="card rounded-0">
@@ -63,22 +62,16 @@
                 </div>
             </div>
         </div>
-        <div v-if="cart == 0" class="row">
-            <div class="col-10 m-auto">
-                <CustomerPanel class="m-auto"></CustomerPanel>
-            </div>
-        </div>
     </div>
 </template>
 
 <script>
-import CustomerPanel from './CustomerPanel.vue'
 
 export default {
     name: 'CustomerOrderList',
 
     components: {
-        CustomerPanel
+
     },
 
     data() {
@@ -120,7 +113,8 @@ export default {
         confirmOrder() {
             axios.post('/api/order', this.orderData).then((response) => {
                 console.log(response.data)
-                return this.getCartList()
+                this.$router.push('/menu')
+                this.$toast.success("Pedido confirmado !")
             }).catch((errors) => {
                 console.log(errors)
             })

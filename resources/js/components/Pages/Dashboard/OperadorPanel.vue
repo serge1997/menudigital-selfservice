@@ -80,6 +80,9 @@
                                         <path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                     </svg>
                                 </button>
+                                <div v-if="pedido.status_id == 5 || pedido.status_id == 6">
+                                    <OrderTransfertComponent @get-TransfertItems="TransferItem(pedido.id)" :transfert-items="titems" :tables="tables"/>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -183,12 +186,14 @@
 <script>
 import axios from 'axios';
 import SideBarComponent from './SideBarComponent.vue'
+import OrderTransfertComponent from '../../OrderTransfertComponent.vue';
 import _ from 'lodash'
 export default {
     name: 'OperadorPanel',
 
     components: {
-        SideBarComponent
+        SideBarComponent,
+        OrderTransfertComponent
     },
 
     data() {
@@ -207,7 +212,8 @@ export default {
             orderStat: {
                 password: null,
                 status_id: null
-            }
+            },
+            titems: null
             
         }
     },
@@ -295,6 +301,14 @@ export default {
                     
                 }).catch((errors) => {
                     console.log(errors.response.data.errors.password)
+                })
+        },
+
+        TransferItem(id) {
+            axios.get('/api/transfert/items/' + id)
+                .then((response) => {
+                    this.titems = response.data
+                    console.log(response.data)
                 })
         }
 

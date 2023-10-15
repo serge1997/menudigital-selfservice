@@ -3,6 +3,7 @@
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderTransfertController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -51,7 +52,10 @@ Route::post('/update/status/{id}/{pedido}', [PedidoController::class, 'UpdateOrd
 Route::get('get/bill/{id}', [PedidoController::class, 'getBillItems']);
 Route::get('dashboard/cancel', [PedidoController::class, 'getCanceledStatus']);
 
+//Order Transfert
 
+Route::get('transfert/items/{id}', [OrderTransfertController::class, 'getTransfertOrderItems']);
+Route::post('post/transfert/', [OrderTransfertController::class, 'postTransfert']);
 
 //User
 
