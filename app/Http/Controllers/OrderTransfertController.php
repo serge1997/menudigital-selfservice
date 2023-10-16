@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\ItensPedido;
 use App\Models\Pedido;
 use DateTime;
 class OrderTransfertController extends Controller
@@ -51,5 +52,27 @@ class OrderTransfertController extends Controller
         endforeach;
 
         return response()->json("Pedido transferido com sucesso !");
+    }
+
+    public function getReport()
+    {
+        $hoje = new DateTime();
+        $hoje = $hoje->format('Y-m-d');
+
+        $report = DB::table('itens_pedido')
+            ->select(
+                'menuitems.item_name',
+                DB::raw('SUM(itens_pedido.item_quantidade) AS quantidade'),
+                DB::raw('SUM(.itens_pedido.item_total) AS total')
+            )
+                ->join('menuitems', 'itens_pedido.item_id', '=', 'menuitems.id')
+                    ->where('item_emissao', $hoje)
+                        ->where('item_delete', false)
+                            ->groupby(
+                                'menuitems.item_name'
+                            )
+                                ->get();
+
+        return response()->json($report);
     }
 }

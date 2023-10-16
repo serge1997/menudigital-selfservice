@@ -57,6 +57,9 @@ Route::get('dashboard/cancel', [PedidoController::class, 'getCanceledStatus']);
 Route::get('transfert/items/{id}', [OrderTransfertController::class, 'getTransfertOrderItems']);
 Route::post('post/transfert/', [OrderTransfertController::class, 'postTransfert']);
 
+//Report
+Route::get('dashboard/report', [OrderTransfertController::class, 'getReport']);
+
 //User
 
 Route::get('group', [UserController::class, 'getGroup']);

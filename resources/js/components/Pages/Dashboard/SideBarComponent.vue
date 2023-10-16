@@ -20,14 +20,14 @@
             </div>
             <div class="sidebar-body">
                 <ul class="list-group w-100 mt-4">
+                    <li class="list-group-item rounded-0 border-0 border-top">
+                        <router-link class="nav-link" :to="{name: 'OperadorPanel'}">Caixa</router-link>
+                    </li>
+                    <li class="list-group-item rounded-0 border-0 border-top">
+                        <router-link class="nav-link" :to="{name: 'Garcom'}">Garcom</router-link>
+                    </li>
                     <li class="list-group-item border-0 rounded-0 border-top">
-                        <router-link class="nav-link" to="/">Order</router-link>
-                    </li>
-                    <li class="list-group-item rounded-0 border-0 border-top">
-                        <router-link class="nav-link" to="/">Historico</router-link>
-                    </li>
-                    <li class="list-group-item rounded-0 border-0 border-top">
-                        <router-link class="nav-link" to="/">Dashboard</router-link>
+                        <router-link class="nav-link" :to="{name: 'BusinessInteligence'}">Business Inteligence</router-link>
                     </li>
                     <li class="list-group-item rounded-0 border-0 border-top">
                         <router-link class="nav-link" :to="{ name: 'NewItem'}">New item</router-link>

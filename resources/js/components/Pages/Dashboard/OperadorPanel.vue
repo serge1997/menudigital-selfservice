@@ -17,10 +17,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="py-2">
+                <div class="w-100 py-2 d-flex">
                     <button class="btn">Todos</button>
                     <button class="btn">Pagou</button>
-                    <button class="btn">Sell report</button>
+                    <SellReportComponent/>
                 </div>
                <table class="table">
                     <thead>
@@ -187,13 +187,15 @@
 import axios from 'axios';
 import SideBarComponent from './SideBarComponent.vue'
 import OrderTransfertComponent from '../../OrderTransfertComponent.vue';
+import SellReportComponent from '../../SellReportComponent.vue';
 import _ from 'lodash'
 export default {
     name: 'OperadorPanel',
 
     components: {
         SideBarComponent,
-        OrderTransfertComponent
+        OrderTransfertComponent,
+        SellReportComponent
     },
 
     data() {
