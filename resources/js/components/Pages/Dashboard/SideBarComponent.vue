@@ -6,8 +6,8 @@
             </svg>
         </button>
     </div>
-    <div class="col-4 position-fixed">
-        <div v-if="!sidebar" class="col-lg-5 col-md-2 bg-primary min-vh-100 p-0">
+    <div class="col-2 position-fixed shadow">
+        <div v-if="!sidebar" class="col-lg-12 col-md-10 bg-primary min-vh-100 p-0">
             <div class="sidebar-header d-flex justify-content-between align-items-center min-vh-25">
                 <h6 class="sidebar-title w-50 text-white p-1">
                     Casino bar

@@ -4,6 +4,7 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderTransfertController;
+use App\Http\Controllers\BiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -60,8 +61,10 @@ Route::post('post/transfert/', [OrderTransfertController::class, 'postTransfert'
 //Report
 Route::get('dashboard/report', [OrderTransfertController::class, 'getReport']);
 
-//User
+//BI
+Route::get('waiter/stats', [BiController::class, 'waiterStat']);
 
+//User
 Route::get('group', [UserController::class, 'getGroup']);
 Route::post('/create/user', [UserController::class, 'create']);
 Route::post('login', [UserController::class, 'login']);

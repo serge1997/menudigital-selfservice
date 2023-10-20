@@ -66,12 +66,13 @@ class OrderTransfertController extends Controller
                 DB::raw('SUM(.itens_pedido.item_total) AS total')
             )
                 ->join('menuitems', 'itens_pedido.item_id', '=', 'menuitems.id')
-                    ->where('item_emissao', $hoje)
-                        ->where('item_delete', false)
-                            ->groupby(
-                                'menuitems.item_name'
-                            )
-                                ->get();
+                    ->join('pedidos', 'itens_pedido.item_pedido', '=', 'pedidos.id')
+                        ->where('item_emissao', $hoje)
+                            ->where([['itens_pedido.item_delete', false], ['pedidos.status_id', '<>', 6]])
+                                ->groupby(
+                                    'menuitems.item_name'
+                                )
+                                    ->get();
 
         return response()->json($report);
     }
