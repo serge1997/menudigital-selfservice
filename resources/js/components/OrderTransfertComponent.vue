@@ -28,14 +28,15 @@
                         </label>
                     </div>
                 </div>
-                <div class="w-50 shadow p-3 min-vh-100">
+                <div class="w-50 shadow p-3">
                     <label for="">Mesa de destino: </label>
                     <select class="form-select w-50 rounded-0 border-secondary" v-model="transfert.ped_tableNumber">
                         <option v-for="tab in tables" :value="tab.table">{{ tab.table }}</option>
                     </select>
                     <div class="btn-group d-flex flex-column w-50" role="group" aria-label="Basic checkbox toggle button group">
-                        <div class="mt-2" v-for="op in options">
+                        <div class="mt-2 d-flex flex-column" v-for="(op, index) in options">
                             <label class="btn btn-outline-primary rounded-0 fw-medium" for="btncheck1">{{ op.replace(/[0-9]/g, '') }}</label>
+                            <input class="form-control rounded-0 border-secondary mt-2" type="number" v-model="transfert.item_quantidade[index]" :placeholder="op.replace(/[0-9]/g, '') + ' quantidade'">
                         </div>
                     </div>
                 </div>
@@ -57,13 +58,23 @@ export default {
 
     props:['transfertItems', 'tables'],
 
+    watch:{
+        item_quantidade(after, before){
+            this.quantidade.push(this.transfert.item_quantidade)
+            this.Insert()
+        }
+    },
+
     data(){
         return {
             options: [],
+            quantidade: ["QUantidade"],
+            count: 0,
             transfert:{
                 item_pedido: null,
                 item_id: [],
-                ped_tableNumber: null
+                ped_tableNumber: null,
+                item_quantidade: []
             },
         }
     },
@@ -76,17 +87,22 @@ export default {
                 this.transfert.item_id.push(x.match(/[0-9]/))
             }
 
+            console.log(this.transfert.item_id)
             axios.post('/api/post/transfert', this.transfert).then((response) => {
                 this.$toast.success(response.data)
                 this.options = []
             }).catch((errors) => {
                 console.log(errors)
             })
+        },
+        Insert() {
+            this.transfert.item_quantidade = new Array(this.options.length).fill('')
+            //this.quantidade.push(this.transfert.item_quantidade[index])
         }
     },
 
     mounted(){
-        console.log(this.options)
+       
     }
 }
 </script>

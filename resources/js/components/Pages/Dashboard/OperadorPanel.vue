@@ -65,7 +65,7 @@
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
                                 </button>
-                                <router-link :to="{ name: 'Bill', params: {id:pedido.id}}" class="nav-link p-0 px-2 text-black">
+                                <router-link :to="{ name: 'Bill', params: {id:pedido.id}}" class="nav-link p-0 px-2 text-black" @click="imprimir">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" 
                                         stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" 
                                         class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 
@@ -92,11 +92,11 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content rounded-0">
                         <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Cancelar item </h1>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <table class="table w-100">
+                            <table class="table w-100 table-active">
                                 <thead>
                                     <tr>
                                         <th>Item</th>
@@ -113,7 +113,13 @@
                                         <td>{{ item.item_price }}</td>
                                         <td>{{ item.item_total }}</td>
                                         <td>
-                                            <button data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn">Cancelar</button>
+                                            <button data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn">  
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
+                                                    fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round" 
+                                                    stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
+                                                    </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+                                                </svg>
+                                            </button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -229,7 +235,7 @@ export default {
     async created() {
        await this.getOrder()
        this.getTable()
-       this.getCanceledStatus()
+       //this.getCanceledStatus()
 
     },
 
@@ -312,7 +318,7 @@ export default {
                     this.titems = response.data
                     console.log(response.data)
                 })
-        }
+        },
 
     },
 
