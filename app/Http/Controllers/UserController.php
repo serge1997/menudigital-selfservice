@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\ItensPedido;
+use App\Events\CancelOrder;
 
 class UserController extends Controller
 {
@@ -79,7 +80,7 @@ class UserController extends Controller
 
     public function CancelPermission(Request $request, $item_pedido, $item_id)
     {
-        
+        $item_quantidade = $request->quantidade;
         $password = User::where('id', self::USER_ID)
             ->first();
 
@@ -88,14 +89,35 @@ class UserController extends Controller
                 ->first();
 
         if (Hash::check($request->password, $password->password)):
-            DB::table('itens_pedido')
-                ->where('item_pedido', $item_pedido)
-                    ->where('item_id', $item_id)
+            if ($item_quantidade == $item->item_quantidade || !$item_quantidade):
+                DB::table('itens_pedido')
+                    ->where('item_pedido', $item_pedido)
+                        ->where('item_id', $item_id)
+                            ->update([
+                                'item_delete'=> self::IS_CANCEL,
+                                'item_quantidade' => $item->item_quantidade * (-1),
+                                'item_total' => $item->item_total * 0
+                            ]);
+            else:
+                DB::table('itens_pedido')
+                    ->where([['item_pedido', $item_pedido], ['item_id', $item_id]])
                         ->update([
-                            'item_delete'=> self::IS_CANCEL,
-                            'item_total' => $item->item_total * 0
+                            'item_quantidade' => $item->item_quantidade - $item_quantidade,
+                            'item_total' => $item->item_total - ($item_quantidade * $item->item_price)
                         ]);
 
+                $AddCanceledItem = new ItensPedido();
+                $AddCanceledItem->item_pedido = $item_pedido;
+                $AddCanceledItem->item_id = $item_id;
+                $AddCanceledItem->item_quantidade = $item_quantidade * (-1);
+                $AddCanceledItem->item_total = $item->item_total * 0;
+                $AddCanceledItem->item_delete = true;
+                $AddCanceledItem->item_price = $item->item_price;
+                $AddCanceledItem->item_emissao = $item->item_emissao;
+                $AddCanceledItem->item_option = $item->item_option;
+                $AddCanceledItem->save();
+            endif;
+            event(new CancelOrder($item));
             return response()->json("Item cancelado com sucesso");
         endif;
 

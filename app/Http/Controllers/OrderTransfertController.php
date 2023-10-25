@@ -102,4 +102,18 @@ class OrderTransfertController extends Controller
 
         return response()->json($report);
     }
+
+
+    public function getSearchResult(Request $request)
+    {
+        $items = DB::table("menuitems")->select('*')
+            ->join("menu_mealtype", "menuitems.type_id", "=", "menu_mealtype.id_type")
+                ->where('menuitems.item_name', 'like', '%'.$request->search.'%')
+                    ->get();
+
+        return response()->json([
+            'items' => $items
+        ]);
+    
+    }
 }

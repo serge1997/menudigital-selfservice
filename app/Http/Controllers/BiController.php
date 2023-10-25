@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\ItensPedido;
 
 class BiController extends Controller
 {
@@ -49,7 +50,7 @@ class BiController extends Controller
                                 DB::raw("SUM(itens_pedido.item_total) venda"),
                                 DB::raw("SUM(item_quantidade) quantidade")
                             )
-                                ->join('menuitems','itens_pedido.item_id','=','menuitems.type_id')
+                                ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
                                     ->where('itens_pedido.item_delete', false)
                                         ->groupBy(
                                             'itens_pedido.item_emissao',

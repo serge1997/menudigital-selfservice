@@ -85,7 +85,7 @@ class PedidoController extends Controller
             )
                 ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
                     ->join('status', 'pedidos.status_id', '=', 'status.id')
-                        ->where('pedidos.ped_emissao', $hoje)
+                        ->where([['pedidos.ped_emissao', $hoje], ['ped_delete', false]])
                             ->groupBy(
                                 'pedidos.id',
                                 'pedidos.ped_customerName',
@@ -145,14 +145,14 @@ class PedidoController extends Controller
                 $query->select('ped_tableNumber')
                     ->from('pedidos')
                         ->where('ped_emissao', $hoje)
-                            ->where('status_id', '=', 6);
+                            ->where([['status_id', '=', 6], ['ped_delete', 0]]);
             })->get();
 
 
         $busyTables = DB::table('pedidos')
             ->select('pedidos.ped_tableNumber','pedidos.id', 'users.name')
                 ->join('users', 'pedidos.user_id', '=', 'users.id')
-                    ->where('pedidos.status_id', '=', 6)
+                    ->where([['pedidos.status_id', '=', 6], ['pedidos.ped_delete', 0]])
                         ->where('pedidos.ped_emissao', $hoje)
                             ->get();
 

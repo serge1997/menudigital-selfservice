@@ -15,13 +15,16 @@
                 </router-link>
             </div>
        </div>
+       <div class="row">
+        <SearchComponent @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent> 
+       </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden"></span>
             </div>
         </div>
         <div class="row d-flex justify-content-center">
-            <div class="col-lg-2 col-md-4 border menu-type-card p-2" id="typebtn" v-for="mtype in MenuType" :key="mtype.id_type">
+            <div class="col-lg-2 col-md-4 border menu-type-card p-2 mt-2" id="typebtn" v-for="mtype in MenuType" :key="mtype.id_type">
                 <button class="btn w-100 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">  
                     <img class="w-25" :src="'/img/type/'+ mtype.foto_type" alt="">
                     {{ mtype.desc_type }}
@@ -36,7 +39,7 @@
                             <img class="w-100 h-100 rounded-0 card-img-top" src="img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
-                            <h5 class="text-center">{{ item.item_name }}</h5>
+                            <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             <div class="order-btn-box text-white mt-2">
@@ -111,12 +114,13 @@
 
 <script>
 import axios from 'axios';
+import SearchComponent from '../SearchComponent.vue';
 
 export default {
     name: 'Menu',
 
     components: {
-
+        SearchComponent
     },
 
     data() {

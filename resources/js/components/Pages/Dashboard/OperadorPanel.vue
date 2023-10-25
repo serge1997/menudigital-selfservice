@@ -147,6 +147,7 @@
                                 <div>
                                     <form @submit.prevent="CancelBill">
                                         <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
+                                        <input class="form-control rounded-0 border-secondary mt-2" type="text" v-model="cancel.quantidade" placeholder="Quantidade">
                                         <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
                                     </form>
                                 </div>
@@ -214,6 +215,7 @@ export default {
             busyTables: null,
             cancel: {
                 password: null,
+                quantidade: null
             },
             item_id: null,
             item_pedido: null,
