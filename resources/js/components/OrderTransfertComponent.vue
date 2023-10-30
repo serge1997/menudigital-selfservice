@@ -83,11 +83,10 @@ export default {
         postTransfert(){
             this.transfert.item_pedido = document.getElementById('pedido').value
 
-            for(const x of this.options){
-                this.transfert.item_id.push(x.match(/[0-9]/))
+            for(let x of this.options){
+                //this.transfert.item_id.push(x.match(/[0-9]/));
+                this.transfert.item_id.push(x.replace(/[^0-9]/g, ''))
             }
-
-            console.log(this.transfert.item_id)
             axios.post('/api/post/transfert', this.transfert).then((response) => {
                 this.$toast.success(response.data)
                 this.options = []

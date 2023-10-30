@@ -38,6 +38,9 @@
                     <li class="list-group-item rounded-0 border-0 border-top">
                         <router-link class="nav-link" :to="{ name: 'Employe'}">New Employe</router-link>
                     </li>
+                    <li class="list-group-item rounded-0 border-0 border-top">
+                        <router-link class="nav-link" :to="{ name: 'SettingPanel'}">Setting</router-link>
+                    </li>
                 </ul>
             </div>
         </div>

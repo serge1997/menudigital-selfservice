@@ -49,7 +49,7 @@
                                 <div class="btn-group">
                                     <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     </button>
-                                    <ul class="dropdown-menu p-0">
+                                    <ul class="dropdown-menu p-0 shadow">
                                         <h6 class="text-capitalize fw-medium">pagamento</h6>
                                         <div class="">
                                             <li v-for="stat in status">
@@ -113,7 +113,14 @@
                                         <td>{{ item.item_price }}</td>
                                         <td>{{ item.item_total }}</td>
                                         <td>
-                                            <button data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn">  
+                                            <button v-if="item.status_id != 6" data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn border-0 disabled">  
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
+                                                    fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round" 
+                                                    stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
+                                                    </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+                                                </svg>
+                                            </button>
+                                            <button v-else data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn border-0">  
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
                                                     fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round" 
                                                     stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
@@ -290,7 +297,8 @@ export default {
             axios.post(`/api/dashboard/cancela/${this.item_pedido}/${this.item_id}`, this.cancel).then((response) => {
                 this.$toast.success(response.data)
                 console.log(response.data)
-                location.reaload()
+                this.cancel.password = "";
+                this.cancel.quantidade = "";
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -301,8 +309,8 @@ export default {
                 .then((response) => {
 
                     if (response.data.statut === 200) {
-
                         this.$toast.success(response.data.msg)
+                        this.orderStat.password = "";
                     }else{
                         if (response.data.statut === 404){
                             this.$toast.error(response.data.msg)

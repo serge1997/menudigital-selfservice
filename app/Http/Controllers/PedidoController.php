@@ -110,6 +110,7 @@ class PedidoController extends Controller
         $itens = DB::table('pedidos')
             ->select(
                 'pedidos.id',
+                'pedidos.status_id',
                 'itens_pedido.item_id',
                 'menuitems.item_name',
                 'itens_pedido.item_quantidade',

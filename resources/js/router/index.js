@@ -12,6 +12,7 @@ import Employe from '../components/Pages/Dashboard/Employe.vue';
 import Login from '../components/Pages/Login.vue';
 import Garcom from '../components/Pages/Dashboard/Garcom.vue';
 import BusinessInteligence from '../components/Pages/Dashboard/BusinessInteligence.vue'
+import SettingPanel from '../components/Pages/Dashboard/SettingPanel.vue';
 import { defaults } from "lodash";
 
 
@@ -127,6 +128,25 @@ const routes = [
         },
         meta: {requiresAuth: true}
     },
+
+    {
+        path: '/dashboard/setting',
+        name: 'SettingPanel',
+        component: SettingPanel,
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+                if (response.data.group_id != 1) {
+                    next('/home')
+                }else{
+                    next()
+                }
+                
+            })
+        },
+        meta: {requiresAuth: true}
+    },
+
 
     {
         path: '/dashboard/garcom',

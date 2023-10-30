@@ -11,7 +11,6 @@
                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z">
                         </path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path>
                     </svg>
-                    <span class="text-danger fs-5 p-3 rounded-0 fw-medium alert alert-danger" v-if="isCart">!</span>
                 </router-link>
             </div>
        </div>
@@ -32,7 +31,7 @@
             </div>
         </div>
         <div class="row p-4">
-            <div v-if="itemOfType < 1" v-for="item in MenuItems" :key="item.id" class="col-lg-5 col-md-10 mb-4 m-auto">
+            <div v-if="itemOfType < 1" v-for="item in MenuItems" :key="item.id" class="col-lg-5 col-md-10 mb-4 m-auto" disabled>
                 <div class="card rounded-0 p-0">
                     <div class="card-body d-flex p-0">
                         <div class="col-6">
@@ -43,7 +42,8 @@
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             <div class="order-btn-box text-white mt-2">
-                                <router-link @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="nav-link px-3 py-1 text-black border rounded-3">add</router-link>
+                                <router-link v-if="!item.item_rupture" @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="nav-link px-3 py-1 text-black border rounded-3">add</router-link>
+                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
                                 <button class="border-0" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">  
                                     <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
                                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -133,7 +133,8 @@ export default {
                 tableNumber: localStorage.getItem('table')
             },
             isCart: false,
-            load: true
+            load: true,
+            isRupture: false
         }
     },
 
@@ -160,7 +161,6 @@ export default {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     axios.get('/api/get/menutype').then((response) => {
-                        console.log(response.data)
                         this.MenuType = response.data
                     }).catch((errors) => {
                         console.log(errors)
@@ -171,7 +171,6 @@ export default {
 
         getItemOfType(id_type) {
             axios.get('/api/item/type/' + id_type).then((response) => {
-                console.log(response.data)
                 this.itemOfType = response.data.items
             }).catch((errors) => {
                 console.log(errors)

@@ -62,7 +62,9 @@ class OrderTransfertController extends Controller
                             ->where('item_id', $ids)
                                 ->update([
                                     'item_quantidade' => $item->item_quantidade - $qty,
-                                ]);     
+                                    'item_total' => $item->item_price * ($item->item_quantidade - $qty)
+                                ]);
+                         
                         $tintens = new ItensPedido();
                         $tintens->item_emissao = $item->item_emissao;
                         $tintens->item_quantidade = $qty;
@@ -77,7 +79,7 @@ class OrderTransfertController extends Controller
                 //endforeach;
         endforeach;
         
-        return response()->json($item_quantidade);
+        return response()->json("Item transferido com sucesso");
     }
 
     public function getReport()

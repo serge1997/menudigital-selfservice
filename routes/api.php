@@ -38,6 +38,10 @@ Route::post('reduce/quantity/{id}/{teste}', [MenuItemController::class, 'ReduceQ
 Route::get('cart/items/{table}', [MenuItemController::class, 'CustomerFinalCart']);
 Route::get('delete/item/{cartID}/{table}', [MenuItemController::class, 'DeleteFromCart']);
 
+Route::get('edit/menu-item/{id}', [MenuItemController::class,'getItemForEdit']);
+Route::post('/set-rupture/{id}', [MenuItemController::class, 'SetRupture']);
+Route::post('/delete/menu-item/{id}', [MenuItemController::class,'ToDelete']);
+
 Route::get('table', [MenuItemController::class, 'getTable']);
 Route::get('dashboard/tables', [PedidoController::class, 'getTablesNumber']);
 Route::post('save/type', [MenuItemController::class, 'SaveType']);

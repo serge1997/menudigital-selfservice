@@ -5,6 +5,8 @@ import axios from 'axios';
 import Toaster from '@meforma/vue-toaster';
 import router from './router/index';
 import App from './App.vue';
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
 console.log("Hello world from app.js")
 
@@ -41,4 +43,4 @@ router.beforeEach((to, from, next) => {
 
 createApp(App).use(router).use(VueAxios, axios).use(Toaster, {
     position: 'top'
-}).mount('#app')
+}).use(VueSweetalert2).mount('#app')

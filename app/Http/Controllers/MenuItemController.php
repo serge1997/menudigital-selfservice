@@ -9,14 +9,22 @@ use App\Models\Menuitems;
 use App\Models\Cart;
 use App\Models\MealType;
 use DateTime;
+use Illuminate\Database\Eloquent\Collection;
 
 class MenuItemController extends Controller
 {
+    public $items;
+
+    public function __construct()
+    {
+        $this->items = new MenuItems();
+    }
     public function getMealType()
     {
         return response()->json([
-            'type' => DB::table('menu_mealtype')->select('id_type', 'desc_type')
-                        ->get()
+            'type' => DB::table('menu_mealtype')
+                ->select('id_type', 'desc_type')
+                     ->get()
         ]);
     }
 
@@ -68,7 +76,8 @@ class MenuItemController extends Controller
     {
         $items = DB::table("menuitems")->select('*')
             ->join("menu_mealtype", "menuitems.type_id", "=", "menu_mealtype.id_type")
-            ->get();
+                ->where('menuitems.item_status', '=', true)
+                    ->get();
 
         return response()->json([
             'items' => $items
@@ -97,7 +106,20 @@ class MenuItemController extends Controller
     public function getMenuType()
     {
         $type = DB::table("menu_mealtype")
-            ->get();
+            ->select(
+                    "menu_mealtype.id_type",
+                    "menu_mealtype.desc_type",
+                    "menu_mealtype.foto_type",
+                    DB::raw("COUNT(menuitems.id) as item_qty")
+                )
+                ->join('menuitems', 'menu_mealtype.id_type', '=', 'menuitems.type_id')
+                    ->where('menuitems.item_status', '=', true)
+                        ->groupby(
+                            "menu_mealtype.id_type",
+                            "menu_mealtype.desc_type",
+                            "menu_mealtype.foto_type"
+                        )
+                            ->get();
 
         return response()->json($type);
     }
@@ -250,7 +272,6 @@ class MenuItemController extends Controller
                 'total' => $oldTotal->total - $unitPrice->unit_price
             ]);
         }
-
         $qty = DB::table('carts')->select('quantity')
             ->where([['item_id', '=', $id], ['tableNumber', '=', $table]])
             ->first();
@@ -258,13 +279,11 @@ class MenuItemController extends Controller
         $total = DB::table('carts')->select('total')
             ->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
             ->first();
-
         return response()->json([
             'quantity' => $qty->quantity,
             'total' => $total->total
         ]);
     }
-
     public function CustomerFinalCart($table)
     {
         $items = DB::table('carts')->select(
@@ -326,6 +345,37 @@ class MenuItemController extends Controller
     public function show($id)
     {
         return response()->json(Menuitems::where('id', $id)->get());
+    }
+
+    public function getItemForEdit($id)
+    {
+        $otherItems = Menuitems::where('id', '=', $id)->get();
+        return response()->json($otherItems);
+    }
+
+    public function SetRupture($id)
+    {
+        $item = Menuitems::where('id','=', $id)->first();
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+
+        DB::table('menuitems')
+            ->where('id', $id)
+                ->update([
+                    'item_rupture' => !$item->item_rupture
+                ]);
+    }
+
+    public function ToDelete($id)
+    {
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+
+        DB::table('menuitems')
+            ->where('id', $id)
+                ->update([
+                    'item_status' => false
+                ]);
+
+        return response()->json("Item deletado com sucesso");
     }
 
 }
