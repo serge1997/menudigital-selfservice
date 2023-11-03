@@ -23,7 +23,7 @@
                     </small>
                 </div>
                 <div class="col-6 d-flex justify-content-center align-items-center">
-                    <button class="text-primary rounded-0 alert alert-primary p-2">Manage</button>
+                    <button class="text-primary rounded-0 alert alert-primary p-2" data-bs-toggle="modal" data-bs-target="#ModelPersonalSetting">Manage</button>
                 </div>
             </div>
             <div class="col-12 d-flex mt-5">
@@ -65,17 +65,21 @@
             </div>
         </div>
         <SettingMenuComponent />
+        <SettingPersonalComponent />
+        
     </div>
 </template>
 
 <script>
 import SettingMenuComponent from '../../SettingMenuComponent.vue';
+import SettingPersonalComponent from '../../SettingPersonalComponent.vue';
 
 export default{
     name: 'SettingPanel',
 
     components: {
-        SettingMenuComponent
+        SettingMenuComponent,
+        SettingPersonalComponent
     },
     
     data(){

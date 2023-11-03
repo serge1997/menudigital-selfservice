@@ -53,8 +53,8 @@
                                         <h6 class="text-capitalize fw-medium">pagamento</h6>
                                         <div class="">
                                             <li v-for="stat in status">
-                                                <button class="btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-if="pedido.status_id != 5 && pedido.status_id != 6"></button>
-                                                <button class="btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-else-if="stat.id != 5">{{ stat.stat_desc }}</button>
+                                                <button class="btn dropdown-btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-if="pedido.status_id != 5 && pedido.status_id != 6"></button>
+                                                <button class="btn dropdown-btn fw-medium text-capitalize" @click="UpdateOrderStatus(stat.id, pedido.id)" v-else-if="stat.id != 5">{{ stat.stat_desc }}</button>
                                             </li>
                                         </div>
                                     </ul>

@@ -15,7 +15,7 @@
             </div>
        </div>
        <div class="row">
-        <SearchComponent @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent> 
+        <SearchComponent -search-placeholder="Search item here..." @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent> 
        </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
@@ -93,8 +93,8 @@
                             </div>
                             <div class="w-50 d-flex flex-column justify-content-between align-items-center">
                                 <div>
-                                    <p class="text-center">{{ item.item_name }}</p>
-                                    <p class="text-center">{{ item.item_desc }}</p>
+                                    <p class="text-center text-uppercase fw-medium">{{ item.item_name }}</p>
+                                    <p class="text-center p-4"><small>{{ item.item_desc }}</small></p>
                                 </div>
                                 <div>
                                     <h6 class="text-center m-auto text-white py-2 px-4 shadow rounded-4 price">R$ {{ item.item_price }} </h6>

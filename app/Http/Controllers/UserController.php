@@ -62,7 +62,7 @@ class UserController extends Controller
             'password' => ['required']
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where([['email', $request->email], ['isactive', true]])->first();
 
         if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -154,5 +154,91 @@ class UserController extends Controller
                     "msg"=>"This status is not allowed for this action !",
                     "statut" => 404
                 ]);
+    }
+
+    public function getEmploye()
+    {
+        $employe = DB::table("users")
+            ->select(
+                "users.id",
+                "users.name",
+                "users.email",
+                "users.tel",
+                "users_group.groupe",
+                "users_group.id as group_id"
+            )
+                ->join("users_group", "users.group_id", "=", "users_group.id")
+                    ->where('isactive', true)
+                        ->get();
+
+        return response()->json($employe);
+    }
+
+    public function getToupdateEmploye($id)
+    {
+        return response()
+            ->json(User::where('id', $id)->get());
+    }
+
+    public function ToDeleteEmploye($id)
+    {
+        DB::table('users')
+            ->where('id', $id)
+                ->update([
+                    'isactive' => false
+                ]);
+        
+        return response()
+                ->json("Usuario deletado com sucesso");
+    }
+
+    public function updateEmployeStatus($id, $group_id)
+    {
+        DB::table("users")
+            ->where("id", $id)
+                ->update([
+                    "group_id" => $group_id
+                ]);
+
+        return response()
+            ->json("Hieraquia editada com sucesso");
+    }
+
+    public function EmployeUpdate(Request $request)
+    {
+        $request->validate([
+            "user_name" => ["required","string"],
+            "user_email" => ["required"],
+            "user_tel" => ["required"],
+            "user_id" => ["required"]
+        ],
+        [
+            "user_name.required" => "name required",
+            "user_email.required" => "e-mail is required",
+            "user_tel.required" => "phone contact is required" 
+        ]);
+
+        $user_id = $request->user_id;
+        $user_name = $request->user_name;
+        $user_email = $request->user_email;
+        $user_tel = $request->user_tel;
+
+        try {
+
+            DB::beginTransaction();
+                DB::table('users')
+                    ->where('id', $user_id)
+                        ->update([
+                            "name" => $user_name,
+                            "email" => $user_email,
+                            "tel" => $user_tel
+                        ]);
+            DB::commit();
+            return response()
+                ->json("Usuario editado com sucesso");
+        }catch (Exception $e) {
+            DB::rollBack();
+            return response()->json("usuario não pode ser editado, tente novamente");
+        }
     }
 }

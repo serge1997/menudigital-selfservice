@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="col-md-10 m-auto d-flex justify-content-between p-3">
-            <input type="search" placeholder="Search item here..." v-model="search" class="form-control rounded-0 search-input">
+            <input type="search" :placeholder="SearchPlaceholder" v-model="search" class="form-control rounded-0 search-input">
             <button class="btn border rounded-0" id="search-icon"> 
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" 
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
@@ -44,6 +44,10 @@ import axios from 'axios';
 export default {
     name: 'SearchComponent',
 
+    props: {
+        SearchPlaceholder: String
+    },
+
     watch: {
         search(before, after){
             this.getSearchResult();
@@ -81,9 +85,7 @@ export default {
 </script>
 
 <style scoped>
-#search-icon {
-    background-color: #333;
-}
+
 
 .search-input{
     border: 2px solid #e2e8f0;

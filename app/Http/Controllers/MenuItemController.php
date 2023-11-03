@@ -378,4 +378,40 @@ class MenuItemController extends Controller
         return response()->json("Item deletado com sucesso");
     }
 
+    public function updatedMenuItem(Request $request)
+    {
+        $request->validate([
+            "item_name" => ["required"],
+            "item_price" => ["required"],
+            "item_desc" => ["required"]
+        ],
+        [
+            "item_name.required" => "item name required",
+            "item_price.required" => "item price required",
+            "item_desc" => "item description is required"
+        ]);
+        
+        $item_name = $request->item_name;
+        $item_price = $request->item_price;
+        $item_id = $request->item_id;
+        $item_desc = $request->item_desc;
+
+        try {
+
+            DB::table("menuitems")
+            ->where("id", $item_id)
+                ->update([
+                    "item_name" => $item_name,
+                    "item_desc" => $item_desc,
+                    "item_price" => $item_price
+                ]);
+            return response()
+                ->json("Item editado com sucesso");
+        }catch(\Exception $e){
+            return response()
+                ->json("Item não pode ser editado, tente novamente");
+        }
+
+    }
+
 }

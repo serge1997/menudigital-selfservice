@@ -110,7 +110,7 @@ class OrderTransfertController extends Controller
     {
         $items = DB::table("menuitems")->select('*')
             ->join("menu_mealtype", "menuitems.type_id", "=", "menu_mealtype.id_type")
-                ->where('menuitems.item_name', 'like', '%'.$request->search.'%')
+                ->where([['menuitems.item_name', 'like', '%'.$request->search.'%'], ['item_status', true]])
                     ->get();
 
         return response()->json([

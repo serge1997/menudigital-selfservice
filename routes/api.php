@@ -37,6 +37,7 @@ Route::post('add/quantity/{id}/{table}', [MenuItemController::class, 'AddQuantit
 Route::post('reduce/quantity/{id}/{teste}', [MenuItemController::class, 'ReduceQuantity']);
 Route::get('cart/items/{table}', [MenuItemController::class, 'CustomerFinalCart']);
 Route::get('delete/item/{cartID}/{table}', [MenuItemController::class, 'DeleteFromCart']);
+Route::post('item-menu/update', [MenuItemController::class, 'updatedMenuItem']);
 
 Route::get('edit/menu-item/{id}', [MenuItemController::class,'getItemForEdit']);
 Route::post('/set-rupture/{id}', [MenuItemController::class, 'SetRupture']);
@@ -78,4 +79,9 @@ Route::post('login', [UserController::class, 'login']);
 Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/dashboard/cancela/{item_pedido}/{item_id}', [UserController::class, 'CancelPermission']);
 Route::post('/editorder/stat/{item_pedido}', [UserController::class, 'EditOrderStat']);
+Route::get('get/employe', [UserController::class, 'getEmploye']);
+Route::get('get/employe/{id}', [UserController::class, 'getToupdateEmploye']);
+Route::post('employe/delete/{id}', [UserController::class, 'ToDeleteEmploye']);
+Route::post('employe-status/update/{id}/{group_id}', [UserController::class,'updateEmployeStatus']);
+Route::post('employe/update', [UserController::class,'EmployeUpdate']);
 

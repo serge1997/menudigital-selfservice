@@ -25,4 +25,14 @@ export default {
         background-color: #e2e8f0;
     }
 
+    #search-icon {
+        background-color: #333;
+    }
+
+    .dropdown-btn:hover {
+        background-color: #eff3f7;
+        box-shadow: 1px 8px #3333338a;
+        transition: .3s ease;
+    }
+
 </style>
