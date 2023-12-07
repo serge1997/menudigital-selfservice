@@ -144,8 +144,7 @@ export default {
                 title: "Quer realmente apagar o usuario ?",
                 text: "Não irá ter mais acesso aos informações e serviço desse colaborador. No caso de recuperação, entre em contato con o fornecedor do aplicativo.",
                 showCancelButton: true,
-                confirmButtonColor: '#42b883',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#e63958',
                 confirmButtonText: 'Deletar colaborador',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
@@ -177,8 +176,7 @@ export default {
             this.$swal.fire({
                 text: "Clique em sim para confirmar a edição da hieraquia do usuario.",
                 showCancelButton: true,
-                confirmButtonColor: '#42b883',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#333',
                 confirmButtonText: 'Sim',
                 cancelButtonText: 'Cancelar'
             }).then((res) => {

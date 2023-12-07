@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Supplier extends Model
 {
     use HasFactory;
 
     protected $table = 'suppliers';
-    protected $fillable = 
+    protected $fillable =
         [
             'sup_name',
             'sup_personID',
@@ -19,4 +20,9 @@ class Supplier extends Model
             'sup_neighborhood',
             'sup_email'
         ];
+
+    public function product(): HasMany
+    {
+        return $this->hasMany(Product::class, 'prod_suplierID');
+    }
 }

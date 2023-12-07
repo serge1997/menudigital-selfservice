@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ItensPedido extends Model
 {
@@ -21,4 +22,9 @@ class ItensPedido extends Model
         'item_option',
         'item_comments'
     ];
+
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Pedido::class, 'item_pedido');
+    }
 }
