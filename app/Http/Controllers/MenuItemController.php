@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Menuitems;
 use App\Models\Cart;
 use App\Models\MealType;
+use App\Models\Technicalfiche;
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -31,7 +33,7 @@ class MenuItemController extends Controller
     public function StoreMenuItem(StoreProductRequest $request) {
 
         $request->validated();
-        
+
         $values = $request->all();
         $item = new Menuitems($values);
 
@@ -77,7 +79,8 @@ class MenuItemController extends Controller
         $items = DB::table("menuitems")->select('*')
             ->join("menu_mealtype", "menuitems.type_id", "=", "menu_mealtype.id_type")
                 ->where('menuitems.item_status', '=', true)
-                    ->get();
+                    ->orderBy('menuitems.item_name')
+                        ->get();
 
         return response()->json([
             'items' => $items
@@ -145,18 +148,18 @@ class MenuItemController extends Controller
     }
     public function addToCart($id, Request $request)
     {
-        
+
         $price = Menuitems::select('item_price')
             ->where('id', $id)
             ->first();
-        
+
         $cart = new Cart();
         $cart->item_id = $id;
         $cart->tableNumber = $request->tableNumber;
         $cart->unit_price = $price->item_price;
         $cart->total = $price->item_price;
         //$cart->save();
-        
+
         try {
 
             $unitPrice = DB::table('carts')->select('unit_price')
@@ -166,7 +169,7 @@ class MenuItemController extends Controller
             $checkProductExist = Cart::select('item_id')
                 ->where([["item_id", "=", $id], ["tableNumber", "=", $request->tableNumber]])
                 ->first();
-           
+
 
             $quantidade = DB::table('carts')->select('quantity')
                 ->where([["item_id", "=", $id], ["tableNumber", "=", $request->tableNumber]])
@@ -177,9 +180,9 @@ class MenuItemController extends Controller
                 DB::table('carts')->where([['item_id', '=', $id], ['tableNumber', '=', $request->tableNumber]])
                     ->update([
                         'quantity' => $quantidade->quantity += 1,
-                        'total' => $unitPrice->unit_price * $quantidade->quantity 
+                        'total' => $unitPrice->unit_price * $quantidade->quantity
                     ]);
-            
+
            }else {
 
                 DB::beginTransaction();
@@ -191,9 +194,9 @@ class MenuItemController extends Controller
             return response()->json($e);
         }
 
-        
-        
-    
+
+
+
     }
 
     public function SetCartOptions($id, Request $request)
@@ -216,7 +219,7 @@ class MenuItemController extends Controller
         }
     }
 
-    public function AddQuantity($id, $table)
+    public function AddQuantity($id, $table): JsonResponse
     {
         $item = Cart::find($id);
 
@@ -250,7 +253,7 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function ReduceQuantity($id, $table)
+    public function ReduceQuantity($id, $table): JsonResponse
     {
         $quantidade = DB::table('carts')->select('quantity')
             ->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
@@ -288,13 +291,13 @@ class MenuItemController extends Controller
     {
         $items = DB::table('carts')->select(
                 'carts.id AS cartID',
-                'menuitems.item_name', 
+                'menuitems.item_name',
                 'menuitems.item_image',
                 'menuitems.item_desc',
                 'carts.quantity',
                 'carts.options',
                 'carts.quantity',
-                'carts.tableNumber', 
+                'carts.tableNumber',
                 'carts.total'
             )
             ->join('menuitems', 'carts.item_id', '=', 'menuitems.id')
@@ -304,7 +307,7 @@ class MenuItemController extends Controller
         $total = DB::table('carts')
             ->where('tableNumber', $table)
             ->sum('total');
-            
+
 
         return response()->json([
             'items' => $items,
@@ -312,7 +315,7 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function DeleteFromCart($cartID, $table)
+    public function DeleteFromCart($cartID, $table) :JsonResponse
     {
         DB::table('carts')->where('id', $cartID)
             ->delete();
@@ -326,7 +329,7 @@ class MenuItemController extends Controller
     }
 
 
-    public function getTable()
+    public function getTable(): JsonResponse
     {
         $table = DB::table('tablenumber')->select('tablenumber.table')
             ->whereNotIn('id', function($query) {
@@ -339,12 +342,26 @@ class MenuItemController extends Controller
             })
                 ->get();
 
-        return response($table);
+        return response()->json($table);
     }
 
     public function show($id)
     {
-        return response()->json(Menuitems::where('id', $id)->get());
+        $item = Menuitems::where('id', $id)->get();
+        $fiche = DB::table('technicalfiches')
+            ->select(
+                '*'
+            )
+                ->join('products', 'technicalfiches.productID', '=', 'products.id')
+                    ->where('itemID', $id)
+                        ->get();
+
+        return response()->json(
+            [
+                'item' => $item,
+                'fiche' => $fiche
+            ]
+        );
     }
 
     public function getItemForEdit($id)
@@ -365,7 +382,7 @@ class MenuItemController extends Controller
                 ]);
     }
 
-    public function ToDelete($id)
+    public function ToDelete($id): JsonResponse
     {
         $id = filter_var($id, FILTER_VALIDATE_INT);
 
@@ -390,7 +407,7 @@ class MenuItemController extends Controller
             "item_price.required" => "item price required",
             "item_desc" => "item description is required"
         ]);
-        
+
         $item_name = $request->item_name;
         $item_price = $request->item_price;
         $item_id = $request->item_id;

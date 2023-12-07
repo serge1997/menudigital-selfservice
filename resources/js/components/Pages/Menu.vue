@@ -5,17 +5,27 @@
                 <h6 class="fs-2">Casino bar</h6>
                 <h6 class="fs-6">Menu digital</h6>
             </div>
-            <div class="p-2">
-                <router-link class="d-flex nav-link" :to="{ name: 'Cart' }">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
-                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z">
+            <div class="p-2 d-flex">
+                <div>
+                    <router-link class="d-flex nav-link" :to="{ name: 'Cart' }">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-bag"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z">
                         </path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </router-link>
+                        </svg>
+                    </router-link>
+                </div>
+                <p class="px-2"></p>
+                <div>
+                    <router-link class="d-flex nav-link" :to="{name: 'Garcom'}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </router-link>
+                </div>
             </div>
        </div>
        <div class="row">
-        <SearchComponent -search-placeholder="Search item here..." @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent> 
+        <SearchComponent -search-placeholder="Search item here..." @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent>
        </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
@@ -23,11 +33,13 @@
             </div>
         </div>
         <div class="row d-flex justify-content-center">
-            <div class="col-lg-2 col-md-4 border menu-type-card p-2 mt-2" id="typebtn" v-for="mtype in MenuType" :key="mtype.id_type">
-                <button class="btn w-100 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">  
-                    <img class="w-25" :src="'/img/type/'+ mtype.foto_type" alt="">
-                    {{ mtype.desc_type }}
-                </button>
+            <div class="row d-flex justify-content-center p-3">
+                <div class="col-lg-2 col-md-4 menu-type-card p-2" id="typebt" v-for="mtype in MenuType" :key="mtype.id_type">
+                    <button class="btn w-75 border-0 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">
+                        <img class="w-50 type-btn" :src="'/img/type/'+ mtype.foto_type" alt="">
+                        {{ mtype.desc_type }}
+                    </button>
+                </div>
             </div>
         </div>
         <div class="row p-4">
@@ -35,17 +47,22 @@
                 <div class="card rounded-0 p-0">
                     <div class="card-body d-flex p-0">
                         <div class="col-6">
-                            <img class="w-100 h-100 rounded-0 card-img-top" src="img/banner.jpg" alt="">
+                            <img class="w-100 h-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             <div class="order-btn-box text-white mt-2">
-                                <router-link v-if="!item.item_rupture" @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="nav-link px-3 py-1 text-black border rounded-3">add</router-link>
+                                <router-link v-if="!item.item_rupture" @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="btn add-btn p-1 px-2 py-1 border-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                </router-link>
                                 <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
-                                <button class="border-0" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">  
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                                <button class="btn add-btn p-1 px-2 py-1 show-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
@@ -59,16 +76,22 @@
                 <div class="card rounded-0 shadow">
                     <div class="card-body d-flex p-0">
                         <div class="col-6">
-                            <img class="w-100" src="img/banner.jpg" alt="">
+                            <img class="w-100" src="/img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
                             <h5 class="text-center">{{ item.item_name }}</h5>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             <div class="order-btn-box text-white mt-2">
-                                <router-link @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="nav-link px-3 py-1 text-black border rounded-3">add</router-link>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">  
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" 
+                                <router-link v-if="!item.item_rupture" @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="btn add-btn p-1 px-2 py-1 border-dark">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                </router-link>
+                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
+                                <button class="btn add-btn p-1 px-2 py-1 show-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="2"
                                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                         <circle cx="12" cy="12" r="3"></circle>
                                     </svg>
@@ -77,7 +100,7 @@
                         </div>
                     </div>
                 </div>
-            </div>      
+            </div>
         </div>
         <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
@@ -89,16 +112,15 @@
                     <div class="modal-body">
                         <div v-for="item in show" class="d-flex justify-content-between">
                             <div class="w-50">
-                                <img class="w-100" src="img/banner.jpg" alt="">
+                                <img class="w-100" src="/img/banner.jpg" alt="">
+                                <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 mt-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             </div>
-                            <div class="w-50 d-flex flex-column justify-content-between align-items-center">
-                                <div>
-                                    <p class="text-center text-uppercase fw-medium">{{ item.item_name }}</p>
-                                    <p class="text-center p-4"><small>{{ item.item_desc }}</small></p>
-                                </div>
-                                <div>
-                                    <h6 class="text-center m-auto text-white py-2 px-4 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
-                                </div>
+                            <div class="px-2"></div>
+                            <div class="w-100 d-flex flex-column align-items-center">
+                                <ul class="d-flex list-group w-100">
+                                    <li class="list-group-item bg-dark text-white">Ingredients</li>
+                                    <li class="list-group-item" v-for="ingredients in fiche">{{ ingredients.prod_name }}</li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -134,12 +156,13 @@ export default {
             },
             isCart: false,
             load: true,
-            isRupture: false
+            isRupture: false,
+            fiche: null
         }
     },
 
     created() {
-    
+
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 axios.get('/api/menu/items').then((response) => {
@@ -160,7 +183,7 @@ export default {
         getMenuType() {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.get('/api/get/menutype').then((response) => {
+                    axios.get('/api/menu-type').then((response) => {
                         this.MenuType = response.data
                     }).catch((errors) => {
                         console.log(errors)
@@ -197,12 +220,13 @@ export default {
         ShowItem(id){
             axios.get('/api/show/'+id).then((response) => {
                 console.log(response.data);
-                this.show = response.data
+                this.show = response.data.item
+                this.fiche = response.data.fiche
             }).catch((errors) => {
                 console.log(errors);
             })
         }
-        
+
     },
 
     mounted() {
@@ -221,41 +245,34 @@ export default {
 .fantasy {
     font-family: 'Borel';
 }
-    #typebtn {
-        background-color: #eff3f7;
-        transition: all .3s ease;
-        position: relative;
-        z-index: 10;
-    }
 
-    #typebtn::before {
-        content: '';
-        position: absolute;
-        width: 0%;
-        height: 110%;
-        transform: translateX(-15px) translateY(-7px);
-        transition: all .4s ease;
-        z-index: -1;
-        background-color: #fff;
-    }
+.order-btn-box {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+}
 
-    #typebtn:hover::before {
-        width: 180%;
-    }
 
-    .price {
-        background-color: #1F2024 ;
-        font-size: 0.8em;
-    }
+.menu-type-card {
+    border-bottom: 1px #e63958 solid;
+}
 
-    .order-link {
-        background-color: #1F2024;
-    }
+.type-btn {
+    width: 25%;
+    padding: 8px;
+    border-radius: 50%;
+    border: 1px solid #e63958;
+    transition: all .4s ease-in;
+}
 
-    .order-btn-box {
-        display: flex;
-        gap: 8px;
-        justify-content: center;
-        align-items: center;
-    }
+.menu-type-card:hover .type-btn{
+    background-color: #e63958;
+}
+
+.menu-type-card:active .type-btn{
+    background-color: #e63958;
+}
+
+
 </style>

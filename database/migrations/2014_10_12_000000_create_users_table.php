@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('group_id')->unsigned();
             $table->foreign('group_id')->references('id')
                 ->on('users_group')->onDelete('cascade');
+                $table->boolean('isactive')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

@@ -1,7 +1,7 @@
 <template>
     <!-- Button trigger modal -->
-    <button type="button" @click="$emit('getTransfertItems', id)" class="btn" data-bs-toggle="modal" data-bs-target="#transfertModal"> 
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+    <button type="button" @click="$emit('getTransfertItems', id)" class="btn" data-bs-toggle="modal" data-bs-target="#transfertModal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-divide-square">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line>
             <line x1="12" y1="16" x2="12" y2="16"></line><line x1="12" y1="8" x2="12" y2="8"></line>
@@ -43,8 +43,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn btn-primary rounded-0" @click="postTransfert">Transferir</button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button class="btn modal-btn text-white rounded-0" @click="postTransfert">Transferir</button>
         </div>
         </div>
     </div>
@@ -88,7 +87,12 @@ export default {
                 this.transfert.item_id.push(x.replace(/[^0-9]/g, ''))
             }
             axios.post('/api/post/transfert', this.transfert).then((response) => {
-                this.$toast.success(response.data)
+
+                if (response.data.status == 400){
+                    this.$toast.error(response.data.msg)
+                }else{
+                    this.$toast.success(response.data.msg)
+                }
                 this.options = []
             }).catch((errors) => {
                 console.log(errors)
@@ -101,7 +105,7 @@ export default {
     },
 
     mounted(){
-       
+
     }
 }
 </script>

@@ -2,14 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ItensPedido;
 use App\Models\Pedido;
+use App\Models\PaiementType;
 use DateTime;
 class OrderTransfertController extends Controller
 {
-    
+    public $paimentStatus;
+    public function __construct()
+    {
+        $this->paimentStatus = new PaiementType();
+    }
+
     public function getTransfertOrderItems($id)
     {
         $items = DB::table('itens_pedido')
@@ -20,7 +27,7 @@ class OrderTransfertController extends Controller
                     'menuitems.item_name'
                 )
                     ->join('menuitems', 'itens_pedido.item_id', '=', 'menuitems.id')
-                        ->where('item_pedido', $id)
+                        ->where([['item_pedido', $id], ['item_quantidade', '>', 0]])
                             ->get();
 
         return response()->json($items);
@@ -57,6 +64,17 @@ class OrderTransfertController extends Controller
                                         'item_pedido' => $order->id,
                                     ]);
                     else:
+
+                        if ($qty > $item->item_quantidade):
+                            DB::table('pedidos')
+                                ->where('id', $order->id)
+                                    ->delete();
+                            return response()
+                                ->json([
+                                    'status' => 400,
+                                    'msg' => 'Quantidade do item superior não é aceitado'
+                                ]);
+                        endif;
                         DB::table('itens_pedido')
                             ->where('item_pedido', $request->item_pedido)
                             ->where('item_id', $ids)
@@ -64,7 +82,7 @@ class OrderTransfertController extends Controller
                                     'item_quantidade' => $item->item_quantidade - $qty,
                                     'item_total' => $item->item_price * ($item->item_quantidade - $qty)
                                 ]);
-                         
+
                         $tintens = new ItensPedido();
                         $tintens->item_emissao = $item->item_emissao;
                         $tintens->item_quantidade = $qty;
@@ -78,11 +96,14 @@ class OrderTransfertController extends Controller
                     endif;
                 //endforeach;
         endforeach;
-        
-        return response()->json("Item transferido com sucesso");
+
+        return response()->json([
+            'msg' =>"Item transferido com sucesso",
+            'status' => 200
+        ]);
     }
 
-    public function getReport()
+    public function getReport(): JsonResponse
     {
         $hoje = new DateTime();
         $hoje = $hoje->format('Y-m-d');
@@ -101,8 +122,28 @@ class OrderTransfertController extends Controller
                                     'menuitems.item_name'
                                 )
                                     ->get();
+        $paiement_data = DB::table('pedidos')
+            ->select(DB::raw('SUM(itens_pedido.item_total) cash'), 'status.stat_desc')
+                ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
+                    ->rightJoin('status', 'pedidos.status_id', '=', 'status.id')
+                    ->where('pedidos.ped_emissao', $hoje)
+                        ->groupBy([
+                            'status.stat_desc'
+                        ])
+                            ->get();
+        $itemCanceled = DB::table('itens_pedido')
+                ->select(DB::raw('SUM(item_quantidade * item_price) valor'))
+                        ->where([['item_emissao', $hoje], ['item_quantidade', '<', 0]])
+                            ->get();
 
-        return response()->json($report);
+
+
+
+        return response()->json([
+            'report' => $report,
+            'paiment' => $paiement_data,
+            'valcanceled' => $itemCanceled
+        ]);
     }
 
 
@@ -116,6 +157,6 @@ class OrderTransfertController extends Controller
         return response()->json([
             'items' => $items
         ]);
-    
+
     }
 }

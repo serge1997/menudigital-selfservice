@@ -9,8 +9,8 @@
                     <div class="d-flex justify-content-between">
                         <h6 class="text-center">Venda do dia</h6>
                         <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                                stroke="#d9534f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="#d9534f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
                                 class="feather feather-arrow-up-right"><line x1="7" y1="17" x2="17" y2="7"></line>
                                 <polyline points="7 7 17 7 17 17"></polyline>
                             </svg>
@@ -31,8 +31,8 @@
                     <div class="d-flex justify-content-between">
                         <h6 class="text-center">Venda Total</h6>
                         <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" 
-                                stroke="#d9534f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                stroke="#d9534f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
                                 class="feather feather-arrow-up-right"><line x1="7" y1="17" x2="17" y2="7"></line>
                                 <polyline points="7 7 17 7 17 17"></polyline>
                             </svg>
@@ -64,9 +64,9 @@
                         <h6>Top waiter ranking</h6>
                         <div class="border shadow-sm waiter-card mt-3 col-md-12" v-for="type in typesCollection">
                             <div class="header d-flex justify-content-between">
-                                <div class="user-icon p-1">  
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" 
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+                                <div class="user-icon p-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2">
                                         </path><circle cx="12" cy="7" r="4"></circle>
                                     </svg>
@@ -111,8 +111,9 @@
     </div>
 </template>
 <script>
-import bb, {area, areaSpline, bar, donut} from 'billboard.js'
+import bb, {area, areaSpline, bar, line, donut} from 'billboard.js'
 import SideBarComponent from './SideBarComponent.vue';
+
 export default {
     name: 'BusinessInteligence',
 
@@ -132,126 +133,58 @@ export default {
             type:{
                 starter: 0,
                 principal: 0
+            },
+            barchart:{
+                date: [],
+                sell: []
             }
         }
     },
 
     methods: {
-
-        getWaiterStats(){
-            axios.get('/api/waiter/stats').then((response) => {
-                this.typesCollection = response.data.type
-                this.itemsCollection = response.data.itemsCollection
-
-
-                for(const w of response.data.waiter){
-                    this.waiterAvg.push(w.mediaVenda)
-                    this.waiterName.push(w.name)
-                    this.waiterSell.push(w.venda)
+        getGeneralStat() {
+            axios.get('/api/bi/general-stat').then((response) => {
+                console.log(response.data)
+                for (let data of response.data){
+                    let sell = Number(data.total)
+                    this.barchart.date.push(data.item_emissao);
+                    this.barchart.sell.push(sell)
                 }
-
-                const TypeSet = new Set();
-                const TypeCollection = [];
-                for(const t of response.data.type){
-                    TypeSet.add(t.type)
-                    //this.typeSell.push(t.typevenda)
-                }
-                
-                TypeSet.forEach(function(e){
-                    TypeCollection.push(e)
-                })
-
-                for(const t of response.data.type){
-                    if (t.type == "ENTRADA"){
-                        t.typevenda = Number(t.typevenda)
-                        this.type.starter += t.typevenda
-                    }else{
-                        if (t.type == "PRINCIPAL"){
-                            t.typevenda = Number(t.typevenda)
-                            this.type.principal += t.typevenda
-                        }
-                    }
-
-                }
-
-                console.log(this.type.principal)
-                
-
-                bb.generate({
-                    data: {
-                        columns: [
-                            ["VENDA", ...this.waiterSell],
-                            ["MEDIA VENDA", ...this.waiterAvg]
-                        ],
-                        type: bar(),
-                    },
-                    axis:{
-                        x:{
-                            type: "category",
-                            categories: [...this.waiterName]
-                        }
-                    },
-
-                    bar: {
-                        width: {
-                            ratio: 0.5
-                        }
-                    },
-                    bindto: "#bar"
-                });
-
-                var chart = bb.generate({
-                    data: {
-                        columns: [
-                            [TypeCollection[0], this.type.starter],
-                            [TypeCollection[1], this.type.principal],
-                        ],
-                        type: donut(), // for ESM specify as: donut()
-                    },
-                    arc: {
-                        cornerRadius: {
-                        ratio: 0.2
-                        }
-                    },
-                    bindto: "#charDonut"
-                    });
-            }).catch((errors) =>{
-                console.log(errors)
+                this.SetDoubleBarChart()
+                //this.barchart.sell = [...this.waiterSell];
+                console.log(this.barchart.sell)
             })
         },
 
-
-        MontChartBar() {
-            
-       },
-
-       MontChartLine(){
+        //double bar chart
+        SetDoubleBarChart(){
             var chart = bb.generate({
-            data: {
-                columns: [
-                ["data1", 300, 350, 300, 0, 0, 0],
-                ["data2", 130, 100, 140, 200, 150, 50]
-                ],
-                types: {
-                data1: area(), // for ESM specify as: area()
-                data2: areaSpline(), // for ESM specify as: areaSpline()
-                }
-            },
+                data: {
+                    x: "x",
+                    columns: [
+                        ["x", ...this.barchart.date],
+                        ["sample", ...this.barchart.sell],
+                    ],
+                    type: bar(), // for ESM specify as: line()
+                },
+                axis: {
+                    x: {
+                        type: "timeseries",
+                        tick: {
+                            count: 4,
+                            format: "%Y-%m-%d"
+                        }
+                    }
+                },
                 bindto: "#Chart"
             });
-       },
-
-       MountChartDonut() {
-            
-       }
+        }
     },
 
-    mounted(){
-        this.MontChartBar()
-        this.MontChartLine()
-        this.MountChartDonut()
-        this.getWaiterStats()
+    mounted() {
+        this.getGeneralStat()
     }
+
 }
 
 </script>

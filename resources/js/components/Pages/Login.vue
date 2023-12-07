@@ -56,18 +56,18 @@ export default {
         login() {
             axios.post('/api/login', this.credentials).then((response) => {
                 localStorage.setItem('token', response.data)
-                this.$router.push('/home')
+                this.$router.push('/dashboard/operador')
                 this.$toast.success("Seja Bem vindo!");
             }).catch((errors) => {
                 this.loginerrresponse = errors.response.data.message;
                 this.msgerrors = errors.response.data.errors
             })
         }
-        
+
     },
 
     mounted(){
-        
+
     }
 }
 

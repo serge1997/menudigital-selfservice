@@ -3,6 +3,16 @@
         <div class="d-flex justify-content-between p-0">
             <div class="col-8 m-auto">
                 <h4 class="text-capitalize">Espaço Garcom</h4>
+                <div class="w-100 d-flex justify-content-center p-2">
+                    <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Menu' }">
+                        <img class="w-25 m-auto" src="../../../../public/img/iconmenu.png" alt="">
+                        <span class="text-center fw-medium text-capitalize">Menu</span>
+                    </router-link>
+                    <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Home' }">
+                        <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
+                        <span class="text-center fw-medium text-capitalize">New order</span>
+                    </router-link>
+                </div>
                 <div class="py-4">
                     <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
                     <div class="d-flex justify-content-center flex-wrap p-2 mt-2">
@@ -23,17 +33,19 @@
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                        <button class="btn rounded-0 bg-dark text-white capitalize" data-bs-toggle="modal" data-bs-target="#AddMenu">
+                            Adicionar
+                        </button>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <table class="table">
+                        <table class="table table-active">
                             <thead>
                                 <tr>
                                     <th>Item</th>
-                                    <th>quantidade</th>
+                                    <th>Quantidade</th>
                                     <th>Valor</th>
-                                    <th>Valor Total</th>
+                                    <th>Subtotal</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -44,7 +56,29 @@
                                     <td>{{ item.item_total }}</td>
                                 </tr>
                             </tbody>
+                            <tfoot>
+                                <tr class="fw-medium fs-5">
+                                    <td>Totais</td>
+                                    <td>{{ billTotalItem }}</td>
+                                    <td class="bg-dark"></td>
+                                    <td class="bg-dark text-white"><span>{{ billTotal }} R$</span></td>
+                                </tr>
+                            </tfoot>
                         </table>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="AddMenu" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <menu-component :id="orderID"></menu-component>
                     </div>
                     <div class="modal-footer">
                     </div>
@@ -57,11 +91,12 @@
 
 <script>
 import _ from 'lodash'
+import MenuComponent from './MenuComponent.vue';
 export default {
     name: 'OperadorPanel',
 
     components: {
-    
+        MenuComponent
     },
 
     data() {
@@ -71,8 +106,12 @@ export default {
             status: null,
             linkSTyle: 'text-white',
             tables: null,
-            busyTables: null
-            
+            busyTables: null,
+            orderID: null,
+            //orderID: localStorage.getItem('orderID'),
+            addnewItem: null,
+            billTotal: 0,
+            billTotalItem: null
         }
     },
     watch:{
@@ -100,9 +139,16 @@ export default {
         },
 
         getOrderItem(id) {
+            this.billTotal = 0
+            this.billTotalItem = 0
             axios.get('/api/dashboard/item/' + id).then((response) => {
                 this.itens = response.data
-               
+                this.orderID = id
+                for (let bill of response.data) {
+                    this.billTotal += Number(bill.item_total)
+                    this.billTotalItem += Number(bill.item_quantidade)
+                }
+                console.log(localStorage.getItem('orderID'))
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -126,6 +172,10 @@ export default {
             })
         }
 
+    },
+
+    mounted(){
+        console.log(this.orderID)
     }
 }
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer("type_id")->unsigned();
             $table->foreign("type_id")->references("id_type")
                 ->on("menu_mealtype")->onDelete("cascade");
+            $table->boolean('item_rupture')->default(false);
             $table->timestamps();
         });
     }

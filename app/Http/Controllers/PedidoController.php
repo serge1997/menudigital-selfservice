@@ -2,19 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Pedido;
 use App\Models\ItensPedido;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use App\Events\StockReduced;
+use App\Models\Menuitems;
+use App\Models\Technicalfiche;
+use App\Models\Saldo;
+use App\Models\PaiementType;
+
 
 class PedidoController extends Controller
 {
-    
+    public $hoje ;
+    public $orderStatus;
+
+    public function __construct()
+    {
+        $date = new DateTime();
+        $this->hoje = $date->format('Y-m-d');
+        $this->orderStatus = new PaiementType();
+    }
+
     public function  confirmOrder(Request $request)
     {
-        $hoje = new DateTime();
         $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
             ->get();
 
@@ -22,13 +37,13 @@ class PedidoController extends Controller
         $order->ped_tableNumber = $request->ped_tableNumber;
         $order->ped_customerName = $request->ped_customerName;
         $order->user_id = $request->user_id;
-        $order->ped_emissao = $hoje->format("Y-m-d H:i:s");
+        $order->ped_emissao = $this->hoje;
         $order->status_id = 6;
         $order->save();
 
         foreach($orderItem as $itemPedido) {
             $itens = new ItensPedido();
-            $itens->item_emissao = $hoje->format("Y-m-d H:i:s");
+            $itens->item_emissao = $this->hoje;
             $itens->item_pedido = $order->id;
             $itens->item_quantidade = $itemPedido->quantity;
             $itens->item_id = $itemPedido->item_id;
@@ -37,6 +52,7 @@ class PedidoController extends Controller
             $itens->item_comments = $itemPedido->comments;
             $itens->item_option = $itemPedido->options;
             $itens->save();
+            event(new StockReduced($itens));
         }
 
         DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
@@ -69,7 +85,7 @@ class PedidoController extends Controller
 
     }
 
-    public function OperadorOrderList()
+    public function OperadorOrderList(): JsonResponse
     {
         $hoje = new DateTime();
         $hoje = $hoje->format("Y-m-d");
@@ -85,7 +101,7 @@ class PedidoController extends Controller
             )
                 ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
                     ->join('status', 'pedidos.status_id', '=', 'status.id')
-                        ->where([['pedidos.ped_emissao', $hoje], ['ped_delete', false]])
+                        ->where([['pedidos.status_id', $this->orderStatus->getProgress()], ['ped_delete', false]])
                             ->groupBy(
                                 'pedidos.id',
                                 'pedidos.ped_customerName',
@@ -134,7 +150,7 @@ class PedidoController extends Controller
                 ]);
     }
 
-    public function getTablesNumber()
+    public function getTablesNumber(): JsonResponse
     {
         $hoje = new DateTime();
         $hoje = $hoje->format("Y-m-d");
@@ -176,9 +192,137 @@ class PedidoController extends Controller
                     ->join('menuitems', 'itens_pedido.item_id', '=', 'menuitems.id')
                         ->where('pedidos.id', $id)
                             ->get();
-        
+
         return response()->json($bill);
     }
 
-    
+    public function Add_To_Order(Request $request, $id)
+    {
+        $menuitem = Menuitems::where('id', $id)->first();
+        $orderID = $request->orderID;
+        $tableNumber = $request->tableNumber;
+        $check_if_item_exist = ItensPedido::where([['item_pedido', $orderID], ['item_id', $id]])
+            ->first();
+
+
+        /*if ($check_if_item_exist):
+            DB::table('itens_pedido')
+                ->where([['item_pedido', $orderID], ['item_id', $id]])
+                    ->update([
+                        'item_quantidade' => $check_if_item_exist->item_quantidade,
+                        'item_total' => $menuitem->item_price * $check_if_item_exist->item_quantidade
+                    ]);
+                return response()
+                    ->json([
+                        'item' => $menuitem,
+                        'order' => ItensPedido::where([['item_pedido', $orderID], ['item_id', $id]])->first()
+                    ]);
+        endif;*/
+
+        /*$itens = new ItensPedido();
+        $itens->item_pedido = $orderID;
+        $itens->item_id = $id;
+        $itens->item_quantidade = 0;
+        $itens->item_price = $menuitem->item_price;
+        $itens->item_total = $menuitem->item_price;
+        $itens->item_emissao = $this->hoje;
+        $itens->save();*/
+
+        return response()
+            ->json([
+                'item' => $menuitem,
+                'order' => ItensPedido::where([['item_pedido', $orderID], ['item_id', $id]])->first()
+
+            ]);
+
+
+    }
+
+    public function postNewOrderItem(Request $request)
+    {
+        $orderID = $request->orderID;
+        $itemID = $request->itemID;
+        $quantity = $request->quantity;
+
+        $menuitem = Menuitems::where('id', $itemID)->first();
+        $item = ItensPedido::where([
+                ['item_pedido', $orderID], ['item_id', $itemID]
+            ])->first();
+
+
+        if ($item):
+            $totalQuantity = $item->item_quantidade + $quantity;
+            DB::table('itens_pedido')
+                ->where([['item_pedido', $orderID], ['item_id', $itemID]])
+                    ->update([
+                        'item_quantidade' => $item->item_quantidade += $quantity,
+                        'item_total' => $menuitem->item_price * $totalQuantity
+                    ]);
+
+            $fiche = Technicalfiche::where('itemID', $menuitem->id)->get();
+
+            foreach ($fiche as $product){
+                $old_saldo = Saldo::where('productID', $product->productID)->first();
+
+                if ($old_saldo->emissao == $this->hoje):
+                    DB::table('saldos')
+                        ->where('productID', $product->productID)
+                            ->update([
+                                'saldoFinal' => $old_saldo->saldoFinal - $product->quantity,
+                            ]);
+                else:
+                     DB::table('saldos')
+                         ->where('productID', $item->productID)
+                             ->update([
+                                 'emissao' => $this->hoje,
+                                 'saldoInicial' => $old_saldo->saldoFinal,
+                                 'saldoFinal' => $old_saldo->saldoFinal - $product->quantity
+                             ]);
+                endif;
+            }
+            return response()
+                ->json("Item adicionado com sucesso exist");
+        endif;
+        $itens = new ItensPedido();
+        $itens->item_pedido = $orderID;
+        $itens->item_id = $itemID;
+        $itens->item_quantidade = $quantity;
+        $itens->item_price = $menuitem->item_price;
+        $itens->item_total = $menuitem->item_price * $quantity;
+        $itens->item_emissao = $this->hoje;
+        $itens->save();
+        event(new StockReduced($itens));
+
+        return response()
+            ->json("Item adicionado com sucesso ");
+    }
+
+    public function getBillHistory(): JsonResponse
+    {
+        $bills = DB::table('pedidos')
+            ->select(
+                'pedidos.id',
+                'pedidos.ped_customerName',
+                'users.name',
+                'pedidos.ped_tableNumber',
+                'status.stat_desc',
+                'pedidos.ped_emissao',
+                DB::raw('SUM(item_total) as total')
+            )
+                ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
+                    ->join('users', 'pedidos.user_id', '=', 'users.id')
+                        ->join('status', 'pedidos.status_id', '=', 'status.id')
+                            ->where([['pedidos.status_id', '<>', 6], ['pedidos.status_id', '<>', 5]])
+                                ->groupBy(
+                                    'id',
+                                    'pedidos.ped_customerName',
+                                    'users.name',
+                                    'status.stat_desc',
+                                    'pedidos.ped_tableNumber',
+                                    'pedidos.ped_emissao'
+                                )
+                                    ->orderBy('pedidos.ped_emissao', 'DESC')
+                                        ->get();
+        return response()->json($bills);
+    }
 }

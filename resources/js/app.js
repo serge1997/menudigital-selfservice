@@ -40,7 +40,6 @@ router.beforeEach((to, from, next) => {
 
 //localStorage.removeItem('token')
 
-
 createApp(App).use(router).use(VueAxios, axios).use(Toaster, {
     position: 'top'
 }).use(VueSweetalert2).mount('#app')

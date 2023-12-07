@@ -56,12 +56,12 @@
                                         <td class="text-uppercase">{{ employe.groupe }}</td>
                                         <td>
                                             <button class="btn" @click="ShowEmployeEditForm(employe.id)">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                                 </svg>
                                             </button>
                                             <button @click="ToDeleteEmploye(employe.id)" class="btn">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc3545" 
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc3545"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
                                                 </svg>
                                             </button>
@@ -69,7 +69,7 @@
                                                 <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 </button>
                                                 <ul class="dropdown-menu p-0 rounded-0 shadow">
-                                                    <h6 class="text-capitalize fw-medium p-2">Poste</h6>
+                                                    <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">Poste</h6>
                                                     <div class="w-100">
                                                         <li class="w-100">
                                                             <button v-for="group in groups" @click="updateEmployeStatus(employe.id, group.id)" class="btn fw-medium dropdown-btn p-2 w-100 rounded-0 text-left border-bottom text-capitalize">{{ group.groupe }}</button>
@@ -160,7 +160,7 @@ export default {
                     }).catch((err) => {
                         console.log(err)
                     })
-                   
+
                 }
             })
         },

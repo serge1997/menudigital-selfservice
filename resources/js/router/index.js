@@ -10,9 +10,11 @@ import NewMenuType from '../components/Pages/Dashboard/NewMenuType.vue';
 import CustomerBill from '../components/Pages/Dashboard/CustomerBill.vue';
 import Employe from '../components/Pages/Dashboard/Employe.vue';
 import Login from '../components/Pages/Login.vue';
-import Garcom from '../components/Pages/Dashboard/Garcom.vue';
+import Garcom from '../components/Pages/Garcom.vue';
 import BusinessInteligence from '../components/Pages/Dashboard/BusinessInteligence.vue'
 import SettingPanel from '../components/Pages/Dashboard/SettingPanel.vue';
+import Stock from '../components/Pages/Dashboard/Stock.vue';
+import PublicMenu from '../components/Pages/PublicMenu.vue'
 import { defaults } from "lodash";
 
 
@@ -123,7 +125,7 @@ const routes = [
                 }else{
                     next()
                 }
-                
+
             })
         },
         meta: {requiresAuth: true}
@@ -141,7 +143,7 @@ const routes = [
                 }else{
                     next()
                 }
-                
+
             })
         },
         meta: {requiresAuth: true}
@@ -154,6 +156,30 @@ const routes = [
         component: Garcom,
         meta: {requiresAuth: true}
 
+    },
+
+    {
+        path: '/dashboard/stock',
+        name: 'Stock',
+        component: Stock,
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+
+                if (response.data.group_id != 1 && response.data.group_id != 2){
+                    next('/home')
+                }else{
+                    next()
+                }
+            })
+        },
+        meta: {requiresAuth: true}
+    },
+
+    {
+        path: '/public-menu',
+        name: 'PublicMenu',
+        component:PublicMenu
     }
 ]
 

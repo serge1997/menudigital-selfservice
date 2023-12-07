@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ItensPedido;
@@ -58,7 +59,7 @@ class BiController extends Controller
                                         )
                                             ->orderBy('itens_pedido.item_emissao','desc')
                                                 ->get();
-        
+
 
         return response()->json(
                 [
@@ -67,5 +68,16 @@ class BiController extends Controller
                     'itemsCollection' => $itemsColection
                 ]
             );
+    }
+
+    public function getGeneralStat(): JsonResponse
+    {
+        $query = DB::table('itens_pedido')
+                ->select(
+                    DB::raw('SUM(item_total) total'),
+                    'item_emissao'
+                )->groupBy('item_emissao')
+                    ->get();
+        return response()->json($query);
     }
 }

@@ -75,6 +75,7 @@ export default {
     data() {
         return {
             menuItem: {
+                item_name: null,
                 item_desc: null,
                 item_price: null,
                 tem_image: null,
@@ -95,6 +96,10 @@ export default {
                 this.$toast.error(response.data.error);
             } else {
                 this.$toast.success(response.data.success);
+                this.menuItem.item_desc = "";
+                this.menuItem.item_price = "";
+                this.menuItem.type_id = "";
+                this.menuItem.item_name = ""
             }
            }).catch((errors) => {
              console.log(errors.response.data.errors)

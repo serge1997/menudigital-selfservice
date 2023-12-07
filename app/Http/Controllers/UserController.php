@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
@@ -20,7 +21,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        
+
     }
 
     public function getGroup()
@@ -78,7 +79,7 @@ class UserController extends Controller
         $request->user()->currentAccessToken()->delete();
     }
 
-    public function CancelPermission(Request $request, $item_pedido, $item_id)
+    public function CancelPermission(Request $request, $item_pedido, $item_id): JsonResponse
     {
         $item_quantidade = $request->quantidade;
         $password = User::where('id', self::USER_ID)
@@ -124,13 +125,34 @@ class UserController extends Controller
         return response()->json("Senha invalida !");
     }
 
+    public function cancelOrder(Request $request)
+    {
+        $password = User::where('id', self::USER_ID)
+            ->first();
+        try{
+
+            if (Hash::check($request->password, $password->password)):
+                DB::table('pedidos')
+                    ->where('id', $request->orderID)
+                        ->update([
+                            'ped_delete' => 1,
+                            'status_id' => 5
+                        ]);
+                return response()->json("Order canceled successfully");
+            endif;
+        }catch(Exception $e){
+            return response()->json("Operation denied");
+        }
+        return response()->json("Senha invalida !");
+    }
+
     public function EditOrderStat(Request $request, $item_pedido)
     {
 
         $request->validate([
             'password' => ['required']
         ]);
-        
+
         $password = User::where('id', self::USER_ID)
             ->first();
 
@@ -187,7 +209,7 @@ class UserController extends Controller
                 ->update([
                     'isactive' => false
                 ]);
-        
+
         return response()
                 ->json("Usuario deletado com sucesso");
     }
@@ -215,7 +237,7 @@ class UserController extends Controller
         [
             "user_name.required" => "name required",
             "user_email.required" => "e-mail is required",
-            "user_tel.required" => "phone contact is required" 
+            "user_tel.required" => "phone contact is required"
         ]);
 
         $user_id = $request->user_id;

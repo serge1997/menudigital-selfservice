@@ -34,14 +34,15 @@ class CancelOrderListener
                 DB::table('pedidos')
                     ->where('id', $OrderId)
                         ->update([
-                            'ped_delete' => 1
+                            'ped_delete' => 1,
+                            'status_id' => 5
                         ]);
        endif;
 
 
-           
 
-        
+
+
 
     }
 }

@@ -5,8 +5,10 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderTransfertController;
 use App\Http\Controllers\BiController;
+use App\Http\Controllers\StockController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,66 +24,96 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::get('menu/type', [MenuItemController::class, 'getMealType']);
-Route::post('/save/meal', [MenuItemController::class, 'StoreMenuItem']);
-Route::get('/menu/items', [MenuItemController::class, 'getMenu']);
-Route::get('get/cartitem/{id}/{table?}',[ MenuItemController::class, 'ShowCart']);
-Route::get('get/menutype', [MenuItemController::class, 'getMenuType']);
-Route::get('item/type/{id_type?}', [MenuItemController::class, 'getItemOfType']);
-Route::post('add/cart/{id?}', [MenuItemController::class, 'addToCart']);
-Route::post('table', [MenuItemController::class, 'setTableNumber']);
-Route::get('/checkcart/{checkTable?}', [MenuItemController::class, 'checkCart']);
-Route::post('set/option/{id?}', [MenuItemController::class, 'SetCartOptions']);
-Route::post('add/quantity/{id}/{table}', [MenuItemController::class, 'AddQuantity']);
-Route::post('reduce/quantity/{id}/{teste}', [MenuItemController::class, 'ReduceQuantity']);
-Route::get('cart/items/{table}', [MenuItemController::class, 'CustomerFinalCart']);
-Route::get('delete/item/{cartID}/{table}', [MenuItemController::class, 'DeleteFromCart']);
-Route::post('item-menu/update', [MenuItemController::class, 'updatedMenuItem']);
-
-Route::get('edit/menu-item/{id}', [MenuItemController::class,'getItemForEdit']);
-Route::post('/set-rupture/{id}', [MenuItemController::class, 'SetRupture']);
-Route::post('/delete/menu-item/{id}', [MenuItemController::class,'ToDelete']);
-
-Route::get('table', [MenuItemController::class, 'getTable']);
-Route::get('dashboard/tables', [PedidoController::class, 'getTablesNumber']);
-Route::post('save/type', [MenuItemController::class, 'SaveType']);
-Route::get('/show/{id}', [MenuItemController::class, 'show']);
+Route::controller(MenuItemController::class)->group(function(){
+    Route::get('menu/type', 'getMealType');
+    Route::post('save/meal', 'storeMenuItem');
+    Route::get('menu/items', 'getMenu');
+    Route::get('/cart-item/{id}/{table}', 'ShowCart');
+    Route::get('menu-type', 'getMenuType');
+    Route::get('item/type/{id_type?}', 'getItemOfType');
+    Route::post('add/cart/{id}', 'addToCart');
+    Route::post('table', 'setTableNumber');
+    Route::get('/checkcart/{checkTable?}', 'checkCart');
+    Route::post('set/option/{id?}', 'SetCartOptions');
+    Route::post('add-quantity/{id}/{table}', 'AddQuantity');
+    Route::post('reduce-quantity/{id}/{table}', 'ReduceQuantity');
+    Route::get('cart/items/{table}', 'CustomerFinalCart');
+    Route::get('delete/item/{cartID}/{table}', 'DeleteFromCart');
+    Route::post('item-menu/update', 'updatedMenuItem');
+    Route::get('edit/menu-item/{id}','getItemForEdit');
+    Route::post('/set-rupture/{id}','SetRupture');
+    Route::get('table','getTable');
+    Route::post('/delete/menu-item/{id}','ToDelete');
+    Route::post('save/type','SaveType');
+    Route::get('/show/{id}', 'show');
+});
 
 //orders
-
-Route::post('order', [PedidoController::class, 'confirmOrder']);
-Route::get('/order/list/{table}', [PedidoController::class, 'getOrderList']);
-Route::get('dashboard/order', [PedidoController::class, 'OperadorOrderList']);
-Route::get('/dashboard/item/{id}', [PedidoController::class, 'getOrderItem']);
-Route::post('/update/status/{id}/{pedido}', [PedidoController::class, 'UpdateOrderStatus']);
-Route::get('get/bill/{id}', [PedidoController::class, 'getBillItems']);
-Route::get('dashboard/cancel', [PedidoController::class, 'getCanceledStatus']);
+Route::controller(PedidoController::class)->group(function() {
+    Route::get('dashboard/tables', 'getTablesNumber');
+    Route::post('order', 'confirmOrder');
+    Route::get('/order/list/{table}', 'getOrderList');
+    Route::get('dashboard/order', 'OperadorOrderList');
+    Route::get('/dashboard/item/{id}', 'getOrderItem');
+    Route::post('/update/status/{id}/{pedido}', 'UpdateOrderStatus');
+    Route::get('get/bill/{id}', 'getBillItems');
+    Route::get('dashboard/cancel', 'getCanceledStatus');
+    Route::post('add-to-order/{id}', 'Add_To_Order');
+    Route::post('new-item', 'postNewOrderItem');
+    Route::get('bill-history', 'getBillHistory');
+});
 
 //Order Transfert
-
-Route::get('transfert/items/{id}', [OrderTransfertController::class, 'getTransfertOrderItems']);
-Route::post('post/transfert/', [OrderTransfertController::class, 'postTransfert']);
-
-//search
-Route::get('search', [OrderTransfertController::class,'getSearchResult']);
-
-//Report
-Route::get('dashboard/report', [OrderTransfertController::class, 'getReport']);
+Route::controller(OrderTransfertController::class)->group(function() {
+    Route::get('transfert/items/{id}', 'getTransfertOrderItems');
+    Route::post('post/transfert/', 'postTransfert');
+    //search
+    Route::get('search', 'getSearchResult');
+    //Report
+    Route::get('dashboard/report','getReport');
+});
 
 //BI
+ROute::controller(BiController::class)->group(function (){
+    Route::get('/bi/general-stat', 'getGeneralStat');
+});
 Route::get('waiter/stats', [BiController::class, 'waiterStat']);
 
 //User
-Route::get('group', [UserController::class, 'getGroup']);
-Route::post('/create/user', [UserController::class, 'create']);
-Route::post('login', [UserController::class, 'login']);
-Route::post('logout', [UserController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('/dashboard/cancela/{item_pedido}/{item_id}', [UserController::class, 'CancelPermission']);
-Route::post('/editorder/stat/{item_pedido}', [UserController::class, 'EditOrderStat']);
-Route::get('get/employe', [UserController::class, 'getEmploye']);
-Route::get('get/employe/{id}', [UserController::class, 'getToupdateEmploye']);
-Route::post('employe/delete/{id}', [UserController::class, 'ToDeleteEmploye']);
-Route::post('employe-status/update/{id}/{group_id}', [UserController::class,'updateEmployeStatus']);
-Route::post('employe/update', [UserController::class,'EmployeUpdate']);
+Route::controller(UserController::class)->group(function() {
+    Route::get('group', 'getGroup');
+    Route::post('/create/user', 'create');
+    Route::post('login', 'login');
+    Route::post('logout', 'logout')->middleware('auth:sanctum');
+    Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
+    Route::post('cancel-order', 'cancelOrder');
+    Route::post('/editorder/stat/{item_pedido}', 'EditOrderStat');
+    Route::get('get/employe', 'getEmploye');
+    Route::get('get/employe/{id}', 'getToupdateEmploye');
+    Route::post('employe/delete/{id}', 'ToDeleteEmploye');
+    Route::post('employe-status/update/{id}/{group_id}', 'updateEmployeStatus');
+    Route::post('employe/update','EmployeUpdate');
+});
 
+
+//stock
+Route::controller(StockController::class)->group(function() {
+    Route::post('supplier', 'StoreSupplier');
+    Route::get('supplier', 'getSupplier');
+    Route::post('stock-entry', 'storeStockEntry');
+    Route::post('technical-fiche', 'store_technical_fiche');
+    Route::get('products-stat', 'get_stock_stat');
+    Route::get('technical-fiche/{id}', 'show_technical_fiche');
+    Route::post('update/technical-fiche', 'Update_technical_fiche');
+    Route::get('inventory', 'get_inventory');
+    Route::put('reset-saldo', 'resetSaldo');
+});
+
+
+
+//produto
+
+Route::controller(ProductController::class)->group(function(){
+    Route::post('product', 'StoreProduct');
+    Route::get('products', 'get_product');
+});

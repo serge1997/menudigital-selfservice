@@ -7,7 +7,9 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use App\Events\CancelOrder;
+use App\Events\StockReduced;
 use App\Listeners\CancelOrderListener;
+use App\Listeners\ReduceStockItem;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,9 @@ class EventServiceProvider extends ServiceProvider
         CancelOrder::class => [
             CancelOrderListener::class
         ],
+        StockReduced::class => [
+            ReduceStockItem::class
+        ]
     ];
 
     /**
