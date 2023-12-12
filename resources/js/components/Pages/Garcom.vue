@@ -61,7 +61,7 @@
                                     <td>Totais</td>
                                     <td>{{ billTotalItem }}</td>
                                     <td class="bg-dark"></td>
-                                    <td class="bg-dark text-white"><span>{{ billTotal }} R$</span></td>
+                                    <td class="bg-dark text-white"><span>{{ billTotal.toFixed(2) }} R$</span></td>
                                 </tr>
                             </tfoot>
                         </table>

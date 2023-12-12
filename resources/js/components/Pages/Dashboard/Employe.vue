@@ -85,7 +85,11 @@ export default {
 
         createUser() {
             axios.post('/api/create/user', this.user).then((response) => {
-                this.$toast.success(response.data);
+                if (response.data.status === 200) {
+                    this.$toast.success(response.data.msg);
+                }else{
+                    this.$toast.error(response.data.msg);
+                }
                 this.user.email = ""
                 this.user.name = ""
                 this.user.tel = ""

@@ -124,6 +124,7 @@ export default {
         this.getCartList()
 
         axios.get('/api/user').then((response) => {
+            console.log(response.data)
             if (response.data.id){
                 this.orderData.user_id = response.data.id
             }

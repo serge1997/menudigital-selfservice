@@ -14,6 +14,11 @@
                                     <small class="text-center">user info, user status and user contact.</small>
                                 </p>
                             </div>
+                            <div class="col-md-4 m-auto d-flex justify-content-lg-center">
+                                <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
+                                    <span class="visually-hidden"></span>
+                                </div>
+                            </div>
                             <div class="form w-100">
                                 <form class="d-flex flex-column justify-content-center w-100 p-2" v-for="user in userForEdit">
                                     <div class="form-group w-75 m-auto d-flex justify-content-between">
@@ -31,6 +36,16 @@
                                     <div class="form-group w-100 align-items-center mt-2">
                                         <p class="w-75 m-auto text-danger" v-if="errMsg" v-for="msg in errMsg.user_email" v-text="msg"></p>
                                         <input type="text" class="form-control w-75 m-auto rounded-0 border-secondary" :value="user.email" id="user-email">
+                                    </div>
+                                    <div class="w-75 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
+                                        <div v-for="roles in user_roles" class="form-check p-2 mt-1">
+                                            <button v-if="roles.role_id" @click.prevent="updateUserRoles(roles.id, roles.desc = true)" class="btn check shadow">
+                                                {{ roles.role_name}}
+                                            </button>
+                                            <button v-else @click.prevent="updateUserRoles(roles.id, roles.desc = false)" class="btn btn-roles shadow">
+                                                {{ roles.role_name}}
+                                            </button>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -115,7 +130,10 @@ export default {
             },
             userForEdit: null,
             groups: null,
-            errMsg: null
+            errMsg: null,
+            load: false,
+            user_roles: null,
+            setroles: []
         }
     },
 
@@ -130,12 +148,21 @@ export default {
         },
 
         ShowEmployeEditForm(id){
-            this.ShowForm = !this.ShowForm
-            axios.get(`/api/get/employe/${id}`).then((res) => {
-                console.log(res.data)
-                this.userForEdit = res.data
-            }).catch((err) => {
-                console.log(err);
+            if (!this.ShowForm){
+                this.load = true
+            }
+            this.ShowForm = true
+            return new Promise(() => {
+                setTimeout(() => {
+                    axios.get(`/api/get/employe/${id}`).then((res) => {
+                        console.log(res.data)
+                        this.userForEdit = res.data.employe
+                        this.user_roles = res.data.withroles
+                        this.load = false
+                    }).catch((err) => {
+                        console.log(err);
+                    })
+                }, 1000)
             })
         },
 
@@ -210,7 +237,38 @@ export default {
                 this.ShowForm = !this.ShowForm;
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors;
+                this.$toast.error(errors.response.data);
             })
+        },
+
+        updateUserRoles(id, check)
+        {
+            let user_id = document.getElementById('user-id').value;
+            this.updateEmployeData.user_id = user_id;
+            if ( check){
+                this.$swal.fire({
+                    text: "You really want to delete this user role ?",
+                    showCancelButton: true
+                }).then((result) => {
+                    if (result.isConfirmed){
+                        axios.post('/api/roles/' + id, this.updateEmployeData)
+                        console.log("Para deletar");
+                        return this.ShowEmployeEditForm(user_id);
+                    }
+                })
+            }else{
+                this.$swal.fire({
+                    text: "You really want to add this function for the user ?",
+                    showCancelButton: true
+                }).then((result) => {
+                    if (result.isConfirmed){
+                        axios.post('/api/add-role/' + id, this.updateEmployeData)
+                        console.log("Para adicionar")
+                        return this.ShowEmployeEditForm(user_id);
+                    }
+                })
+
+            }
         }
     },
 
@@ -219,6 +277,15 @@ export default {
         this.getUsergroup()
     }
 }
-
-
 </script>
+
+<style scoped>
+.check {
+    border: 1px solid rgba(34, 34, 34, 0.18);
+    border-left: 6px solid #e63958;
+}
+
+.btn-roles{
+    border: 1px solid rgba(34, 34, 34, 0.18);
+}
+</style>

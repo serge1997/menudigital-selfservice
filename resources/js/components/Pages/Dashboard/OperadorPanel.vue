@@ -22,7 +22,7 @@
                     <button class="btn fw-medium caixa-btn" data-bs-toggle="modal" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)">
                        inventory
                     </button>
-                    <BillHistoriyComponent @update-order-status="UpdateOrderStatus" :status="status"/>
+                    <BillHistoriyComponent :status="status"/>
                     <SellReportComponent/>
                 </div>
                <table class="table border">
@@ -146,7 +146,7 @@
                                         <td>{{ billTotalItem }}</td>
                                         <td></td>
                                         <td class="text-left bg-dark text-white" colspan="2">
-                                            {{ billTotal }} R$
+                                            {{ billTotal.toFixed(2) }} R$
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -251,7 +251,7 @@
                                     <input class="form-control rounded-0 border-secondary" type="password" v-model="orderStat.password" placeholder="password here...">
                                     <select class="form-select mt-3 border-secondary rounded-0" v-model="orderStat.status_id">
                                         <option v-for="stat in status" :value="stat.id">
-                                            {{ stat.stat_desc }}
+                                            {{ stat.id }}
                                         </option>
                                     </select>
                                     <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
@@ -331,6 +331,7 @@ export default {
             const response = await  axios.get('/api/dashboard/order')
             this.order = response.data.order
             this.status = response.data.status
+           console.log("Status" + this.status)
 
             /*for(const a of this.order){
                 console.log(`valor of a is ${a.id}`)
@@ -418,7 +419,6 @@ export default {
         EditOrderStat(){
             axios.post(`/api/editorder/stat/${this.item_pedido}`, this.orderStat)
                 .then((response) => {
-
                     if (response.data.statut === 200) {
                         this.$toast.success(response.data.msg)
                         this.orderStat.password = "";

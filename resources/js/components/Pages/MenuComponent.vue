@@ -270,10 +270,9 @@ export default {
         justify-content: center;
         align-items: center;
     }
-
 .v-enter-active,
 .v-leave-active {
-    transition: opacity 0.5s ease;
+    transition: opacity .15s ease;
 }
 
 .v-enter-from,

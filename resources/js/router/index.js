@@ -120,7 +120,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-                if (response.data.group_id != 1) {
+                if (response.data.group_id != 1 && response.data.group_id != 2) {
                     next('/home')
                 }else{
                     next()
@@ -138,7 +138,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-                if (response.data.group_id != 1) {
+                if (response.data.group_id != 1 && response.data.group_id != 2) {
                     next('/home')
                 }else{
                     next()

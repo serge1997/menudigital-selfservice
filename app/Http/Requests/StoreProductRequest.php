@@ -30,7 +30,7 @@ class StoreProductRequest extends FormRequest
         ];
     }
 
-    public function messages()
+    public function messages(): array
     {
         return [
             'item_name.required' => "Nome é obrigatorio",

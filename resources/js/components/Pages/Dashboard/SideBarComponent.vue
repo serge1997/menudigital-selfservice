@@ -135,8 +135,12 @@ export default {
        },
 
         LogOut(){
-           localStorage.removeItem('token');
-           this.$router.push('/')
+            axios.post('/api/logout').then((response) => {
+                localStorage.removeItem('token')
+                this.$router.push('/');
+            }).catch((error) => {
+                console.log(error);
+            })
         }
     }
 }

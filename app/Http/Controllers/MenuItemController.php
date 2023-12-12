@@ -12,6 +12,7 @@ use App\Models\MealType;
 use App\Models\Technicalfiche;
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;
+use App\Http\Services\UserRoleAcess;
 
 class MenuItemController extends Controller
 {
@@ -30,14 +31,16 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function StoreMenuItem(StoreProductRequest $request) {
-
+    public function StoreMenuItem(StoreProductRequest $request)
+    {
         $request->validated();
-
-        $values = $request->all();
-        $item = new Menuitems($values);
-
+        $user_id = $request->session()->get('auth-vue');
         try{
+            if (!UserRoleAcess::can_manage($user_id)){
+                return response()->json(['error' => "User don't have permission", 'status' => 500]);
+            }
+            $values = $request->all();
+            $item = new Menuitems($values);
 
             DB::beginTransaction();
             $item -> save();

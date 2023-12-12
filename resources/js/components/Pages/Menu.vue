@@ -162,7 +162,6 @@ export default {
     },
 
     created() {
-
         return new Promise((resolve, reject) => {
             setTimeout(() => {
                 axios.get('/api/menu/items').then((response) => {

@@ -9,6 +9,7 @@ use App\Http\Controllers\StockController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UserRoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,10 @@ use App\Http\Controllers\ProductController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/user-token', [UserController::class, 'currentUser']);
+
+
 Route::controller(MenuItemController::class)->group(function(){
     Route::get('menu/type', 'getMealType');
     Route::post('save/meal', 'storeMenuItem');
@@ -85,6 +90,7 @@ Route::controller(UserController::class)->group(function() {
     Route::post('/create/user', 'create');
     Route::post('login', 'login');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
+    //Route::get('user-token','currentUser');
     Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
     Route::post('cancel-order', 'cancelOrder');
     Route::post('/editorder/stat/{item_pedido}', 'EditOrderStat');
@@ -94,7 +100,6 @@ Route::controller(UserController::class)->group(function() {
     Route::post('employe-status/update/{id}/{group_id}', 'updateEmployeStatus');
     Route::post('employe/update','EmployeUpdate');
 });
-
 
 //stock
 Route::controller(StockController::class)->group(function() {
@@ -109,11 +114,14 @@ Route::controller(StockController::class)->group(function() {
     Route::put('reset-saldo', 'resetSaldo');
 });
 
-
-
 //produto
-
 Route::controller(ProductController::class)->group(function(){
     Route::post('product', 'StoreProduct');
     Route::get('products', 'get_product');
+});
+
+Route::controller(UserRoleController::class)->group(function() {
+    Route::get('rules', 'get_all_rules');
+    Route::post('roles/{id}', 'update_user_roles');
+    Route::post('add-role/{id}', 'update_user_roles_add');
 });

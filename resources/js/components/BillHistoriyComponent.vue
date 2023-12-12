@@ -46,7 +46,7 @@
                                                 <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">pagamento</h6>
                                                 <div class="">
                                                     <li v-for="stat in status">
-                                                        <button @click="$emit('UpdateOrderStatus', stat.id, bill.id)" class="btn dropdown-btn fw-medium text-capitalize" >{{ stat.stat_desc }}</button>
+                                                        <button @click="storeParam(bill.id)" class="btn dropdown-btn fw-medium text-capitalize" data-bs-toggle="modal" data-bs-target="#OrderStatHistory">{{ stat.stat_desc }}</button>
                                                     </li>
                                                 </div>
                                             </ul>
@@ -59,10 +59,43 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="OrderStatHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content rounded-0 border-0">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito</h1>
+                        <span class="px-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                     stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
+                                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                            </span>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="fs-5">Manager Password needed history</p>
+                        <div>
+                            <form @submit.prevent="EditOrderStatHistory">
+                                <input class="form-control rounded-0 border-secondary" type="password" v-model="orderStat.password" placeholder="password here...">
+                                <select class="form-select mt-3 border-secondary rounded-0" v-model="orderStat.status_id">
+                                    <option v-for="stat in status" :value="stat.id">
+                                        {{ stat.stat_desc }}
+                                    </option>
+                                </select>
+                                <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
+
+import axios from "axios";
 
 export default {
     name: 'BillHistoryComponent',
@@ -73,7 +106,13 @@ export default {
         return {
             gerente: null,
             isgerente: 1,
-            bills: null
+            bills: null,
+            order_id: null,
+            orderStat: {
+                password: null,
+                status_id: null
+            },
+
         }
     },
 
@@ -85,6 +124,22 @@ export default {
             }).catch((errors) => {
                 console.log(errors)
             })
+        },
+
+        EditOrderStatHistory(){
+            axios.post(`/api/editorder/stat/${this.order_id}`, this.orderStat)
+                .then((response) => {
+                    this.$toast.success(response.data)
+                    this.orderStat.password = "";
+                }).catch((errors) => {
+                    this.$toast.error(errors.response.data)
+                    console.log(errors.response.data.errors.password)
+            })
+        },
+        storeParam(id){
+            localStorage.removeItem('orderID');
+            localStorage.setItem('orderHistory', id);
+            this.order_id = localStorage.getItem('orderHistory');
         }
     },
 
@@ -100,3 +155,8 @@ export default {
     }
 }
 </script>
+<style scoped>
+.modal-body {
+    height: 400px;
+}
+</style>

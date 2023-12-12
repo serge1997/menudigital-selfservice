@@ -80,7 +80,6 @@ export default {
                 item_price: null,
                 tem_image: null,
                 type_id: null,
-                item_desc: null,
                 item_status: null
             },
             mealType: null,
