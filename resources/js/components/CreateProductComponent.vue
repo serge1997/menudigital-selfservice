@@ -4,19 +4,14 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">New Stock product</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-100 p-2">
-                            <div class="w-50 text-wrap m-auto">
-                                <small>
-                                    Cadastre um novo produto, no caso de venda a gestão de estqoue será feiro
-                                    automaticamente.
-                                </small>
-                            </div>
+                        <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                            <h6>create a new product </h6>
+                            <p>product</p>
                         </div>
-                        <div class="w-100">
+                        <div class="w-100 mt-4">
                             <span class="text-danger p-1" v-if="errMsg" v-for="msg in errMsg.prod_name" v-text="msg"></span>
                             <div class="input-group p-1">
                                 <input type="text" class="form-control rounded-0 border border-secondary" placeholder="Name " v-model="product.prod_name">
@@ -30,7 +25,7 @@
                                     <option value="cl">cl</option>
                                     <option value="g">g</option>
                                     <option value="folha">folha</option>
-                                </select>                                
+                                </select>
                                 <span class="px-2"></span>
                                 <input type="text" class="form-control rounded-0 border border-secondary" placeholder="conteudo" v-model="product.prod_contain">
                             </div>
@@ -44,7 +39,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button @click="StoreProduct" type="button" class="btn btn-primary rounded-0">Salvar</button>
+                        <button @click="StoreProduct" type="button" class="btn bg-dark text-white rounded-0">Salvar</button>
                     </div>
                 </div>
             </div>
@@ -72,18 +67,15 @@ export default{
     methods: {
         StoreProduct(){
             axios.post("/api/product", this.product).then((response) => {
-                if (response.data.status == 200){
-                    this.$toast.success(response.data.msg_success)
+                    this.$toast.success(response.data)
                     this.product.prod_contain = "";
                     this.product.prod_desc = "";
                     this.product.prod_name = "";
                     this.product.prod_unmed = "";
                     this.product.prod_supplierID = ""
-                    return;
-                }
-                this.$toast.error(response.data.msg_error)
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors
+                this.$toast.error(errors.response.data)
             })
         }
     },

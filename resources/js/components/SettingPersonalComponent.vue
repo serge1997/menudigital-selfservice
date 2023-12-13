@@ -4,16 +4,14 @@
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Personal register Edition</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div v-if="ShowForm" class="w-100 edit-form">
-                            <div class="">
-                                <p class="text-center"><span class="fw-bold">Edit employe regist</span> <br>
-                                    <small class="text-center">user info, user status and user contact.</small>
-                                </p>
-                            </div>
+                        <div class="w-75 form-header p-2 text-capitalize shadow-lg rounded-3 text-white m-auto">
+                            <h6>Personal management</h6>
+                            <p>personal hr</p>
+                        </div>
+                        <div v-if="ShowForm" class="w-100 edit-form mt-4">
                             <div class="col-md-4 m-auto d-flex justify-content-lg-center">
                                 <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
                                     <span class="visually-hidden"></span>
@@ -21,16 +19,16 @@
                             </div>
                             <div class="form w-100">
                                 <form class="d-flex flex-column justify-content-center w-100 p-2" v-for="user in userForEdit">
-                                    <div class="form-group w-75 m-auto d-flex justify-content-between">
+                                    <div class="w-75 d-flex m-auto">
                                         <input type="hidden" :value="user.id" id="user-id">
-                                        <div class="w-100">
+                                        <div class="w-50">
                                             <span class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></span>
-                                            <input type="text" class="form-control w-75 rounded-0 border-secondary" :value="user.name" id="user-name">
+                                            <input type="text" class="form-control rounded-0 border-secondary" :value="user.name" id="user-name">
                                         </div>
                                         <div class="px-2"></div>
-                                        <div class="w-100">
+                                        <div class="w-50">
                                             <span class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></span>
-                                            <input type="text" class="form-control w-75 rounded-0 border-secondary" :value="user.tel" id="user-tel">
+                                            <input type="text" class="form-control rounded-0 border-secondary" :value="user.tel" id="user-tel">
                                         </div>
                                     </div>
                                     <div class="form-group w-100 align-items-center mt-2">
@@ -100,7 +98,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button @click="updateEmploye" type="button" class="btn btn-primary rounded-0">Salvar</button>
+                        <button @click="updateEmploye" type="button" class="btn text-white bg-dark rounded-0">Salvar</button>
                     </div>
                 </div>
             </div>

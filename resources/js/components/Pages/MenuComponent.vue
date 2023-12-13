@@ -215,6 +215,7 @@ export default {
                 this.$toast.success(response.data)
             }).catch((errors) => {
                 console.log(errors)
+                this.$toast.error(errors.response.data)
             })
         }
 

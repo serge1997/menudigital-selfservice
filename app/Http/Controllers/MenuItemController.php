@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Services\UserInstance;
+use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -59,7 +61,12 @@ class MenuItemController extends Controller
         }
     }
 
-    public function SaveType(Request $request)
+    /**
+     * @param Request $request
+     * @return JsonResponse
+     * @use Role $role
+     */
+    public function SaveType(Request $request) :JsonResponse
     {
         $type = new MealType();
         $type->desc_type = $request->desc_type;
@@ -71,10 +78,21 @@ class MenuItemController extends Controller
             $foto->move(public_path('img/type'), $fotoname);
             $type->foto_type = $fotoname;
         }
+        try{
+            $auth = $request->session()->get('auth-vue');
+            foreach (UserInstance::get_user_roles($auth) as $menu):
+                if ($menu->role_id === Role::MANAGER):
+                    $type->save();
+                    return response()->json("Item casdastrado com successo", 200);
+                endif;
+            endforeach;
+            return response()->json("You dont have permission", 422);
+        }catch (\Exception $e){
+            return response()->json("Action cant be concluided", 422);
+        }
 
-        $type->save();
 
-        return response()->json("Item casdastrado com successo");
+
     }
 
     public function getMenu()

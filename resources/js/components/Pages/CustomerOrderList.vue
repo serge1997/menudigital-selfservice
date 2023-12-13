@@ -111,9 +111,10 @@ export default {
             axios.post('/api/order', this.orderData).then((response) => {
                 console.log(response.data)
                 this.$router.push('/dashboard/garcom')
-                this.$toast.success("Pedido confirmado !")
+                this.$toast.success(response.data)
             }).catch((errors) => {
                 console.log(errors)
+                this.$toast.error(errors.response.data)
             })
         }
     },

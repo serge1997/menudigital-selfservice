@@ -6,12 +6,17 @@
             </svg>
         </button>
     </div>
-    <div class="col-2 position-fixed shadow bg-white">
+    <div class="col-lg-2 col-md-12 position-fixed shadow bg-white" :class="{animate: isanimate}">
         <div v-if="!sidebar" class="col-lg-12 col-md-10 side-bar min-vh-100 p-0">
             <div class="sidebar-header d-flex justify-content-between align-items-center min-vh-25">
-                <h6 class="sidebar-title w-50 text-white p-1">
-                    Casino bar
-                </h6>
+                <div class="sidebar-title d-flex flex-column p-1 w-50 text-dark">
+                    <div class="user-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <p class="text-wrap">{{ username }}</p>
+                </div>
                 <button @click="CloseSideBar" class="btn p-0">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>
@@ -121,7 +126,9 @@ export default {
 
     data() {
         return {
-            sidebar: true
+            sidebar: true,
+            username: null,
+            isanimate: false
         }
     },
 
@@ -132,6 +139,7 @@ export default {
 
        ShowSideBar() {
         this.sidebar = !this.sidebar
+        this.isanimate = true;
        },
 
         LogOut(){
@@ -141,13 +149,25 @@ export default {
             }).catch((error) => {
                 console.log(error);
             })
-        }
+        },
+    },
+    mounted(){
+        console.log("side bar")
+        window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+        axios.get('/api/user').then((response) => {
+            this.username = response.data.name
+        }).catch((errors) => {
+            console.log(errors)
+        })
     }
 }
 </script>
 
 <style scoped>
-
+.animate {
+    transition: .5s ease-in;
+    opacity: 0.9;
+}
 
 .btn-icon:hover {
     color: red;

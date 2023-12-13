@@ -285,8 +285,9 @@ class StockController extends Controller
             ->json($fiche);
     }
 
-    public function Update_technical_fiche(Request $request): JsonResponse
+    public function Update_technical_fiche(Request $request)
     {
+        /*
         $request->validate([
             'productID' => ['required'],
             'itemID' => ['required'],
@@ -323,7 +324,7 @@ class StockController extends Controller
 
         return response()
             ->json("Action commited successffuly");
-        //DB::table('technicalfiches')
+        //DB::table('technicalfiches')*/
     }
 
     public function get_inventory(): JsonResponse

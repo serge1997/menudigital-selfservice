@@ -2,9 +2,9 @@
     <div class="modal fade" id="ModalRestaurantinfo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content rounded-0">
-                <div class="modal-header">
+                <div class="modal-header form-header text-white rounded-0">
                     <h5 class="modal-title" id="exampleModalLabel">Registe The General Restaurant Information</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                     <div class="modal-body p-4">
                         <div class="input-group fw-medium">

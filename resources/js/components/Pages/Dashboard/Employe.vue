@@ -6,9 +6,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-8 m-auto">
-                    <h5 class="text-center p-2">Salvar novo colaborador</h5>
-                    <form @submit.prevent="createUser" class="shadow w-100 p-4">
+                    <form @submit.prevent="createUser" class="w-100 p-4">
                         <div class="row">
+                            <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                                <h6>new collaborator</h6>
+                                <p>Save new collaborator</p>
+                            </div>
                             <div class="col-md-12 mt-3">
                                 <label for="name" class="fs-5">Nome : </label>
                                 <input type="text" class="form-control rounded-0 border-secondary" placeholder="nome do colaborador" v-model="user.name">
@@ -42,7 +45,7 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button type="submit" class="btn bg-primary rounded-0 px-4">Salvar</button>
+                            <button type="submit" class="btn text-white bg-dark rounded-0 px-4">Salvar</button>
                         </div>
                     </form>
                 </div>

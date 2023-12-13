@@ -1,9 +1,9 @@
 <template>
-    <div class="col-12">
-         <div class="position-fixed">
+    <div class="col-lg-12 col-md-12">
+         <div class="position-fixed z-1">
             <SideBarComponent></SideBarComponent>
         </div>
-        <div class="d-flex justify-content-between p-0">
+        <div class="d-flex justify-content-between p-0 z-0">
             <div class="col-8 m-auto">
                 <h4 class="text-capitalize">Espaço operador</h4>
                 <div class="py-4">
@@ -268,7 +268,7 @@
 
 <script>
 import axios from 'axios';
-import SideBarComponent from './SideBarComponent.vue'
+import SideBarComponent from './SideBarComponent.vue';
 import OrderTransfertComponent from '../../OrderTransfertComponent.vue';
 import SellReportComponent from '../../SellReportComponent.vue';
 import InventoryComponent from "@/components/InventoryComponent.vue";
@@ -331,11 +331,6 @@ export default {
             const response = await  axios.get('/api/dashboard/order')
             this.order = response.data.order
             this.status = response.data.status
-           console.log("Status" + this.status)
-
-            /*for(const a of this.order){
-                console.log(`valor of a is ${a.id}`)
-            }*/
         },
 
         getOrderItem(id) {
@@ -348,7 +343,6 @@ export default {
                     this.billTotal += Number(bill.item_total)
                     this.billTotalItem += Number(bill.item_quantidade)
                 }
-                console.log(response.data)
             }).catch((errors) => {
                 console.log(errors)
             })

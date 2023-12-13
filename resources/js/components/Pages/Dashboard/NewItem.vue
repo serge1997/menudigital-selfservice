@@ -6,9 +6,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-8 m-auto">
-                    <h5 class="text-center p-2">Salvar novo item do menu</h5>
-                    <form @submit.prevent="SaveItem" class="shadow w-100 p-4">
-                        <div class="row">
+                    <form @submit.prevent="SaveItem" class="w-100 p-4">
+                        <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                            <h6>create a new menu item</h6>
+                            <p>menu item</p>
+                        </div>
+                        <div class="row mt-4">
                             <div class="col-lg-6 col-md-10 d-flex flex-column">
                                 <input type="text" class="form-control rounded-0 border-secondary" v-model="menuItem.item_name" placeholder="nome do prato">
                                 <p class="text-danger" v-if="errMsg" v-for="item_name in errMsg.item_name" v-text="item_name"></p>

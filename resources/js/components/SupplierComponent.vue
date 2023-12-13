@@ -4,18 +4,14 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h5 class="modal-title text-capitalize" id="exampleModalLabel">Save a new supplier</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-100 p-2">
-                            <div class="w-50 text-wrap m-auto">
-                                <small>
-                                    Cadastre um novo fornecedor
-                                </small>
-                            </div>
+                        <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                            <h6>create a new supllier information</h6>
+                            <p>Supllier</p>
                         </div>
-                        <div class="w-100">
+                        <div class="w-100 mt-4">
                             <span class="p-1 text-danger" v-if="errMsg" v-for="msg in errMsg.sup_name" v-text="msg"></span>
                             <div class="input-group p-1">
                                 <input type="text" class="form-control border-secondary rounded-0" placeholder="Supplier name" v-model="supplier.sup_name">
@@ -37,7 +33,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button @click="StoreSupplier" type="button" class="btn btn-primary rounded-0">Salvar</button>
+                        <button @click="StoreSupplier" type="button" class="btn bg-dark text-white rounded-0">Salvar</button>
                     </div>
                 </div>
             </div>

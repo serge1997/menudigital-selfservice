@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,7 @@ use App\Models\ItensPedido;
 use App\Models\Pedido;
 use App\Models\PaiementType;
 use DateTime;
+use App\Http\Services\UserInstance;
 class OrderTransfertController extends Controller
 {
     public $paimentStatus;
@@ -17,7 +19,7 @@ class OrderTransfertController extends Controller
         $this->paimentStatus = new PaiementType();
     }
 
-    public function getTransfertOrderItems($id)
+    public function getTransfertOrderItems($id): JsonResponse
     {
         $items = DB::table('itens_pedido')
                 ->select(
@@ -33,7 +35,7 @@ class OrderTransfertController extends Controller
         return response()->json($items);
     }
 
-    public function postTransfert(Request $request)
+    public function postTransfert(Request $request): JsonResponse
     {
         $items_id = $request->item_id;
         $item_quantidade = $request->item_quantidade;
@@ -42,65 +44,68 @@ class OrderTransfertController extends Controller
             ->first();
 
         $hoje = new DateTime();
+        $auth = $request->session()->get('auth-vue');
+        foreach (
+            UserInstance::get_user_roles($auth) as $trasnfert
+        ):
+            if ($trasnfert->role_id === Role::MANAGER ||
+                $trasnfert->role_id === Role::CAN_USE_CASHIER
+            ):
 
-        $order = new Pedido();
-        $order->ped_tableNumber = $request->ped_tableNumber;
-        $order->ped_customerName = "Transfered";
-        $order->user_id = $waiter->user_id;
-        $order->ped_emissao = $hoje->format("Y-m-d H:i:s");
-        $order->status_id = 6;
-        $order->save();
+                $order = new Pedido();
+                $order->ped_tableNumber = $request->ped_tableNumber;
+                $order->ped_customerName = "Transfered";
+                $order->user_id = $waiter->user_id;
+                $order->ped_emissao = $hoje->format("Y-m-d H:i:s");
+                $order->status_id = 6;
+                $order->save();
 
-        foreach ($items_id as $key=>$ids):
-            $item = ItensPedido::where('item_pedido', $waiter->id)->where('item_id', $ids)
-                ->first();
-                //foreach ($item_quantidade as $qty):
-                    $qty = $item_quantidade[$key];
-                    if ($item->item_quantidade == $qty):
-                        DB::table('itens_pedido')
-                            ->where('item_pedido', $request->item_pedido)
-                                ->where('item_id', $ids)
-                                    ->update([
-                                        'item_pedido' => $order->id,
-                                    ]);
-                    else:
+                foreach ($items_id as $key=>$ids):
+                    $item = ItensPedido::where('item_pedido', $waiter->id)->where('item_id', $ids)
+                        ->first();
+                        //foreach ($item_quantidade as $qty):
+                            $qty = $item_quantidade[$key];
+                            if ($item->item_quantidade == $qty):
+                                DB::table('itens_pedido')
+                                    ->where('item_pedido', $request->item_pedido)
+                                        ->where('item_id', $ids)
+                                            ->update([
+                                                'item_pedido' => $order->id,
+                                            ]);
+                            else:
 
-                        if ($qty > $item->item_quantidade):
-                            DB::table('pedidos')
-                                ->where('id', $order->id)
-                                    ->delete();
-                            return response()
-                                ->json([
-                                    'status' => 400,
-                                    'msg' => 'Quantidade do item superior não é aceitado'
-                                ]);
-                        endif;
-                        DB::table('itens_pedido')
-                            ->where('item_pedido', $request->item_pedido)
-                            ->where('item_id', $ids)
-                                ->update([
-                                    'item_quantidade' => $item->item_quantidade - $qty,
-                                    'item_total' => $item->item_price * ($item->item_quantidade - $qty)
-                                ]);
+                                if ($qty > $item->item_quantidade):
+                                    DB::table('pedidos')
+                                        ->where('id', $order->id)
+                                            ->delete();
+                                    return response()
+                                        ->json("Quantidade do item superior não é aceitado", 422);
+                                endif;
+                                DB::table('itens_pedido')
+                                    ->where('item_pedido', $request->item_pedido)
+                                    ->where('item_id', $ids)
+                                        ->update([
+                                            'item_quantidade' => $item->item_quantidade - $qty,
+                                            'item_total' => $item->item_price * ($item->item_quantidade - $qty)
+                                        ]);
 
-                        $tintens = new ItensPedido();
-                        $tintens->item_emissao = $item->item_emissao;
-                        $tintens->item_quantidade = $qty;
-                        $tintens->item_id = $item->item_id;
-                        $tintens->item_price = $item->item_price;
-                        $tintens->item_total = $item->item_price * $qty;
-                        $tintens->item_comments = $item->item_comments;
-                        $tintens->item_option = $item->item_option;
-                        $tintens->item_pedido = $order->id;
-                        $tintens->save();
-                    endif;
-                //endforeach;
+                                $tintens = new ItensPedido();
+                                $tintens->item_emissao = $item->item_emissao;
+                                $tintens->item_quantidade = $qty;
+                                $tintens->item_id = $item->item_id;
+                                $tintens->item_price = $item->item_price;
+                                $tintens->item_total = $item->item_price * $qty;
+                                $tintens->item_comments = $item->item_comments;
+                                $tintens->item_option = $item->item_option;
+                                $tintens->item_pedido = $order->id;
+                                $tintens->save();
+                            endif;
+                        //endforeach;
+                endforeach;
+                return response()->json("Item transferido com sucesso", 200);
+            endif;
         endforeach;
-
-        return response()->json([
-            'msg' =>"Item transferido com sucesso",
-            'status' => 200
-        ]);
+        return response()->json("You don't have permission", 422);
     }
 
     public function getReport(): JsonResponse

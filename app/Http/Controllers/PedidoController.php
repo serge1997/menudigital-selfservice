@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Cart;
@@ -14,7 +15,8 @@ use App\Models\Menuitems;
 use App\Models\Technicalfiche;
 use App\Models\Saldo;
 use App\Models\PaiementType;
-use App\Http\Services\UserRoleAcess;
+use App\Http\Services\UserInstance;
+use App\Models\Role;
 
 
 class PedidoController extends Controller
@@ -29,40 +31,52 @@ class PedidoController extends Controller
         $this->orderStatus = new PaiementType();
     }
 
-    public function  confirmOrder(Request $request)
+    public function  confirmOrder(Request $request): JsonResponse
     {
         $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
             ->get();
+        $auth = $request->session()->get('auth-vue');
+        foreach (UserInstance::get_user_roles($auth) as $confirm):
+            if (
+                $confirm->role_id === Role::MANAGER ||
+                $confirm->role_id === Role::CAN_TAKE_ORDER ||
+                $confirm->role_id === Role::CAN_USE_CASHIER ||
+                $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
+                $confirm->role_id === Role::CAN_CANCEL_ORDER
+            ):
 
-        $order = new Pedido();
-        $order->ped_tableNumber = $request->ped_tableNumber;
-        $order->ped_customerName = $request->ped_customerName;
-        $order->user_id = $request->user_id;
-        $order->ped_emissao = $this->hoje;
-        $order->status_id = 6;
-        $order->save();
+                $order = new Pedido();
+                $order->ped_tableNumber = $request->ped_tableNumber;
+                $order->ped_customerName = $request->ped_customerName;
+                $order->user_id = $request->user_id;
+                $order->ped_emissao = $this->hoje;
+                $order->status_id = 6;
+                $order->save();
 
-        foreach($orderItem as $itemPedido) {
-            $itens = new ItensPedido();
-            $itens->item_emissao = $this->hoje;
-            $itens->item_pedido = $order->id;
-            $itens->item_quantidade = $itemPedido->quantity;
-            $itens->item_id = $itemPedido->item_id;
-            $itens->item_price = $itemPedido->unit_price;
-            $itens->item_total = $itemPedido->total;
-            $itens->item_comments = $itemPedido->comments;
-            $itens->item_option = $itemPedido->options;
-            $itens->save();
-            event(new StockReduced($itens));
-        }
+                foreach($orderItem as $itemPedido) {
+                    $itens = new ItensPedido();
+                    $itens->item_emissao = $this->hoje;
+                    $itens->item_pedido = $order->id;
+                    $itens->item_quantidade = $itemPedido->quantity;
+                    $itens->item_id = $itemPedido->item_id;
+                    $itens->item_price = $itemPedido->unit_price;
+                    $itens->item_total = $itemPedido->total;
+                    $itens->item_comments = $itemPedido->comments;
+                    $itens->item_option = $itemPedido->options;
+                    $itens->save();
+                    event(new StockReduced($itens));
+                }
 
-        DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
-            ->delete();
+                DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
+                    ->delete();
+                return response()->json("Pedido confirmado", 200);
+            endif;
+        endforeach;
 
-        return response()->json($orderItem);
+        return response()->json("You don't have permission", 422);
     }
 
-    public function getOrderList($table)
+    public function getOrderList($table): JsonResponse
     {
         $hoje = new DateTime();
         $hoje = $hoje->format("Y-m-d");
@@ -122,7 +136,7 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function getOrderItem($id)
+    public function getOrderItem($id): JsonResponse
     {
         $itens = DB::table('pedidos')
             ->select(
@@ -180,7 +194,7 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function  getBillItems($id)
+    public function  getBillItems($id): JsonResponse
     {
         $bill = DB::table('pedidos')
             ->select(
@@ -239,63 +253,75 @@ class PedidoController extends Controller
 
     }
 
-    public function postNewOrderItem(Request $request)
+    public function postNewOrderItem(Request $request): JsonResponse
     {
         $orderID = $request->orderID;
         $itemID = $request->itemID;
         $quantity = $request->quantity;
+        $auth = $request->session()->get('auth-vue');
 
         $menuitem = Menuitems::where('id', $itemID)->first();
         $item = ItensPedido::where([
                 ['item_pedido', $orderID], ['item_id', $itemID]
             ])->first();
 
+        foreach (UserInstance::get_user_roles($auth) as $confirm):
+            if (
+                $confirm->role_id === Role::MANAGER ||
+                $confirm->role_id === Role::CAN_TAKE_ORDER ||
+                $confirm->role_id === Role::CAN_USE_CASHIER ||
+                $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
+                $confirm->role_id === Role::CAN_CANCEL_ORDER
+            ):
 
-        if ($item):
-            $totalQuantity = $item->item_quantidade + $quantity;
-            DB::table('itens_pedido')
-                ->where([['item_pedido', $orderID], ['item_id', $itemID]])
-                    ->update([
-                        'item_quantidade' => $item->item_quantidade += $quantity,
-                        'item_total' => $menuitem->item_price * $totalQuantity
-                    ]);
-
-            $fiche = Technicalfiche::where('itemID', $menuitem->id)->get();
-
-            foreach ($fiche as $product){
-                $old_saldo = Saldo::where('productID', $product->productID)->first();
-
-                if ($old_saldo->emissao == $this->hoje):
-                    DB::table('saldos')
-                        ->where('productID', $product->productID)
+                if ($item):
+                    $totalQuantity = $item->item_quantidade + $quantity;
+                    DB::table('itens_pedido')
+                        ->where([['item_pedido', $orderID], ['item_id', $itemID]])
                             ->update([
-                                'saldoFinal' => $old_saldo->saldoFinal - $product->quantity,
+                                'item_quantidade' => $item->item_quantidade += $quantity,
+                                'item_total' => $menuitem->item_price * $totalQuantity
                             ]);
-                else:
-                     DB::table('saldos')
-                         ->where('productID', $item->productID)
-                             ->update([
-                                 'emissao' => $this->hoje,
-                                 'saldoInicial' => $old_saldo->saldoFinal,
-                                 'saldoFinal' => $old_saldo->saldoFinal - $product->quantity
-                             ]);
-                endif;
-            }
-            return response()
-                ->json("Item adicionado com sucesso exist");
-        endif;
-        $itens = new ItensPedido();
-        $itens->item_pedido = $orderID;
-        $itens->item_id = $itemID;
-        $itens->item_quantidade = $quantity;
-        $itens->item_price = $menuitem->item_price;
-        $itens->item_total = $menuitem->item_price * $quantity;
-        $itens->item_emissao = $this->hoje;
-        $itens->save();
-        event(new StockReduced($itens));
 
-        return response()
-            ->json("Item adicionado com sucesso ");
+                    $fiche = Technicalfiche::where('itemID', $menuitem->id)->get();
+
+                    foreach ($fiche as $product){
+                        $old_saldo = Saldo::where('productID', $product->productID)->first();
+
+                        if ($old_saldo->emissao == $this->hoje):
+                            DB::table('saldos')
+                                ->where('productID', $product->productID)
+                                    ->update([
+                                        'saldoFinal' => $old_saldo->saldoFinal - $product->quantity,
+                                    ]);
+                        else:
+                             DB::table('saldos')
+                                 ->where('productID', $item->productID)
+                                     ->update([
+                                         'emissao' => $this->hoje,
+                                         'saldoInicial' => $old_saldo->saldoFinal,
+                                         'saldoFinal' => $old_saldo->saldoFinal - $product->quantity
+                                     ]);
+                        endif;
+                    }
+                    return response()
+                        ->json("Item adicionado com sucesso", 200);
+                endif;
+                $itens = new ItensPedido();
+                $itens->item_pedido = $orderID;
+                $itens->item_id = $itemID;
+                $itens->item_quantidade = $quantity;
+                $itens->item_price = $menuitem->item_price;
+                $itens->item_total = $menuitem->item_price * $quantity;
+                $itens->item_emissao = $this->hoje;
+                $itens->save();
+                event(new StockReduced($itens));
+
+                return response()
+                    ->json("Item adicionado com sucesso ", 200);
+            endif;
+        endforeach;
+        return response()->json("You don't have permission", 422);
     }
 
     public function getBillHistory(): JsonResponse

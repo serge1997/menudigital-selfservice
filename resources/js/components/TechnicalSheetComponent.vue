@@ -4,19 +4,14 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h5 class="modal-title text-capitalize" id="exampleModalLabel">New Tecnical sheet</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-100">
-                            <div class="w-50 m-auto text-center">
-                                <small class="text-center">
-                                    Escolhe um item do cardapio, e crie a ficha tecnica para gerenciamento
-                                    de estoque e controle de custo.
-                                </small>
-                            </div>
+                        <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                            <h6>create a item technical fiche </h6>
+                            <p>Technical fiche</p>
                         </div>
-                        <div class="w-100">
+                        <div class="w-100 mt-4">
                             <span v-if="errMsg" v-for="msg in errMsg.itemID" class="text-danger p-1"> {{ msg }} </span>
                             <div class="input-group p-1 mt-1">
                                 <select class="form-select rounded-0 border border-secondary" v-model="fiche.itemID">

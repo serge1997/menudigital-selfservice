@@ -67,17 +67,20 @@ class UserController extends Controller
             'email' => ['required'],
             'password' => ['required']
         ]);
+        try {
+            $user = User::where([['email', $request->email], ['isactive', true]])->first();
 
-        $user = User::where([['email', $request->email], ['isactive', true]])->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'msgerr' => ['senha ou usuario incoreto']
-            ]);
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'msgerr' => ['senha ou usuario incoreto']
+                ]);
+            }
+            $sess = $request->session()->put('auth-vue', $user->id);
+            $this->session = $sess;
+            return $user->createToken('browser')->plainTextToken;
+        }catch(Exception $e){
+            return response()->json('server error, User cant loggIn.', 400);
         }
-        $sess = $request->session()->put('auth-vue', $user->id);
-        $this->session = $sess;
-        return $user->createToken('browser')->plainTextToken;
     }
 
     public function logout(Request $request):void

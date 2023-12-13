@@ -1,5 +1,11 @@
 <template>
     <div class="col-12">
+        <div class="p-1 col-12">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            {{ username }}
+        </div>
         <div class="d-flex justify-content-between p-0">
             <div class="col-8 m-auto">
                 <h4 class="text-capitalize">Espaço Garcom</h4>
@@ -13,10 +19,10 @@
                         <span class="text-center fw-medium text-capitalize">New order</span>
                     </router-link>
                 </div>
-                <div class="py-4">
+                <div class="py-4 col-lg-10 col-md-12">
                     <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
-                    <div class="d-flex justify-content-center flex-wrap p-2 mt-2">
-                        <button  v-for="tab in tables" class="btn col-2">
+                    <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
+                        <button  v-for="tab in tables" class="btn col-lg-4 col-md-5">
                             <div class="bg-success border p-2">
                                 <h6 class="text-white text-center fw-normal">Mesa {{ tab.table }}<br><small>livre</small></h6>
                             </div>
@@ -111,7 +117,8 @@ export default {
             //orderID: localStorage.getItem('orderID'),
             addnewItem: null,
             billTotal: 0,
-            billTotalItem: null
+            billTotalItem: null,
+            username: null
         }
     },
     watch:{
@@ -176,6 +183,12 @@ export default {
 
     mounted(){
         console.log(this.orderID)
+        window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+        axios.get('/api/user').then((response) => {
+            this.username = response.data.name
+        }).catch((errors) => {
+            console.log(errors)
+        })
     }
 }
 

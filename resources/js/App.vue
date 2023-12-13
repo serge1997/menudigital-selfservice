@@ -34,6 +34,11 @@ export default {
     background-color: #e63958;
 }
 
+.form-header{
+    background-color: #e63958;
+    border-right: 6px;
+}
+
 .active {
     background-color: #e63958;
 }

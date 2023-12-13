@@ -4,17 +4,12 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h5 class="modal-title text-capitalize" id="exampleModalLabel">Save stock entry</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-100 p-2">
-                            <div class="w-50 text-wrap m-auto">
-                                <small>
-                                    Cadastre um novo produto, no caso de venda a gestão de estqoue será feiro
-                                    automaticamente.
-                                </small>
-                            </div>
+                        <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                            <h6>Save a new product delivery</h6>
+                            <p>Stock management</p>
                         </div>
                         <div class="w-100 p-2">
                             <span v-if="errMsg" v-for="msg in errMsg.productID" class="text-danger"> {{ msg }} </span><br>
@@ -53,7 +48,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button @click="StoreStockEntry" type="button" class="btn btn-primary rounded-0">Salvar</button>
+                        <button @click="StoreStockEntry" type="button" class="btn bg-dark text-white rounded-0">Salvar</button>
                     </div>
                 </div>
             </div>

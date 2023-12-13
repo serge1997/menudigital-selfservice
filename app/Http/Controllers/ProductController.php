@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Role;
+use App\Http\Services\UserInstance;
 
 class ProductController extends Controller
 {
@@ -31,15 +33,17 @@ class ProductController extends Controller
         ]);
 
         try {
+            $auth = $request->session()->get('auth-vue');
             $data = $request->all();
-            Product::create($data);
+            foreach (UserInstance::get_user_roles($auth) as $create):
+                if ($create->role_id === Role::CAN_CREATE_PRODUCT || $create->role_id === Role::MANAGER):
+                    Product::create($data);
+                    return response()
+                        ->json("Produto Salvou com sucesso", 200);
+                endif;
+            endforeach;
             return response()
-                ->json(
-                    [
-                        "msg_success" => "Produto Salvou com sucesso",
-                        "status" => 200
-                    ]
-                );
+                ->json("You dont have permission", 422);
         }catch(\Exception){
             return response()
                 ->json(

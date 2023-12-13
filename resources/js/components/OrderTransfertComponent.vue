@@ -81,21 +81,14 @@ export default {
     methods:{
         postTransfert(){
             this.transfert.item_pedido = document.getElementById('pedido').value
-
             for(let x of this.options){
-                //this.transfert.item_id.push(x.match(/[0-9]/));
                 this.transfert.item_id.push(x.replace(/[^0-9]/g, ''))
             }
             axios.post('/api/post/transfert', this.transfert).then((response) => {
-
-                if (response.data.status == 400){
-                    this.$toast.error(response.data.msg)
-                }else{
-                    this.$toast.success(response.data.msg)
-                }
-                this.options = []
+                this.$toast.success(response.data)
             }).catch((errors) => {
                 console.log(errors)
+                this.$toast.error(errors.response.data)
             })
         },
         Insert() {

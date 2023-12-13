@@ -6,9 +6,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-8 m-auto">
-                    <h5 class="text-center p-2">Salvar novo Tipo do menu</h5>
-                    <form @submit.prevent="SaveType" class="shadow w-100 p-4">
-                        <div class="row">
+                    <form @submit.prevent="SaveType" class="w-100 p-4">
+                        <div class="row p-0">
+                            <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                                <h6>new category item</h6>
+                                <p>Save new category</p>
+                            </div>
                             <div class="col-md-12 mt-3">
                                 <label for="name" class="fs-5">Tipo do menu : </label>
                                 <input type="text" class="form-control rounded-0 border-secondary" v-model="type.desc_type" placeholder="Tipo do menu">
@@ -20,21 +23,8 @@
                                 <input type="file" class="form-control rounded-0 border-secondary" @change="ImgHandle" placeholder="nome do prato">
                             </div>
                         </div>
-                        <label class="fs-5 mt-3" for="">Status : </label>
-                        <!--<div class="form-check form-switch">
-                            <input class="form-check-input" type="radio" name="isative" value="1">
-                            <label class="form-check-label text-uppercase" for="flexRadioDefault1">
-                                ativado
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="radio" name="isative" value="0" checked>
-                            <label class="form-check-label text-uppercase" for="flexRadioDefault2">
-                                não ativado
-                            </label>
-                        </div>-->
                         <div class="mt-3">
-                            <button type="submit" class="btn bg-primary rounded-0 px-4">Salvar</button>
+                            <button type="submit" class="btn rounded-0 px-4 text-white bg-dark">Salvar</button>
                         </div>
                     </form>
                 </div>
@@ -76,6 +66,7 @@ export default {
                this.$toast.success(response.data);
             }).catch((errors) => {
                 console.log(errors)
+                this.$toast.error(errors.response.data)
             })
         }
     }
