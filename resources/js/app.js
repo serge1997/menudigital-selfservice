@@ -7,12 +7,15 @@ import router from './router/index';
 import App from './App.vue';
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import PrimeVue from "primevue/config";
+import 'primevue/resources/themes/lara-light-blue/theme.css';
+import 'primeicons/primeicons.css'
 
 console.log("Hello world from app.js")
 
 function loggedIn() {
     return localStorage.getItem('token')
-};
+}
 
 router.beforeEach((to, from, next) => {
     if(to.matched.some(record => record.meta.requiresAuth)) {
@@ -42,4 +45,4 @@ router.beforeEach((to, from, next) => {
 
 createApp(App).use(router).use(VueAxios, axios).use(Toaster, {
     position: 'top'
-}).use(VueSweetalert2).mount('#app')
+}).use(VueSweetalert2).use(PrimeVue).mount('#app')

@@ -1,8 +1,6 @@
 <template>
     <div class="col-lg-12 col-md-12">
-         <div class="position-fixed z-1">
-            <SideBarComponent></SideBarComponent>
-        </div>
+        <SideBarComponent></SideBarComponent>
         <div class="d-flex justify-content-between p-0 z-0">
             <div class="col-8 m-auto">
                 <h4 class="text-capitalize">Espaço operador</h4>
@@ -18,12 +16,13 @@
                     </div>
                 </div>
                 <div class="w-100 py-2 d-flex">
-                    <router-link :to="{ name: 'Home' }" class="btn fw-medium caixa-btn">New order</router-link>
-                    <button class="btn fw-medium caixa-btn" data-bs-toggle="modal" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)">
-                       inventory
-                    </button>
-                    <BillHistoriyComponent :status="status"/>
-                    <SellReportComponent/>
+                    <Toolbar>
+                        <template #start>
+                            <Button label="New order" @click="this.$router.push('/home')" icon="pi pi-plus" class="mr-2" />
+                            <Button label="inventory" data-bs-toggle="modal" icon="pi pi-eye" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)" class="mr-2" />
+                            <SellReportComponent/>
+                        </template>
+                    </Toolbar>
                 </div>
                <table class="table border">
                     <thead>
@@ -274,6 +273,9 @@ import SellReportComponent from '../../SellReportComponent.vue';
 import InventoryComponent from "@/components/InventoryComponent.vue";
 import BillHistoriyComponent from "@/components/BillHistoriyComponent.vue";
 import _ from 'lodash'
+import Toolbar from "primevue/toolbar";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
 export default {
     name: 'OperadorPanel',
 
@@ -282,7 +284,10 @@ export default {
         OrderTransfertComponent,
         SellReportComponent,
         BillHistoriyComponent,
-        InventoryComponent
+        InventoryComponent,
+        Toolbar,
+        Button,
+        InputText
     },
 
     data() {

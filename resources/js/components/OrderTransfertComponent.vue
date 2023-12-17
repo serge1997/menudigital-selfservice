@@ -86,6 +86,9 @@ export default {
             }
             axios.post('/api/post/transfert', this.transfert).then((response) => {
                 this.$toast.success(response.data)
+                this.transfert.item_id = []
+                this.transfert.item_quantidade = []
+                this.options = []
             }).catch((errors) => {
                 console.log(errors)
                 this.$toast.error(errors.response.data)

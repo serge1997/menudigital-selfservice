@@ -37,21 +37,16 @@ class MenuItemController extends Controller
     {
         $request->validated();
         $user_id = $request->session()->get('auth-vue');
+        $values = $request->all();
         try{
-            if (!UserRoleAcess::can_manage($user_id)){
-                return response()->json(['error' => "User don't have permission", 'status' => 500]);
-            }
-            $values = $request->all();
-            $item = new Menuitems($values);
-
-            DB::beginTransaction();
-            $item -> save();
-            DB::commit();
-
-            return response()->json([
-                "success" => "Item Salvou com sucesso"
-            ]);
-
+            foreach (UserInstance::get_user_roles($user_id) as $item_role):
+                if ($item_role->role_id === Role::MANAGER):
+                    $item = new Menuitems($values);
+                    $item -> save();
+                    return response()->json("Item Salvou com sucesso", 200);
+                 endif;
+            endforeach;
+            return response()->json(['error' => "User don't have permission", 'status' => 500]);
         }catch(\Exception $e) {
             DB::rollBack();
             return response()->json([
@@ -65,9 +60,14 @@ class MenuItemController extends Controller
      * @param Request $request
      * @return JsonResponse
      * @use Role $role
+     * make a migration fresh to put type desc not null
      */
     public function SaveType(Request $request) :JsonResponse
     {
+        /*$request->validate([
+            'desc_type' => ['required']
+        ]);*/
+
         $type = new MealType();
         $type->desc_type = $request->desc_type;
 
@@ -88,7 +88,7 @@ class MenuItemController extends Controller
             endforeach;
             return response()->json("You dont have permission", 422);
         }catch (\Exception $e){
-            return response()->json("Action cant be concluided", 422);
+            return response()->json("Action cant be concluided".$e->getMessage(), 422);
         }
 
 

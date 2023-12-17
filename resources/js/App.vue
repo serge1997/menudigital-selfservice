@@ -1,5 +1,5 @@
 <template>
-    <div class="fade-enter-active">
+    <div id="the-app" class="fade-enter-active">
         <router-view></router-view>
     </div>
 </template>
@@ -11,7 +11,7 @@ export default {
     name: 'App',
 
     mounted(){
-        //localStorage.removeItem('token')
+
     }
 }
 

@@ -13,39 +13,39 @@
                                 <p>Save new collaborator</p>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <label for="name" class="fs-5">Nome : </label>
-                                <input type="text" class="form-control rounded-0 border-secondary" placeholder="nome do colaborador" v-model="user.name">
-                                <p class="text-danger" v-if="errMsg" v-for="errname in errMsg.name" v-text="errname"></p>
+                                <div class="d-flex flex-column gap-2">
+                                    <label for="user-name">Collaborator name</label>
+                                    <InputText :class="invalid" type="text" id="user-name" v-model="user.name" aria-describedby="user name" placeholder="collaborator name"/>
+                                    <small class="text-danger" v-if="errMsg" v-for="errname in errMsg.name" id="user-name-err"  v-text="errname"></small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-12 mt-3">
-                                <label for="name" class="fs-5">Celular : </label>
-                                <input type="text" class="form-control rounded-0 border-secondary" placeholder="Celular pessoal" v-model="user.tel">
+                                <div class="d-flex flex-column gap-2">
+                                    <label for="user-tel">User contact</label>
+                                    <InputText :class="invalid" type="text" id="user-name" v-model="user.tel" aria-describedby="user name" placeholder="collaborator contact"/>
+                                    <small class="text-danger" v-if="errMsg" v-for="errtel in errMsg.tel" id="user-tel-err"  v-text="errtel"></small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-12 mt-3">
-                                <label for="name" class="fs-5">Senha : </label>
-                                <input type="password" class="form-control rounded-0 border-secondary" placeholder="Atribuir uma senha de acesso" v-model="user.password">
+                                <div class="d-flex flex-column gap-2">
+                                    <label for="user-password">Collaborator e-mail or username</label>
+                                    <InputText :class="invalid" type="text" id="user-email" v-model="user.email" aria-describedby="user email" placeholder="collaborator email"/>
+                                    <small class="text-danger" v-if="errMsg" v-for="erremail in errMsg.email" id="user-email-err"  v-text="erremail"></small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
                             <div class="col-md-12 mt-3">
-                                <label for="name" class="fs-5">E-mail : </label>
-                                <input type="text" class="form-control rounded-0 border-secondary" placeholder="email de acesso" v-model="user.email">
+                                <div class="d-flex flex-column gap-2">
+                                    <label for="user-password">Collaborator password</label>
+                                    <InputText :class="invalid" type="password" id="user-name" v-model="user.password" aria-describedby="user password" placeholder="user password"/>
+                                    <small class="text-danger" v-if="errMsg" v-for="errpassword in errMsg.password" id="user-password-err"  v-text="errpassword"></small>
+                                </div>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12 mt-3">
-                                <label for="tipo" class="fs-5">Função: </label>
-                                <select class="form-select text-capitalize border-secondary rounded-0" v-model="user.group_id">
-                                    <option v-for="group in groups" :value="group.id">{{ group.groupe }}</option>
-                                </select>
+                            <div class="col-mt-12 mt-3">
+                                <Dropdown v-model="user.group_id" option-value="id" :options="groups" optionLabel="groupe" placeholder="Select user function" class="w-100 md:w-14rem" />
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button type="submit" class="btn text-white bg-dark rounded-0 px-4">Salvar</button>
+                            <Button label="Save" type="submit" />
                         </div>
                     </form>
                 </div>
@@ -56,11 +56,17 @@
 
 <script>
 import SideBarComponent from './SideBarComponent.vue'
+import InputText from "primevue/inputtext";
+import Dropdown from "primevue/dropdown";
+import Button from "primevue/button";
 export default {
     name: 'Employe',
 
     components: {
-        SideBarComponent
+        SideBarComponent,
+        InputText,
+        Dropdown,
+        Button
     },
 
     data(){
@@ -73,7 +79,8 @@ export default {
                 group_id: null,
                 email: null
             },
-            errMsg: null
+            errMsg: null,
+            invalid: null
         }
     },
 
@@ -101,6 +108,7 @@ export default {
             }).catch((errors) => {
                 console.log(errors.response.data.errors);
                 this.errMsg = errors.response.data.errors;
+                this.invalid = 'p-invalid'
             })
         }
     },

@@ -243,25 +243,46 @@ export default {
         {
             let user_id = document.getElementById('user-id').value;
             this.updateEmployeData.user_id = user_id;
-            if ( check){
+            if (check){
                 this.$swal.fire({
                     text: "You really want to delete this user role ?",
+                    icon: "question",
                     showCancelButton: true
                 }).then((result) => {
                     if (result.isConfirmed){
-                        axios.post('/api/roles/' + id, this.updateEmployeData)
-                        console.log("Para deletar");
+                        axios.post('/api/role-delete/' + id, this.updateEmployeData).then((response) => {
+                            this.$swal.fire({
+                                text: response.data,
+                                icon: "success",
+                            })
+                        }).catch((errors) => {
+                                this.$swal.fire({
+                                text: errors.response.data,
+                                icon: "error",
+                            })
+                        })
+
                         return this.ShowEmployeEditForm(user_id);
                     }
                 })
             }else{
                 this.$swal.fire({
                     text: "You really want to add this function for the user ?",
+                    icon: "question",
                     showCancelButton: true
                 }).then((result) => {
                     if (result.isConfirmed){
-                        axios.post('/api/add-role/' + id, this.updateEmployeData)
-                        console.log("Para adicionar")
+                        axios.post('/api/role/' + id, this.updateEmployeData).then((response) => {
+                            this.$swal.fire({
+                                text: response.data,
+                                icon: "success",
+                            })
+                        }).catch((errors) => {
+                            this.$swal.fire({
+                                text: errors.response.data,
+                                icon: "error",
+                            })
+                        })
                         return this.ShowEmployeEditForm(user_id);
                     }
                 })

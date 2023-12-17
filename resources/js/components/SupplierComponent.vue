@@ -1,51 +1,59 @@
 <template>
     <div class="container">
-        <div class="modal fade" id="ModalSupplier" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content rounded-0">
-                    <div class="modal-header">
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
-                            <h6>create a new supllier information</h6>
-                            <p>Supllier</p>
-                        </div>
-                        <div class="w-100 mt-4">
-                            <span class="p-1 text-danger" v-if="errMsg" v-for="msg in errMsg.sup_name" v-text="msg"></span>
-                            <div class="input-group p-1">
-                                <input type="text" class="form-control border-secondary rounded-0" placeholder="Supplier name" v-model="supplier.sup_name">
-                                <span class="px-2"></span>
-                                <input type="text" class="form-control border-secondary rounded-0" placeholder="CPF / CNPJ" v-model="supplier.sup_personID">
-                            </div>
-                            <span class="p-1 text-danger" v-if="errMsg" v-for="msg in errMsg.sup_tel" v-text="msg"></span>
-                            <div class="input-group p-1 mt-2">
-                                <input type="text" placeholder="Celular" class="form-control rounded-0 border-secondary" v-model="supplier.sup_tel">
-                                <span class="px-2"></span>
-                                <input type="text" placeholder="Bairro" class="form-control rounded-0 border-secondary" v-model="supplier.sup_neighborhood">
-                            </div>
-                            <div class="input-group p-1 mt-2">
-                                <input type="text" placeholder="E-mail" class="form-control rounded-0 border-secondary" v-model="supplier.sup_email">
-                            </div>
-                            <div class="input-group p-1 mt-2">
-                                <input type="text" placeholder="Cidade" class="form-control rounded-0 border-secondary" v-model="supplier.sup_city">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button @click="StoreSupplier" type="button" class="btn bg-dark text-white rounded-0">Salvar</button>
-                    </div>
+        <Button label="Create a supplier register" icon="pi pi-external-link" @click="visibleSupplierModal = true" />
+        <Dialog v-model:visible="visibleSupplierModal" maximizable modal header="Create a new supplier" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="w-100 d-flex gap-2 mt-3">
+                <div class="w-50 d-flex flex-column gap-2">
+                    <label for="sup-name">Product name</label>
+                    <InputText :class="invalid" type="text" id="sup-name" v-model="supplier.sup_name" aria-describedby="product-name" placeholder="product name"/>
+                    <small class="text-danger" v-if="errMsg" v-for="sup_name in errMsg.sup_name" id="product-name-err"  v-text="sup_name"></small>
+                </div>
+                <div class="w-50 d-flex flex-column gap-2">
+                    <label for="sup-cpf">Supplier person id</label>
+                    <InputText type="text" id="sup-cpf" v-model="supplier.sup_personID" aria-describedby="cpf" placeholder="cpf"/>
                 </div>
             </div>
-        </div>
+            <div class="w-100 d-flex gap-2 mt-3">
+                <div class="d-flex flex-column w-50">
+                    <label for="sup-tel">Contact (cel) </label>
+                    <InputMask :class="invalid"  mask="(99)99 999-9999" type="text" id="product-quantity" v-model="supplier.sup_tel" aria-describedby="sup-tel" placeholder="(99)99 999-9999"/>
+                    <small class="text-danger" v-if="errMsg" v-for="tel in errMsg.sup_tel" id="sup-tel-err"  v-text="tel"></small>
+                </div>
+                <div class="d-flex flex-column w-50">
+                    <label for="sup-bairro">Bairro </label>
+                    <InputText type="text" id="sup-bairro" v-model="supplier.sup_neighborhood" aria-describedby="product-name" placeholder="product neighborhood"/>
+                </div>
+            </div>
+            <div class="d-flex flex-column w-100 mt-3">
+                <label for="sup-email">Supplier e-mail </label>
+                <InputText type="text" id="sup-email" v-model="supplier.sup_email" aria-describedby="product-name" placeholder="supplier e-mail"/>
+            </div>
+            <div class="d-flex flex-column w-100 mt-3">
+                <label for="sup-city">Supplier city </label>
+                <InputText type="text" id="sup-city" v-model="supplier.sup_city" aria-describedby="product-name" placeholder="supplier city"/>
+            </div>
+            <div class="w-100 d-flex justify-content-end p-3 mt-3">
+                <Button @click="StoreSupplier" label="Save" />
+            </div>
+        </Dialog>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Dialog from "primevue/dialog";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import InputMask from "primevue/inputmask";
 
 export default{
     name: 'SupplierComponent',
+    components: {
+        Dialog,
+        InputText,
+        Button,
+        InputMask,
+    },
 
     data() {
         return {
@@ -57,26 +65,28 @@ export default{
                 sup_neighborhood: null,
                 sup_email: null
             },
-            errMsg: null
+            errMsg: null,
+            visibleSupplierModal: false,
+            invalid: null
         }
     },
     methods: {
         StoreSupplier(){
             axios.post('/api/supplier', this.supplier).then((response) => {
-                if (response.data.status == 200){
-                    this.$toast.success(response.data.msg_success)
-                    this.supplier.sup_city = "";
-                    this.supplier.sup_email = "";
-                    this.supplier.sup_name = "";
-                    this.sup_neighborhood = "";
-                    this.supplier.sup_tel = "";
-                    this.supplier.sup_personID = "";
-                }else {
-                    this.$toast.success(response.data.msg_error)
-                }
+                this.supplier.sup_city = "";
+                this.supplier.sup_email = "";
+                this.supplier.sup_name = "";
+                this.sup_neighborhood = "";
+                this.supplier.sup_tel = "";
+                this.supplier.sup_personID = "";
+                this.$toast.success(response.data)
+                this.errMsg = null
+                this.invalid = null
             }).catch((errors) => {
                 console.log(errors)
                 this.errMsg = errors.response.data.errors
+                this.invalid = "p-invalid"
+                errors.response.status === 400 ? this.$toast.error(errors.response.data) :null
             })
         }
     }

@@ -27,7 +27,7 @@
                                 <h6 class="text-white text-center fw-normal">Mesa {{ tab.table }}<br><small>livre</small></h6>
                             </div>
                         </button>
-                       <button data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-for="busy in busyTables" class="col-2 btn" @click.prevent="getOrderItem(busy.id)">
+                       <button data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn" @click.prevent="getOrderItem(busy.id)">
                             <div class="bg-danger border p-0">
                                 <h6 class="text-white text-center fw-normal">Mesa {{ busy.ped_tableNumber }}<br><small>ocupada</small><br><small>{{ busy.name }}</small></h6>
                             </div>
@@ -98,6 +98,7 @@
 <script>
 import _ from 'lodash'
 import MenuComponent from './MenuComponent.vue';
+import authuser from "./auth.js";
 export default {
     name: 'OperadorPanel',
 
@@ -182,13 +183,8 @@ export default {
     },
 
     mounted(){
-        console.log(this.orderID)
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-        axios.get('/api/user').then((response) => {
-            this.username = response.data.name
-        }).catch((errors) => {
-            console.log(errors)
-        })
+        authuser.then(result => {this.username = result.name})
     }
 }
 

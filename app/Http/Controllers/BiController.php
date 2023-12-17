@@ -10,7 +10,6 @@ use App\Models\ItensPedido;
 class BiController extends Controller
 {
     public function waiterStat(){
-
         $waiter = DB::table("pedidos")
             ->select(
                 'users.name',
@@ -29,37 +28,42 @@ class BiController extends Controller
                     DB::raw(
                     "
                         CASE
-                            WHEN menuitems.type_id = 1 THEN 'ENTRADA'
-                            WHEN menuitems.type_id = 2 THEN 'PRINCIPAL'
+                            WHEN menuitems.type_id = 1 THEN 'DRINKS'
+                            WHEN menuitems.type_id = 2 THEN 'SOBREMESA'
+                            WHEN menuitems.type_id = 3 THEN 'ENTRADA'
+                            WHEN menuitems.type_id = 5 THEN 'PRINCIPAL'
                         ELSE '' END AS type
                     "
                     ),
-                    DB::raw("menuitems.item_name"),
+                    "menuitems.item_name",
                     DB::raw("SUM(itens_pedido.item_total) typevenda"),
                                 )
-                    ->join('menuitems','itens_pedido.item_id','=','menuitems.type_id')
+                    ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
                         ->groupBy(
                             'menuitems.type_id',
                             'menuitems.item_name'
                             )
                             ->get();
 
-        $itemsColection = DB::table('itens_pedido')
+        $itemsColection = DB::table('pedidos')
                             ->select(
                                 'itens_pedido.item_emissao',
                                 'menuitems.item_name',
+                                'users.name',
                                 DB::raw("SUM(itens_pedido.item_total) venda"),
                                 DB::raw("SUM(item_quantidade) quantidade")
                             )
-                                ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
-                                    ->where('itens_pedido.item_delete', false)
-                                        ->groupBy(
-                                            'itens_pedido.item_emissao',
-                                            'menuitems.item_name'
-                                        )
-                                            ->orderBy('itens_pedido.item_emissao','desc')
-                                                ->get();
-
+                                ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
+                                    ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
+                                        ->join('users', 'pedidos.user_id', 'users.id')
+                                            ->where('itens_pedido.item_delete', false)
+                                                ->groupBy(
+                                                    'itens_pedido.item_emissao',
+                                                    'menuitems.item_name',
+                                                    'users.name'
+                                                )
+                                                    ->orderBy('itens_pedido.item_emissao','desc')
+                                                        ->get();
 
         return response()->json(
                 [

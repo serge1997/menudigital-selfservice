@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Services\UserRoleInstance;
+use App\Http\Services\UserInstance;
 use Illuminate\Support\Facades\DB;
 
 class UserRoleController extends UserRoleInstance
@@ -16,23 +18,33 @@ class UserRoleController extends UserRoleInstance
         return response()->json($this->findAll());
     }
 
-    public function update_user_roles($id, Request $request): JsonResponse
+    public function delete_user_role($id, Request $request): JsonResponse
     {
-        DB::table('user_roles')
-            ->where([['user_id', $request->user_id], ['role_id', $id]])
-                ->delete();
-
-        return response()->json("permission deleted !");
+        $auth_user = $request->session()->get('auth-vue');
+        foreach (UserInstance::get_user_roles($auth_user) as $role):
+            if ($role->role_id === Role::MANAGER):
+                DB::table('user_roles')
+                    ->where([['user_id', $request->user_id], ['role_id', $id]])
+                        ->delete();
+                return response()->json("permission deleted !", 200);
+            endif;
+        endforeach;
+        return response()->json("You don't have permission", 422);
     }
 
-    public function update_user_roles_add($id, Request $request): JsonResponse
+    public function store_user_role($id, Request $request): JsonResponse
     {
-       $user_role = new UserRole();
-       $user_role->user_id = $request->user_id;
-       $user_role->role_id = $id;
-       $user_role->save();
-
-        return response()->json("Permission added succesfully");
+       $auth_user = $request->session()->get('auth-vue');
+       foreach (UserInstance::get_user_roles($auth_user) as $role):
+           if ($role->role_id === Role::MANAGER):
+               $user_role = new UserRole();
+               $user_role->user_id = $request->user_id;
+               $user_role->role_id = $id;
+               $user_role->save();
+               return response()->json("Permission added successfully", 200);
+           endif;
+        endforeach;
+        return response()->json("You dont have permission", 422);
 
     }
 

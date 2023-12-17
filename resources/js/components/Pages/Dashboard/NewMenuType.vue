@@ -13,8 +13,10 @@
                                 <p>Save new category</p>
                             </div>
                             <div class="col-md-12 mt-3">
-                                <label for="name" class="fs-5">Tipo do menu : </label>
-                                <input type="text" class="form-control rounded-0 border-secondary" v-model="type.desc_type" placeholder="Tipo do menu">
+                                <div class="d-flex flex-column gap-2">
+                                    <label for="item-name">Menu type</label>
+                                    <InputText :class="invalid" type="text" id="item-name" v-model="type.desc_type" aria-describedby="type desc" placeholder="Menu type"/>
+                                </div>
                             </div>
                         </div>
                         <div class="row">
@@ -24,7 +26,7 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button type="submit" class="btn rounded-0 px-4 text-white bg-dark">Salvar</button>
+                            <Button type="submit" label="Salvar"/>
                         </div>
                     </form>
                 </div>
@@ -35,12 +37,16 @@
 
 <script>
 import SideBarComponent from './SideBarComponent.vue'
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
 
 export default {
     name: 'NewMenuType',
 
     components: {
-        SideBarComponent
+        SideBarComponent,
+        InputText,
+        Button
     },
 
     data() {

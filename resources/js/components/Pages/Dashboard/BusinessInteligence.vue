@@ -60,65 +60,44 @@
             </div>
             <div class="col-lg-6 col-md-12 d-flex flex-column">
                 <div class="row d-flex jusify-content-between">
-                    <div class="col-lg-5 col-md-6 d-flex flex-column p-2 waiter-ranking">
-                        <h6>Top waiter ranking</h6>
-                        <div class="border shadow-sm waiter-card mt-3 col-md-12" v-for="type in typesCollection">
-                            <div class="header d-flex justify-content-between">
-                                <div class="user-icon p-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2">
-                                        </path><circle cx="12" cy="7" r="4"></circle>
-                                    </svg>
-                                    <p class="mt-1">{{ type.type }}</p>
-                                </div>
-                                <div class="user-value p-1">
-                                    <h6 class="text-danger">{{ type.typevenda }}</h6>
-                                </div>
-                            </div>
+                    <div id="charDonut"></div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <DataTable v-model:filters="filters" ref="dt" :value="dataTable" selectionMode="single" dataKey="id" editMode="cell" @cell-edit-complete="onCellEditComplete"  filterDisplay="row"  paginator :rows="5" tableStyle="min-width: 50rem">
+                    <div class="position-absolute" :class="{ 'place': placeh}"></div>
+                    <template #header>
+                        <div style="text-align: left">
+                            <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
                         </div>
-                    </div>
-                    <div class="col-lg-7 col-md-6 m-auto">
-                        <div id="charDonut"></div>
-                    </div>
-                </div>
-                <div class="border">
-                    <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Emissao</th>
-                                    <th>Item name</th>
-                                    <th>Quantidade</th>
-                                    <th>Venda</th>
-                                </tr>
-                            </thead>
-                        </table>
-                    <div id="table">
-                        <table class="table table-striped">
-                            <tbody>
-                                <tr v-for="itens in itemsCollection">
-                                    <td>{{ itens.item_emissao }}</td>
-                                    <td>{{ itens.item_name }}</td>
-                                    <td>{{ itens.quantidade }}</td>
-                                    <td>{{ itens.venda }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                    </template>
+                    <Column field="item_emissao" sortable style="width: 25%" exportHeader="Product Code" header="Date"></Column>
+                    <Column field="item_name" sortable style="width: 25%" header="Meal name"></Column>
+                    <Column field="quantidade" sortable style="width: 25%" header="Quantity"></Column>
+                    <Column field="venda" sortable style="width: 25%" header="Sell"></Column>
+                    <Column field="name" sortable style="width: 25%" header="Waiter"></Column>
+                </DataTable>
             </div>
         </div>
     </div>
 </template>
 <script>
+import InputText from 'primevue/inputtext';
 import bb, {area, areaSpline, bar, line, donut} from 'billboard.js'
 import SideBarComponent from './SideBarComponent.vue';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Button from "primevue/button";
 
 export default {
     name: 'BusinessInteligence',
 
     components: {
-        SideBarComponent
+        SideBarComponent,
+        InputText,
+        DataTable,
+        Column,
+        Button
     },
 
     data() {
@@ -128,11 +107,15 @@ export default {
             waiterAvg: [],
             waiterName: [],
             itemsCollection: null,
-            typesCollection: null,
+            typesCollection: [],
             typeName: [],
+            dataTable: null,
             type:{
                 starter: 0,
-                principal: 0
+                principal: 0,
+                drinks: 0,
+                dessert: 0,
+                def: 0
             },
             barchart:{
                 date: [],
@@ -153,6 +136,38 @@ export default {
                 this.SetDoubleBarChart()
                 //this.barchart.sell = [...this.waiterSell];
                 console.log(this.barchart.sell)
+            })
+        },
+
+        get_type_waiter_dash(){
+            axios.get('/api/bi/dash-type-waiter').then((response) => {
+                console.log(response.data)
+                this.dataTable = response.data.itemsCollection
+                for (let typename of response.data.type){
+                    if (this.typesCollection.indexOf(typename.type) === -1){
+                        this.typesCollection.push(typename.type)
+                    }
+                    switch(typename.type) {
+                        case "ENTRADA":
+                            this.type.starter += Number(typename.typevenda);
+                            break;
+                        case "PRINCIPAL":
+                            this.type.principal += Number(typename.typevenda);
+                            break;
+                        case "DRINKS":
+                            this.type.drinks += Number(typename.typevenda)
+                            console.log(this.type.drinks)
+                            break;
+                        case "DESSERT":
+                            this.type.dessert += Number(typename.typevenda);
+                            break;
+                        default:
+                            this.type.def += typename.typevenda;
+                    }
+                }
+                this.donut()
+            }).catch((errors) => {
+                console.log(errors)
             })
         },
 
@@ -178,11 +193,41 @@ export default {
                 },
                 bindto: "#Chart"
             });
+        },
+
+        //donut chart
+        donut(){
+            var chart = bb.generate({
+                data: {
+                    columns: [
+                        [this.typesCollection[0], this.type.drinks],
+                        [this.typesCollection[1], this.type.starter],
+                        [this.typesCollection[2], this.type.principal]
+                    ],
+                    type: donut(), // for ESM specify as: donut()
+                    onclick: function(d, i) {
+                        console.log("onclick", d, i);
+                    },
+                    onover: function(d, i) {
+                        console.log("onover", d, i);
+                    },
+                    onout: function(d, i) {
+                        console.log("onout", d, i);
+                    }
+                },
+                donut: {
+                    title: "Food group KPI"
+                },
+                bindto: "#charDonut"
+            })
         }
     },
 
     mounted() {
         this.getGeneralStat()
+        this.get_type_waiter_dash()
+        //this.donut()
+        console.log(this.typesCollection)
     }
 
 }

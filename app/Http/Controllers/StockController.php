@@ -43,21 +43,11 @@ class StockController extends Controller
             $data = $request->all();
             Supplier::create($data);
             return response()
-                ->json(
-                    [
-                        "msg_success" => "supplier created successfully",
-                        "status" => 200
-                    ]
-                );
+                ->json("supplier created successfully",200);
 
         }catch(\Exception $e){
             return response()
-                ->json(
-                    [
-                        "msg_error" => "Action can't be realised",
-                        "stauts" => 404
-                    ]
-                );
+                ->json("Action can't be realised", 400);
         }
     }
 
@@ -192,10 +182,7 @@ class StockController extends Controller
                 ->first();
 
             if ($item_exist){
-                return response()->json([
-                    'status' => 400,
-                    'msg' => "Technical fiche already exist"
-                    ]);
+                return response()->json("Technical fiche already exist", 400);
             }
 
             foreach ($productID as $key => $value):
@@ -222,14 +209,9 @@ class StockController extends Controller
             endforeach;
 
             return response()
-                ->json([
-                    'status' => 200,
-                    'msg' => "Technical fiche created successfully"]);
+                ->json("Technical fiche created successfully", 200);
         }catch(Exception $e){
-            return response()->json([
-                'msg' => " Action can't be completed",
-                'status' => 400
-            ]);
+            return response()->json("Action can't be completed", 422);
         }
     }
 
@@ -242,7 +224,8 @@ class StockController extends Controller
                 st.productID,
                 p.prod_name,
                 sp.sup_name,
-                sa.saldoFinal
+                sa.saldoFinal,
+                p.prod_unmed
             FROM stock_entries st
                 INNER JOIN saldos sa
                     ON sa.productID = st.productID
@@ -254,7 +237,7 @@ class StockController extends Controller
                 st.productID,
                 p.prod_name,
                 sp.sup_name,
-
+                p.prod_unmed,
                 sa.saldoFinal
             HAVING MAX(st.emissao)
             ORDER BY p.prod_name

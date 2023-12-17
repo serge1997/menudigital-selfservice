@@ -11,7 +11,7 @@
         </button>
 
         <div class="modal fade" id="BillHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+            <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
                 <div class="modal-content rounded-0 border-0">
                     <div class="modal-header">
                         <h5 class="modal-title" id="staticBackdropLabel">Bill history</h5>

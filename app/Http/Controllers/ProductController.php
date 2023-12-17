@@ -24,11 +24,15 @@ class ProductController extends Controller
         $request->validate([
 
             'prod_name' => ['required'],
-            'prod_supplierID' => ['required']
+            'prod_supplierID' => ['required'],
+            'prod_unmed' => ['required'],
+            'prod_contain' => ['required']
         ],
         [
             'prod_name.required' => 'name is required',
-            'prod_supplierID.required' => 'supplier is required'
+            'prod_supplierID.required' => 'supplier is required',
+            'prod_unmed.required' => 'unit. measure is required',
+            'prod_contain.rqeuired' => 'unit. contain is required'
 
         ]);
 
@@ -43,15 +47,10 @@ class ProductController extends Controller
                 endif;
             endforeach;
             return response()
-                ->json("You dont have permission", 422);
+                ->json("You dont have permission", 400);
         }catch(\Exception){
             return response()
-                ->json(
-                    [
-                        "msg_error" => "Action can't be realised",
-                        "stauts" => 404
-                    ]
-                );
+                ->json("Action can't be realised", 400);
         }
     }
 

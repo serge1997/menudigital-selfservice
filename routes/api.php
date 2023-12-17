@@ -81,6 +81,7 @@ Route::controller(OrderTransfertController::class)->group(function() {
 //BI
 ROute::controller(BiController::class)->group(function (){
     Route::get('/bi/general-stat', 'getGeneralStat');
+    Route::get('/bi/dash-type-waiter', 'waiterStat');
 });
 Route::get('waiter/stats', [BiController::class, 'waiterStat']);
 
@@ -122,6 +123,6 @@ Route::controller(ProductController::class)->group(function(){
 
 Route::controller(UserRoleController::class)->group(function() {
     Route::get('rules', 'get_all_rules');
-    Route::post('roles/{id}', 'update_user_roles');
-    Route::post('add-role/{id}', 'update_user_roles_add');
+    Route::post('role-delete/{id}', 'delete_user_role');
+    Route::post('role/{id}', 'store_user_role');
 });
