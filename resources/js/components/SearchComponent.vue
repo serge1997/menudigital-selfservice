@@ -1,7 +1,11 @@
 <template>
     <div>
         <div class="col-md-10 m-auto d-flex justify-content-between p-3">
-            <input type="search" :placeholder="SearchPlaceholder" v-model="search" class="form-control rounded-0 search-input">
+            <span class="w-100 p-input-icon-left">
+                <i v-if="isSpinner" class="pi pi-search" />
+                <i v-else class="pi pi-spin pi-spinner" />
+                <InputText v-model="search" class="w-100" :placeholder="SearchPlaceholder" @keydown="this.isSpinner = !this.isSpinner"/>
+            </span>
             <button class="btn border rounded-0" id="search-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
@@ -20,20 +24,11 @@
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
-                            <div class="order-btn-box text-white mt-2">
-                                <router-link v-if="!item.item_rupture" @click="$emit('AddToCart', item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="btn add-btn p-1 px-2 py-1 border-dark">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
-                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                </router-link>
-                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
-                                <button class="btn add-btn p-1 px-2 py-1 show-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="$emit('ShowItem', item.id)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
+                            <div class="mt-2 d-flex justify-content-center gap-1">
+                                <div>
+                                    <CartSidebarComponent @add-to-cart="addToCart(item.id)"/>
+                                </div>
+                                <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
                             </div>
                         </div>
                     </div>
@@ -46,9 +41,18 @@
 
 <script>
 import axios from 'axios';
+import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
 
 export default {
     name: 'SearchComponent',
+
+    components:{
+        CartSidebarComponent,
+        Button,
+        InputText
+    },
 
     props: {
         SearchPlaceholder: String
@@ -64,7 +68,11 @@ export default {
         return {
             result: null,
             search: null,
-            notFound: null
+            notFound: null,
+            table: {
+                tableNumber: localStorage.getItem('table'),
+            },
+            isSpinner: true
         }
     },
 
@@ -85,7 +93,25 @@ export default {
 
                 console.log(response.data);
             })
-    }
+        },
+        addToCart(id) {
+            axios.post('/api/add/cart/' + id, this.table).then((response) => {
+                console.log(response.data)
+            }).catch((errors) => {
+                console.log(errors)
+            })
+        },
+
+        ShowItem(id){
+            axios.get('/api/show/'+id).then((response) => {
+                console.log(response.data);
+                this.show = response.data.item
+                this.fiche = response.data.fiche
+            }).catch((errors) => {
+                console.log(errors);
+            })
+        },
+
     }
 }
 </script>

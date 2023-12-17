@@ -111,8 +111,7 @@ export default {
             })
         },
     },
-    mounted(){
-        console.log("side bar")
+    async mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
         authuser.then(result => {this.username = result.name})
     }

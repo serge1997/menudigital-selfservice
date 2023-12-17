@@ -240,32 +240,23 @@ class MenuItemController extends Controller
         }
     }
 
-    public function AddQuantity($id, $table): JsonResponse
+    public function AddQuantity($id): JsonResponse
     {
-        $item = Cart::find($id);
-
-        $quantidade = DB::table('carts')->select('quantity')
-            ->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
-            ->first();
-
-        $unitPrice = DB::table('carts')->select('unit_price')
-            ->where("item_id", $id)
-            ->first();
-
-        if ($quantidade->quantity <= 8) {
-            DB::table('carts')->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
+        $cart = Cart::where('id', $id)->first();
+        if ($cart->quantity <= 8) {
+            DB::table('carts')->where("id", "=", $id)
             ->update([
-                'quantity' => $quantidade->quantity += 1,
-                'total' => $unitPrice->unit_price * $quantidade->quantity
+                'quantity' => $cart->quantity += 1,
+                'total' => $cart->unit_price * $cart->quantity
             ]);
         }
 
         $qty = DB::table('carts')->select('quantity')
-            ->where([['item_id', '=', $id], ['tableNumber', '=', $table]])
+            ->where('id', '=', $id)
             ->first();
 
         $total = DB::table('carts')->select('total')
-            ->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
+            ->where("id", "=", $id)
             ->first();
 
         return response()->json([
@@ -274,34 +265,27 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function ReduceQuantity($id, $table): JsonResponse
+    public function ReduceQuantity($id): JsonResponse
     {
-        $quantidade = DB::table('carts')->select('quantity')
-            ->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
-            ->first();
-
-        $unitPrice = DB::table('carts')->select('unit_price')
-            ->where("item_id", $id)
-            ->first();
-
+        $cart = Cart::where('id', $id)->first();
         $oldTotal = DB::table('carts')->select('total')
-            ->where("item_id", $id)
+            ->where("id", $id)
             ->first();
 
-        if ($quantidade->quantity > 1) {
+        if ($cart->quantity > 1) {
 
-            DB::table('carts')->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
+            DB::table('carts')->where("id", "=", $id)
             ->update([
-                'quantity' => $quantidade->quantity -= 1,
-                'total' => $oldTotal->total - $unitPrice->unit_price
+                'quantity' => $cart->quantity -= 1,
+                'total' => $oldTotal->total - $cart->unit_price
             ]);
         }
         $qty = DB::table('carts')->select('quantity')
-            ->where([['item_id', '=', $id], ['tableNumber', '=', $table]])
+            ->where('id', '=', $id)
             ->first();
 
         $total = DB::table('carts')->select('total')
-            ->where([["item_id", "=", $id], ["tableNumber", "=", $table]])
+            ->where("id", "=", $id)
             ->first();
         return response()->json([
             'quantity' => $qty->quantity,
@@ -315,6 +299,8 @@ class MenuItemController extends Controller
                 'menuitems.item_name',
                 'menuitems.item_image',
                 'menuitems.item_desc',
+                'carts.item_id',
+                'carts.unit_price',
                 'carts.quantity',
                 'carts.options',
                 'carts.quantity',
@@ -452,4 +438,8 @@ class MenuItemController extends Controller
 
     }
 
+    public function getNewCart($table)
+    {
+        return response()->json(Cart::where('tableNumber', $table)->get());
+    }
 }

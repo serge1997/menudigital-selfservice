@@ -123,5 +123,7 @@ thead{
 .caixa-btn:hover:before{
     width: 80%;
 }
-
+.btn-eye{
+    border: solid 1px #0275d8;
+}
 </style>

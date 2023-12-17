@@ -53,49 +53,31 @@
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
-                            <div class="order-btn-box text-white mt-2">
-                                <router-link v-if="!item.item_rupture" @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="btn add-btn p-1 px-2 py-1 border-dark">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
-                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                </router-link>
-                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
-                                <button class="btn add-btn p-1 px-2 py-1 show-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
+                            <div class="mt-2 d-flex justify-content-center gap-1">
+                                <div>
+                                    <CartSidebarComponent @add-to-cart="addToCart(item.id)"/>
+                                </div>
+                                <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div v-else v-for="item in itemOfType" class="col-lg-5 col-md-10 mb-4 m-auto">
-                <div class="card rounded-0 shadow">
+                <div class="card rounded-0 p-0">
                     <div class="card-body d-flex p-0">
                         <div class="col-6">
-                            <img class="w-100" src="/img/banner.jpg" alt="">
+                            <img class="w-100 h-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
-                            <h5 class="text-center">{{ item.item_name }}</h5>
+                            <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
-                            <div class="order-btn-box text-white mt-2">
-                                <router-link v-if="!item.item_rupture" @click.prevent="addToCart(item.id)" :to="{ name: 'ItemCart', params: {id:item.id}}" class="btn add-btn p-1 px-2 py-1 border-dark">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
-                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                </router-link>
-                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
-                                <button class="btn add-btn p-1 px-2 py-1 show-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="ShowItem(item.id)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </button>
+                            <div class="mt-2 d-flex justify-content-center gap-1">
+                                <div>
+                                    <CartSidebarComponent @add-to-cart="addToCart(item.id)"/>
+                                </div>
+                                <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
                             </div>
                         </div>
                     </div>
@@ -137,12 +119,18 @@
 <script>
 import axios from 'axios';
 import SearchComponent from '../SearchComponent.vue';
+import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
+import Button from "primevue/button";
+import DataView from "primevue/dataview";
 
 export default {
     name: 'Menu',
 
     components: {
-        SearchComponent
+        SearchComponent,
+        CartSidebarComponent,
+        Button,
+        DataView
     },
 
     data() {
@@ -157,7 +145,8 @@ export default {
             isCart: false,
             load: true,
             isRupture: false,
-            fiche: null
+            fiche: null,
+            visibleRight: false
         }
     },
 
@@ -190,7 +179,9 @@ export default {
                 }, 1000)
             })
         },
-
+        Test(id){
+            alert(id)
+        },
         getItemOfType(id_type) {
             axios.get('/api/item/type/' + id_type).then((response) => {
                 this.itemOfType = response.data.items

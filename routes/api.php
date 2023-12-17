@@ -40,8 +40,8 @@ Route::controller(MenuItemController::class)->group(function(){
     Route::post('table', 'setTableNumber');
     Route::get('/checkcart/{checkTable?}', 'checkCart');
     Route::post('set/option/{id?}', 'SetCartOptions');
-    Route::post('add-quantity/{id}/{table}', 'AddQuantity');
-    Route::post('reduce-quantity/{id}/{table}', 'ReduceQuantity');
+    Route::post('add-quantity/{id}', 'AddQuantity');
+    Route::post('reduce-quantity/{id}', 'ReduceQuantity');
     Route::get('cart/items/{table}', 'CustomerFinalCart');
     Route::get('delete/item/{cartID}/{table}', 'DeleteFromCart');
     Route::post('item-menu/update', 'updatedMenuItem');
@@ -51,6 +51,7 @@ Route::controller(MenuItemController::class)->group(function(){
     Route::post('/delete/menu-item/{id}','ToDelete');
     Route::post('save/type','SaveType');
     Route::get('/show/{id}', 'show');
+    Route::get('cart-table/{table}', 'getNewCart');
 });
 
 //orders
