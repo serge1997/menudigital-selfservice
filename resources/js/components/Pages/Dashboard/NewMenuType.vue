@@ -14,8 +14,8 @@
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="item-name">Menu type</label>
-                                    <InputText :class="invalid" type="text" id="item-name" v-model="type.desc_type" aria-describedby="type desc" placeholder="Menu type"/>
+                                    <label for="type-name">Menu type</label>
+                                    <InputText :class="invalid" type="text" id="type-name" v-model="type.desc_type" aria-describedby="type desc" placeholder="Menu type"/>
                                 </div>
                             </div>
                         </div>

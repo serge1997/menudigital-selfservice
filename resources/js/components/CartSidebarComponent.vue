@@ -1,6 +1,7 @@
 <template>
     <div class="col-md-10" @click="reload">
-        <Button icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id)" />
+        <Button v-if="!rupture" icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id)" />
+        <Button v-else icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id, rupture)" disabled />
         <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="w-50">
             <Accordion class="p-accordion" :activeIndex="0">
                 <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
@@ -19,7 +20,7 @@
                                 <Button @click="ReduceQuantity(item.cartID)" icon="pi pi-minus" />
                             </div>
                         </div>
-                        <div class="p-2 position-relative">
+                        <div class="p-2">
                             <Chip class="">
                                 <span class="fw-medium">{{ item.total}} <small>R$</small></span>
                             </Chip>
@@ -30,6 +31,14 @@
                     </div>
                     <div>
                         <InputText v-model="cart.comments" class="w-75 p-3 mt-3" placeholder="customer comment" />
+                    </div>
+                    <div class="w-100 mt-3 p-3">
+                        <div class="d-flex flex-wrap gap-3">
+                            <div v-for="option in options" class="flex align-items-center gap-2">
+                                <RadioButton v-model="cart.options" name="pizza" :value="option.option_name" />
+                                <label for="ingredient1" class="ml-2">{{ option.option_name }}</label>
+                            </div>
+                        </div>
                     </div>
                 </AccordionTab>
             </Accordion>
@@ -65,6 +74,7 @@ import axios from "axios";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import authuser from "@/components/Pages/auth.js";
+import RadioButton from "primevue/radiobutton";
 export default {
     name: 'CartSideBarComponent',
     components: {
@@ -75,9 +85,10 @@ export default {
         InputText,
         Chip,
         DataTable,
-        Column
+        Column,
+        RadioButton
     },
-    props:['id'],
+    props:['id', 'rupture'],
     data(){
         return {
             visibleRight: false,
@@ -91,6 +102,7 @@ export default {
                 user_id: null,
                 ped_customerName: null
             },
+            options: null
         }
     },
 
@@ -98,6 +110,7 @@ export default {
         getCartItem(){
             axios.get('/api/cart/items/'+ this.table).then((response) => {
                 this.cartItems = response.data.items
+                this.options = response.data.options
             }).catch((errors) => {
                 console.log(errors)
             })

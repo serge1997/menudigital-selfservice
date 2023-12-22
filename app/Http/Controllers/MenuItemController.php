@@ -19,6 +19,7 @@ use App\Http\Services\UserRoleAcess;
 class MenuItemController extends Controller
 {
     public $items;
+    public $options;
 
     public function __construct()
     {
@@ -33,7 +34,7 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function StoreMenuItem(StoreProductRequest $request)
+    public function StoreMenuItem(StoreProductRequest $request): JsonResponse
     {
         $request->validated();
         $user_id = $request->session()->get('auth-vue');
@@ -46,13 +47,10 @@ class MenuItemController extends Controller
                     return response()->json("Item Salvou com sucesso", 200);
                  endif;
             endforeach;
-            return response()->json(['error' => "User don't have permission", 'status' => 500]);
+            return response()->json("User don't have permission", 400);
         }catch(\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                "error" => "O item não pode ser salvou",
-                "status" => 500
-            ]);
+            return response()->json("O item não pode ser salvou",400);
         }
     }
 
@@ -127,7 +125,7 @@ class MenuItemController extends Controller
         ]);
     }
 
-    public function getMenuType()
+    public function getMenuType(): JsonResponse
     {
         $type = DB::table("menu_mealtype")
             ->select(
@@ -308,17 +306,26 @@ class MenuItemController extends Controller
                 'carts.total'
             )
             ->join('menuitems', 'carts.item_id', '=', 'menuitems.id')
-            ->where('tableNumber', $table)
-            ->get();
+                ->where('tableNumber', $table)
+                    ->get();
 
         $total = DB::table('carts')
             ->where('tableNumber', $table)
-            ->sum('total');
+                ->sum('total');
+
+        foreach ($items as $item){
+            $this->options = DB::table("menuitems")->select("options.option_name")
+                ->join("options", "menuitems.type_id", "=", "options.type_id")
+                ->where("menuitems.id", $item->item_id)
+                ->get();
+        }
+
 
 
         return response()->json([
             'items' => $items,
-            'total' => $total
+            'total' => $total,
+            'options' => $this->options
         ]);
     }
 

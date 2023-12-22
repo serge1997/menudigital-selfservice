@@ -9,6 +9,7 @@ class Saldo extends Model
 {
     use HasFactory;
 
+    //public int $productID;
     protected $table = 'saldos';
     protected $fillable =
         [

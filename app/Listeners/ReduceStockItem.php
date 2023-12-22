@@ -34,7 +34,7 @@ class ReduceStockItem
         $item_fiche = Technicalfiche::where('itemID', $itemId)->get();
         foreach ($item_fiche as $item):
             $old_saldo = DB::table('saldos')->where('productID', $item->productID)->first();
-            if ($old_saldo->emissao == $hoje):
+            if ($old_saldo->emissao === $hoje):
                 DB::table('saldos')
                 ->where('productID', $item->productID)
                     ->update([
@@ -50,6 +50,5 @@ class ReduceStockItem
                     ]);
             endif;
         endforeach;
-
     }
 }

@@ -113,20 +113,16 @@ export default {
     methods: {
         SaveItem() {
            axios.post('/api/save/meal', this.menuItem).then((response) => {
-            console.log(response.data)
-            if (response.data.status == 500) {
-                this.$toast.error(response.data.error);
-            } else {
-                this.$toast.success(response.data.success);
                 this.menuItem.item_desc = "";
                 this.menuItem.item_price = "";
                 this.menuItem.type_id = "";
                 this.menuItem.item_name = ""
                 this.errMsg = null
-            }
+               this.$toast.success(response.data);
            }).catch((errors) => {
              console.log(errors.response.data.errors)
              this.errMsg = errors.response.data.errors
+             errors.response.status === 400 ? this.$toast.error(errors.response.data): null
            })
         },
 

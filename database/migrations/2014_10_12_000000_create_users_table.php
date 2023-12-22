@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('tel')->nullable();
+            $table->string('username')->unique();
             $table->string('password');
             $table->integer('group_id')->unsigned();
             $table->foreign('group_id')->references('id')

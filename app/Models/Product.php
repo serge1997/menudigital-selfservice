@@ -17,7 +17,8 @@ class Product extends Model
             'prod_desc',
             'prod_contain',
             'prod_supplierID',
-            'prod_unmed'
+            'prod_unmed',
+            'min_quantity'
         ];
     public  function supplier(): BelongsTo
     {

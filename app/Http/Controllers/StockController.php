@@ -13,6 +13,7 @@ use App\Models\Saldo;
 use App\Models\Technicalfiche;
 use DateTime;
 use Exception;
+use App\Http\Services\Stock\StockServiceRepository;
 
 class StockController extends Controller
 {
@@ -57,7 +58,7 @@ class StockController extends Controller
             ->json($this->supplier::select('id', 'sup_name')->get());
     }
 
-    public function storeStockEntry(Request $request) :JsonResponse
+    public function storeStockEntry(Request $request, StockServiceRepository $service) :JsonResponse
     {
         $request->validate([
             'productID'=> ['required'],
@@ -84,23 +85,10 @@ class StockController extends Controller
 
         $produtData = Product::where('id', $request->productID)
             ->first();
-        $maxemissao = DB::table('saldos')
-            ->where('productID', $request->productID)
-                ->max('emissao');
         $product = Saldo::select(DB::raw('MAX(emissao) emissao'), 'productID', 'saldoInicial', 'saldoFinal')
-            ->where([
-                    ['productID', $request->productID], ['emissao', $maxemissao]
-                ])->groupby('emissao', 'productID', 'saldoInicial', 'saldoFinal')
-                        ->first();
-
-        $max_entry = DB::table('stock_entries')
-            ->select(DB::raw('MAX(emissao) emissao'), 'productID')
-                ->max('emissao');
-        $entry_product = StockEntry::where([
-                ['productID', $request->productID], ['emissao', $max_entry]
-            ])->first();
-
-
+            ->where('productID', $request->productID)
+                ->groupby('emissao', 'productID', 'saldoInicial', 'saldoFinal')
+                    ->first();
         try {
 
             $data = $request->all();
@@ -108,7 +96,7 @@ class StockController extends Controller
             $entry->totalCost = $request->unitCost * $request->quantity;
             $entry->emissao = $hoje;
             $entry->save();
-
+            $service->CheckRuptureLowStockState($request->productID);
             if ($product):
                 if ($produtData->prod_unmed != "bt"):
                     DB::table('saldos')
@@ -119,7 +107,7 @@ class StockController extends Controller
                                     'saldoFinal' => $product->saldoFinal + ($request->quantity * $produtData->prod_contain)
                                 ]);
                     return response()
-                        ->json('Action registred successfully');
+                        ->json('Action registred successfully', 200);
                 else:
                     DB::table('saldos')
                         ->where('productID', $request->productID)
@@ -129,7 +117,7 @@ class StockController extends Controller
                                 'saldoFinal' => $product->saldoFinal + $request->quantity
                             ]);
                     return response()
-                        ->json('Action registred successfully');
+                        ->json('Action registred successfully', 200);
                 endif;
             else:
                 if ($produtData->prod_unmed != "bt"):
@@ -149,14 +137,11 @@ class StockController extends Controller
                 endif;
             endif;
             return response()
-                ->json('Action registred successfully');
+                ->json('Action registred successfully', 200);
 
         }catch(\Exception $e){
             return response()
-                ->json([
-                        "status" => 400,
-                        "msg" => "Action can't be completed"
-                    ]);
+                ->json("Action can't be completed".$e->getMessage(), 400);
         }
 
     }
@@ -177,40 +162,46 @@ class StockController extends Controller
         $productID = $request->productID;
         $quantity = $request->quantity;
         try{
+            DB::beginTransaction();
+                $item_exist = Technicalfiche::where('itemID', $itemID)
+                    ->first();
 
-            $item_exist = Technicalfiche::where('itemID', $itemID)
-                ->first();
+                if ($item_exist){
+                    return response()->json("Technical fiche already exist", 400);
+                }
 
-            if ($item_exist){
-                return response()->json("Technical fiche already exist", 400);
-            }
+                foreach ($productID as $key => $value):
+                    $stock = StockEntry::where('productID', $value)->first();
 
-            foreach ($productID as $key => $value):
-                $stock = StockEntry::where('productID', $value)->first();
-                $product = Product::where('id', $value)->first();
+                    if (!$stock) {
+                        return response()->json("Product dont have cost saved", 400);
+                    }
+                    $product = Product::where('id', $value)->first();
 
-                if ($product->prod_unmed != "bt"):
-                    $qty = $quantity[$key];
-                    $fiche = new Technicalfiche();
-                    $fiche->itemID = $itemID;
-                    $fiche->productID = $value;
-                    $fiche->quantity = $qty;
-                    $fiche->cost = ($qty * $stock->unitCost) / $product->prod_contain;
-                    $fiche->save();
-                else:
-                    $qty = $quantity[$key];
-                    $fiche = new Technicalfiche();
-                    $fiche->itemID = $itemID;
-                    $fiche->productID = $value;
-                    $fiche->quantity = $qty;
-                    $fiche->cost = $stock->unitCost;
-                    $fiche->save();
-                endif;
-            endforeach;
+                        if ($product->prod_unmed != "bt"):
+                            $qty = $quantity[$key];
+                            $fiche = new Technicalfiche();
+                            $fiche->itemID = $itemID;
+                            $fiche->productID = $value;
+                            $fiche->quantity = $qty;
+                            $fiche->cost = ($qty * $stock->unitCost) / $product->prod_contain;
+                            $fiche->save();
+                        else:
+                            $qty = $quantity[$key];
+                            $fiche = new Technicalfiche();
+                            $fiche->itemID = $itemID;
+                            $fiche->productID = $value;
+                            $fiche->quantity = $qty;
+                            $fiche->cost = $stock->unitCost;
+                            $fiche->save();
+                        endif;
+                endforeach;
+            DB::commit();
+                return response()
+                    ->json("Technical fiche created successfully", 200);
 
-            return response()
-                ->json("Technical fiche created successfully", 200);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json("Action can't be completed", 422);
         }
     }
@@ -224,7 +215,11 @@ class StockController extends Controller
                 st.productID,
                 p.prod_name,
                 sp.sup_name,
-                sa.saldoFinal,
+                CASE
+                    WHEN p.prod_unmed = 'bt' THEN sa.saldoFinal
+                ELSE
+                    ROUND(sa.saldoFinal / p.prod_contain, 2)
+                END saldoFinal,
                 p.prod_unmed
             FROM stock_entries st
                 INNER JOIN saldos sa
@@ -238,7 +233,8 @@ class StockController extends Controller
                 p.prod_name,
                 sp.sup_name,
                 p.prod_unmed,
-                sa.saldoFinal
+                p.prod_contain,
+                saldoFinal
             HAVING MAX(st.emissao)
             ORDER BY p.prod_name
         ";

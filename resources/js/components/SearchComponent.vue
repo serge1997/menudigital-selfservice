@@ -26,7 +26,7 @@
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             <div class="mt-2 d-flex justify-content-center gap-1">
                                 <div>
-                                    <CartSidebarComponent @add-to-cart="addToCart(item.id)"/>
+                                    <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
                                 </div>
                                 <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
                             </div>

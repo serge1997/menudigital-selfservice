@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Menuitems extends Model
 {
     use HasFactory;
-
     protected $table ='menuitems';
 
     protected $fillable = [

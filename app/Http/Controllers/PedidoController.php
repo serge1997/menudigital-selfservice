@@ -17,63 +17,22 @@ use App\Models\Saldo;
 use App\Models\PaiementType;
 use App\Http\Services\UserInstance;
 use App\Models\Role;
+use App\Events\IsRuputureEvent;
+use App\Http\Services\Stock\StockServiceRepository;
 
 
 class PedidoController extends Controller
 {
     public $hoje ;
     public $orderStatus;
+    public array $Order_item_ids = [];
+    public array $Order_item_quantitys = [];
 
     public function __construct()
     {
         $date = new DateTime();
         $this->hoje = $date->format('Y-m-d');
         $this->orderStatus = new PaiementType();
-    }
-
-    public function  confirmOrder(Request $request): JsonResponse
-    {
-        $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
-            ->get();
-        $auth = $request->session()->get('auth-vue');
-        foreach (UserInstance::get_user_roles($auth) as $confirm):
-            if (
-                $confirm->role_id === Role::MANAGER ||
-                $confirm->role_id === Role::CAN_TAKE_ORDER ||
-                $confirm->role_id === Role::CAN_USE_CASHIER ||
-                $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
-                $confirm->role_id === Role::CAN_CANCEL_ORDER
-            ):
-
-                $order = new Pedido();
-                $order->ped_tableNumber = $request->ped_tableNumber;
-                $order->ped_customerName = $request->ped_customerName;
-                $order->user_id = $request->user_id;
-                $order->ped_emissao = $this->hoje;
-                $order->status_id = 6;
-                $order->save();
-
-                foreach($orderItem as $itemPedido) {
-                    $itens = new ItensPedido();
-                    $itens->item_emissao = $this->hoje;
-                    $itens->item_pedido = $order->id;
-                    $itens->item_quantidade = $itemPedido->quantity;
-                    $itens->item_id = $itemPedido->item_id;
-                    $itens->item_price = $itemPedido->unit_price;
-                    $itens->item_total = $itemPedido->total;
-                    $itens->item_comments = $itemPedido->comments;
-                    $itens->item_option = $itemPedido->options;
-                    $itens->save();
-                    event(new StockReduced($itens));
-                }
-
-                DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
-                    ->delete();
-                return response()->json("Pedido confirmado", 200);
-            endif;
-        endforeach;
-
-        return response()->json("You don't have permission", 422);
     }
 
     public function getOrderList($table): JsonResponse
@@ -134,6 +93,54 @@ class PedidoController extends Controller
             'order' => $order,
             'status' => $status
         ]);
+    }
+
+    public function  confirmOrder(Request $request, StockServiceRepository $stockservice): JsonResponse
+    {
+        $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
+            ->get();
+        $user_auth = $request->session()->get('auth-vue');
+        $auth = $request->session()->get('auth-vue');
+        foreach (UserInstance::get_user_roles($auth) as $confirm):
+            if (
+                $confirm->role_id === Role::MANAGER             ||
+                $confirm->role_id === Role::CAN_TAKE_ORDER      ||
+                $confirm->role_id === Role::CAN_USE_CASHIER     ||
+                $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
+                $confirm->role_id === Role::CAN_CANCEL_ORDER
+            ):
+
+                $order = new Pedido();
+                $order->ped_tableNumber = $request->ped_tableNumber;
+                $order->ped_customerName = $request->ped_customerName;
+                $order->user_id = $user_auth;
+                $order->ped_emissao = $this->hoje;
+                $order->status_id = 6;
+                $order->save();
+
+                foreach($orderItem as $itemPedido) {
+                    $itens = new ItensPedido();
+                    $itens->item_emissao = $this->hoje;
+                    $itens->item_pedido = $order->id;
+                    $itens->item_quantidade = $itemPedido->quantity;
+                    $itens->item_id = $itemPedido->item_id;
+                    $itens->item_price = $itemPedido->unit_price;
+                    $itens->item_total = $itemPedido->total;
+                    $itens->item_comments = $itemPedido->comments;
+                    $itens->item_option = $itemPedido->options;
+                    $itens->save();
+                    $this->Order_item_ids[] = $itemPedido->item_id;
+                    $this->Order_item_quantitys[] = $itemPedido->quantity;
+                }
+                $stockservice->StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
+                DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
+                    ->delete();
+                $stockservice->ControleItemLowStockRupured($this->Order_item_ids);
+                return response()->json("Pedido confirmado", 200);
+            endif;
+        endforeach;
+
+        return response()->json("You don't have permission", 422);
     }
 
     public function getOrderItem($id): JsonResponse

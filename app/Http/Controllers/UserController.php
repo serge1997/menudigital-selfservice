@@ -64,11 +64,11 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => ['required'],
+            'username' => ['required'],
             'password' => ['required']
         ]);
         try {
-            $user = User::where([['email', $request->email], ['isactive', true]])->first();
+            $user = User::where([['username', $request->username], ['isactive', true]])->first();
 
             if (!$user || !Hash::check($request->password, $user->password)) {
                 throw ValidationException::withMessages([

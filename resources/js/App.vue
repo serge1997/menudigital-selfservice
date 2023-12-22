@@ -11,7 +11,7 @@ export default {
     name: 'App',
 
     mounted(){
-
+        //localStorage.removeItem('token')
     }
 }
 

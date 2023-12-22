@@ -50,12 +50,14 @@
                             <img class="w-100 h-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
+                            <small class="m-auto" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
+                            <small class="m-auto" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
+                            <h6 class="col-lg-4 text-center m-auto py-2 px-2 rounded-4"><small>R$</small> {{ item.item_price }} </h6>
                             <div class="mt-2 d-flex justify-content-center gap-1">
                                 <div>
-                                    <CartSidebarComponent @add-to-cart="addToCart(item.id)"/>
+                                    <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
                                 </div>
                                 <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
                             </div>
@@ -75,7 +77,7 @@
                             <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
                             <div class="mt-2 d-flex justify-content-center gap-1">
                                 <div>
-                                    <CartSidebarComponent @add-to-cart="addToCart(item.id)"/>
+                                    <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
                                 </div>
                                 <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
                             </div>
@@ -122,6 +124,7 @@ import SearchComponent from '../SearchComponent.vue';
 import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
 import Button from "primevue/button";
 import DataView from "primevue/dataview";
+import Tag from "primevue/tag";
 
 export default {
     name: 'Menu',
@@ -130,7 +133,8 @@ export default {
         SearchComponent,
         CartSidebarComponent,
         Button,
-        DataView
+        DataView,
+        Tag
     },
 
     data() {
@@ -190,7 +194,7 @@ export default {
             })
         },
 
-        addToCart(id) {
+        addToCart(id, rupture) {
             axios.post('/api/add/cart/' + id, this.table).then((response) => {
                 console.log(response.data)
             }).catch((errors) => {

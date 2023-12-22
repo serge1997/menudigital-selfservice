@@ -10,9 +10,9 @@
                     <h5 class="text-center text-dark w-100 fw-medium p-3">Entra com suas credencias</h5>
                     <form @submit.prevent="login" class="w-100">
                         <div class="d-flex flex-column gap-2">
-                            <label for="email">Username</label>
-                            <InputText :class="invalid" type="text" id="email" v-model="credentials.email" aria-describedby="username-help" />
-                            <small class="text-danger" v-if="msgerrors" v-for="erremail in msgerrors.email" id="email-err"  v-text="erremail"></small>
+                            <label for="username">Username</label>
+                            <InputText :class="invalid" type="text" id="username" v-model="credentials.username" aria-describedby="username-help" />
+                            <small class="text-danger" v-if="msgerrors" v-for="err_username in msgerrors.username" id="err_username"  v-text="err_username"></small>
                         </div>
                         <div class="d-flex flex-column gap-2">
                             <label for="password">Password</label>
@@ -48,7 +48,7 @@ export default {
             groups: null,
             credentials: {
                 password: null,
-                email: null,
+                username: null,
                 device_name: 'browser'
             },
             msgerrors: null,

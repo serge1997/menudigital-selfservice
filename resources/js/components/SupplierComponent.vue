@@ -4,7 +4,7 @@
         <Dialog v-model:visible="visibleSupplierModal" maximizable modal header="Create a new supplier" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100 d-flex gap-2 mt-3">
                 <div class="w-50 d-flex flex-column gap-2">
-                    <label for="sup-name">Product name</label>
+                    <label for="sup-name">Supplier name</label>
                     <InputText :class="invalid" type="text" id="sup-name" v-model="supplier.sup_name" aria-describedby="product-name" placeholder="product name"/>
                     <small class="text-danger" v-if="errMsg" v-for="sup_name in errMsg.sup_name" id="product-name-err"  v-text="sup_name"></small>
                 </div>

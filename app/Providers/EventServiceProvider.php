@@ -10,6 +10,8 @@ use App\Events\CancelOrder;
 use App\Events\StockReduced;
 use App\Listeners\CancelOrderListener;
 use App\Listeners\ReduceStockItem;
+use App\Events\IsRuputureEvent;
+use App\Listeners\ActiveRuputureListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -28,7 +30,12 @@ class EventServiceProvider extends ServiceProvider
         ],
         StockReduced::class => [
             ReduceStockItem::class
+        ],
+
+        IsRuputureEvent::class => [
+            ActiveRuputureListener::class
         ]
+
     ];
 
     /**

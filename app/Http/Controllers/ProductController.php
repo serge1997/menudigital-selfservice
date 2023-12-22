@@ -26,13 +26,15 @@ class ProductController extends Controller
             'prod_name' => ['required'],
             'prod_supplierID' => ['required'],
             'prod_unmed' => ['required'],
-            'prod_contain' => ['required']
+            'prod_contain' => ['required'],
+            'min_quantity' => ['required']
         ],
         [
             'prod_name.required' => 'name is required',
             'prod_supplierID.required' => 'supplier is required',
             'prod_unmed.required' => 'unit. measure is required',
-            'prod_contain.rqeuired' => 'unit. contain is required'
+            'prod_contain.rqeuired' => 'unit. contain is required',
+            'min_quantity.required' => 'minimum quantity required'
 
         ]);
 

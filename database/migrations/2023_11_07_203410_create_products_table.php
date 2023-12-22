@@ -21,6 +21,7 @@ return new class extends Migration
                 ->on("suppliers")->onDelete("cascade");
             $table->string("prod_contain")->nullable();
             $table->boolean("is_delete")->default(false);
+            $table->integer('min_quantity');
             $table->timestamps();
         });
     }

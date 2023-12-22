@@ -28,6 +28,11 @@
                     <small class="text-danger" v-if="errMsg" v-for="contain in errMsg.prod_contain" id="product-contain-err"  v-text="contain"></small>
                 </div>
             </div>
+            <div class="w-100 d-flex flex-column gap-2 mt-3">
+                <label for="item-name">Minimum quantity</label>
+                <InputText :class="invalid" type="number" id="product-min" v-model="product.min_quantity" aria-describedby="product-min"  placeholder="minimum stock quantity"/>
+                <small class="text-danger" v-if="errMsg" v-for="min in errMsg.min_quantity" id="product-min-err"  v-text="min"></small>
+            </div>
             <div class="d-flex flex-column w-100 mt-4">
                 <Dropdown v-model="product.prod_supplierID" option-value="id" :options="suppliers" optionLabel="sup_name" placeholder="Select a supplier" class="w-100 md:w-14rem" />
                 <small class="text-danger" v-if="errMsg" v-for="supID_name in errMsg.prod_supplierID" id="item-name-err"  v-text="supID_name"></small>
@@ -59,7 +64,8 @@ export default{
                 prod_name: null,
                 prod_unmed: null,
                 prod_contain: null,
-                prod_supplierID: null
+                prod_supplierID: null,
+                min_quantity: null
             },
             suppliers: null,
             errMsg: null,
@@ -69,7 +75,7 @@ export default{
                 { un: 'bt' },
                 { un: 'kg' },
                 { un: 'g' },
-                { un: 'bt' }
+                { un: 'folha' }
             ],
             visibleProductModal: false
         }
@@ -87,8 +93,9 @@ export default{
                 this.invalid = null
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors
-                this.$toast.error(errors.response.data)
                 this.invalid = "p-invalid"
+                this.visibleProductModal = false
+                errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'error'}): null
             })
         },
 

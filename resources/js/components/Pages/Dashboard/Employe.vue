@@ -22,15 +22,22 @@
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
                                     <label for="user-tel">User contact</label>
-                                    <InputText :class="invalid" type="text" id="user-name" v-model="user.tel" aria-describedby="user name" placeholder="collaborator contact"/>
+                                    <InputText :class="invalid" type="text" id="user-contac" v-model="user.tel" aria-describedby="user name" placeholder="collaborator contact"/>
                                     <small class="text-danger" v-if="errMsg" v-for="errtel in errMsg.tel" id="user-tel-err"  v-text="errtel"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="user-password">Collaborator e-mail or username</label>
+                                    <label for="user-email">Collaborator e-mail</label>
                                     <InputText :class="invalid" type="text" id="user-email" v-model="user.email" aria-describedby="user email" placeholder="collaborator email"/>
                                     <small class="text-danger" v-if="errMsg" v-for="erremail in errMsg.email" id="user-email-err"  v-text="erremail"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="d-flex flex-column gap-2">
+                                    <label for="user-name">Username</label>
+                                    <InputText :class="invalid" type="text" id="user-name" v-model="user.username" aria-describedby="user email" placeholder="collaborator username"/>
+                                    <small class="text-danger" v-if="errMsg" v-for="errusername in errMsg.username" id="username-err"  v-text="errusername"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
@@ -75,6 +82,7 @@ export default {
             user: {
                 name: null,
                 tel: null,
+                username: null,
                 password: null,
                 group_id: null,
                 email: null

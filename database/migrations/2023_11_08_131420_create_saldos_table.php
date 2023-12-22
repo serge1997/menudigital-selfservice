@@ -15,8 +15,8 @@ return new class extends Migration
             $table->integer("productID")->unsigned();
             $table->foreign("productID")->references("id")
                 ->on("products")->onDelete("cascade");
-            $table->integer("saldoInicial");
-            $table->integer("saldoFinal");
+            $table->float("saldoInicial");
+            $table->float("saldoFinal");
             $table->date("emissao");
             $table->timestamps();
         });
