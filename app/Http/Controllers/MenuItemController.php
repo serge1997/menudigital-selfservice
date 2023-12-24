@@ -32,6 +32,7 @@ class MenuItemController extends Controller
                 ->select('id_type', 'desc_type')
                      ->get()
         ]);
+
     }
 
     public function StoreMenuItem(StoreProductRequest $request): JsonResponse

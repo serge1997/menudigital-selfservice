@@ -5,28 +5,26 @@
         <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="w-50">
             <Accordion class="p-accordion" :activeIndex="0">
                 <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
-                    <div class="d-flex justify-content-between">
-                        <div class="col-md-3 item-img d-flex flex-column align-items-start">
-                            <img alt="item menu image" class="img-thumbnail w-50" src="img/banner.jpg">
+                    <div class="col-md-12 d-flex justify-content-evenly">
+                        <div class="col-md-2 item-img d-flex justify-content-start">
+                            <img alt="item menu image" class="img-thumbnail w-100" src="img/banner.jpg">
                         </div>
-                        <div class="d-flex w-50">
-                            <div>
-                                <Button @click="AddQuantity(item.cartID)" icon="pi pi-plus" />
+                        <div class="col-md-6 d-flex justify-content-center align-items-center">
+                            <div class="col-md-2">
+                                <Button class="w-100" @click="AddQuantity(item.cartID)" icon="pi pi-plus" />
                             </div>
-                            <div>
-                                <InputText class="text-center" type="text" :value="item.quantity"/>
+                            <div class="col-md-4">
+                                <InputText class="text-center w-100" type="text" :value="item.quantity"/>
                             </div>
-                            <div>
-                                <Button @click="ReduceQuantity(item.cartID)" icon="pi pi-minus" />
+                            <div class="col-md-2">
+                                <Button class="w-100" @click="ReduceQuantity(item.cartID)" icon="pi pi-minus" />
                             </div>
-                        </div>
-                        <div class="p-2">
-                            <Chip class="">
+                            <div class="w-100 d-flex justify-content-center bg-white">
                                 <span class="fw-medium">{{ item.total}} <small>R$</small></span>
-                            </Chip>
+                            </div>
                         </div>
-                        <div>
-                            <Button @click="DeleteFromCart(item.cartID)" icon="pi pi-times"/>
+                        <div class="d-flex flex-column justify-content-center">
+                            <Button @click="DeleteFromCart(item.cartID)" severity="danger" icon="pi pi-times"/>
                         </div>
                     </div>
                     <div>

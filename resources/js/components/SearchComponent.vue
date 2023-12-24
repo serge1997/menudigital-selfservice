@@ -23,12 +23,12 @@
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
                                 <div>
                                     <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
                                 </div>
-                                <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
+                                <Button icon="pi pi-eye" @click="visibleShowItemMenuSearchModal = true; ShowItem(item.id)" />
                             </div>
                         </div>
                     </div>
@@ -36,6 +36,25 @@
             </div>
             <p v-if="notFound" class="text-center alert alert-danger w-25 m-auto">{{ notFound }}</p>
         </div>
+        <Dialog v-model:visible="visibleShowItemMenuSearchModal" maximizable modal v-for="item in show" :header="item.item_name" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="w-100 mt-3">
+                <div v-for="item in show" class="d-flex justify-content-between">
+                    <div class="w-50">
+                        <img class="w-100" src="/img/banner.jpg" alt="">
+                        <div class="mt-2 d-flex justify-content-center">
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price mt-2">R$ {{ item.item_price }} </small>
+                        </div>
+                    </div>
+                    <div class="px-2"></div>
+                    <div class="w-100 d-flex flex-column align-items-center">
+                        <ul class="d-flex list-group w-100">
+                            <li class="list-group-item bg-dark text-white">Ingredients</li>
+                            <li class="list-group-item" v-for="ingredients in fiche">{{ ingredients.prod_name }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 
@@ -44,6 +63,7 @@ import axios from 'axios';
 import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
+import Dialog from "primevue/dialog";
 
 export default {
     name: 'SearchComponent',
@@ -51,7 +71,8 @@ export default {
     components:{
         CartSidebarComponent,
         Button,
-        InputText
+        InputText,
+        Dialog
     },
 
     props: {
@@ -72,7 +93,10 @@ export default {
             table: {
                 tableNumber: localStorage.getItem('table'),
             },
-            isSpinner: true
+            isSpinner: true,
+            show: null,
+            fiche: null,
+            visibleShowItemMenuSearchModal: false
         }
     },
 

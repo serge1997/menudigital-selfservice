@@ -61,7 +61,7 @@ export default {
 }
 
 .price {
-    background-color: #e63958 ;
+    background-color: #bfdbfe ;
     font-size: 0.8em;
     width: 95px;
 }

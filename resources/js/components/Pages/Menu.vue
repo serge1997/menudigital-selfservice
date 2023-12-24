@@ -25,7 +25,7 @@
             </div>
        </div>
        <div class="row">
-        <SearchComponent -search-placeholder="Search item here..." @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent>
+        <SearchComponent :show="show" -search-placeholder="Search item here..." @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent>
        </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
@@ -54,12 +54,12 @@
                             <small class="m-auto" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <h6 class="col-lg-4 text-center m-auto py-2 px-2 rounded-4"><small>R$</small> {{ item.item_price }} </h6>
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
                                 <div>
                                     <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
                                 </div>
-                                <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
+                                <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
                             </div>
                         </div>
                     </div>
@@ -74,47 +74,37 @@
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
                                 <div>
                                     <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
                                 </div>
-                                <Button @click.prevent="ShowItem(item.id)" text data-bs-toggle="modal" class="btn-eye" data-bs-target="#staticBackdrop" icon="pi pi-eye"/>
+                                <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content rounded-0">
-                    <div class="modal-header">
-                        <h1 v-for="item in show" class="modal-title fs-5" id="staticBackdropLabel">{{ item.item_name }}</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div v-for="item in show" class="d-flex justify-content-between">
-                            <div class="w-50">
-                                <img class="w-100" src="/img/banner.jpg" alt="">
-                                <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 mt-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
-                            </div>
-                            <div class="px-2"></div>
-                            <div class="w-100 d-flex flex-column align-items-center">
-                                <ul class="d-flex list-group w-100">
-                                    <li class="list-group-item bg-dark text-white">Ingredients</li>
-                                    <li class="list-group-item" v-for="ingredients in fiche">{{ ingredients.prod_name }}</li>
-                                </ul>
-                            </div>
+        <Dialog v-model:visible="visibleShowItemMenuModal" maximizable modal v-for="item in show" :header="item.item_name" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="w-100 mt-3">
+                <div v-for="item in show" class="d-flex justify-content-between">
+                    <div class="w-50">
+                        <img class="w-100" src="/img/banner.jpg" alt="">
+                        <div class="mt-2 d-flex justify-content-center">
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price mt-2">R$ {{ item.item_price }} </small>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <!--<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Understood</button>-->
-                    </div>
+                    <div class="px-2"></div>
+                    <div class="w-100 d-flex flex-column align-items-center">
+                        <ul class="d-flex list-group w-100">
+                            <li class="list-group-item bg-dark text-white">Ingredients</li>
+                            <li class="list-group-item" v-for="ingredients in fiche">{{ ingredients.prod_name }}</li>
+                        </ul>
                     </div>
                 </div>
             </div>
+        </Dialog>
     </div>
 </template>
 
@@ -125,6 +115,7 @@ import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
 import Button from "primevue/button";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
+import Dialog from "primevue/dialog";
 
 export default {
     name: 'Menu',
@@ -134,7 +125,8 @@ export default {
         CartSidebarComponent,
         Button,
         DataView,
-        Tag
+        Tag,
+        Dialog
     },
 
     data() {
@@ -150,7 +142,8 @@ export default {
             load: true,
             isRupture: false,
             fiche: null,
-            visibleRight: false
+            visibleRight: false,
+            visibleShowItemMenuModal: false
         }
     },
 

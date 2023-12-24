@@ -8,7 +8,7 @@ import App from './App.vue';
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
 import PrimeVue from "primevue/config";
-import 'primevue/resources/themes/lara-light-blue/theme.css';
+import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primeicons/primeicons.css'
 
 console.log("Hello world from app.js")

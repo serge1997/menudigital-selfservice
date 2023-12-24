@@ -96,7 +96,6 @@ class StockController extends Controller
             $entry->totalCost = $request->unitCost * $request->quantity;
             $entry->emissao = $hoje;
             $entry->save();
-            $service->CheckRuptureLowStockState($request->productID);
             if ($product):
                 if ($produtData->prod_unmed != "bt"):
                     DB::table('saldos')
@@ -106,6 +105,7 @@ class StockController extends Controller
                                     'saldoInicial' => $product->saldoInicial + ($request->quantity * $produtData->prod_contain),
                                     'saldoFinal' => $product->saldoFinal + ($request->quantity * $produtData->prod_contain)
                                 ]);
+                    $service->CheckRuptureLowStockState($request->productID);
                     return response()
                         ->json('Action registred successfully', 200);
                 else:
@@ -116,6 +116,7 @@ class StockController extends Controller
                                 'saldoInicial' => $product->saldoInicial + $request->quantity,
                                 'saldoFinal' => $product->saldoFinal + $request->quantity
                             ]);
+                    $service->CheckRuptureLowStockState($request->productID);
                     return response()
                         ->json('Action registred successfully', 200);
                 endif;
@@ -135,6 +136,7 @@ class StockController extends Controller
                     $saldo->saldoFinal = $request->quantity;
                     $saldo->save();
                 endif;
+                $service->CheckRuptureLowStockState($request->productID);
             endif;
             return response()
                 ->json('Action registred successfully', 200);
