@@ -7,7 +7,8 @@ use App\Models\Menuitems;
 use App\Models\Technicalfiche;
 use App\Models\Saldo;
 use App\Models\Product;
-use Illuminate\Support\Arr;
+use App\Models\Cart;
+use Exception;
 class StockServiceRepository implements StockServiceInterFace
 {
     public $check_is_rupture_saldo;
@@ -165,5 +166,28 @@ class StockServiceRepository implements StockServiceInterFace
 
         }
 
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public static function SetItemSaldoZeroException(int $tableNumber)
+    {
+        $cart = Cart::where('tableNumber', $tableNumber)->get();
+        foreach ($cart as $item)
+        {
+            $item_sheets = Technicalfiche::where("itemID",$item->item_id)->get();
+            foreach ($item_sheets as $sheet)
+            {
+                $productID = $sheet->productID ?? 19;
+                $saldo = Saldo::where('productID', $productID)->first();
+                $inventoty = $saldo->saldoFinal ?? 0;
+
+                if (!$inventoty|| $inventoty <= 0){
+                    Cart::where('tableNumber', $tableNumber)->delete();
+                    throw new Exception("Ação não pode ser concluida. O pedido contem item com estoque zerado. {$productID}");
+                }
+            }
+        }
     }
 }

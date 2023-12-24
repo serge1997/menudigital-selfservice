@@ -13,7 +13,7 @@
                             <div class="col-md-2">
                                 <Button class="w-100" @click="AddQuantity(item.cartID)" icon="pi pi-plus" />
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-4 d-flex flex-column">
                                 <InputText class="text-center w-100" type="text" :value="item.quantity"/>
                             </div>
                             <div class="col-md-2">
@@ -45,6 +45,7 @@
                 <div class="w-100">
                     <label for="customer-name">Customer name</label>
                     <InputText class="w-100" id="customer-name" v-model="cart.ped_customerName" type="text" placeholder="customer name" />
+                    <small class="text-danger" v-if="errMsg" v-text="errMsg[0]"></small>
                 </div>
                 <div class="w-100 p-3">
                     <DataTable :value="cartItems">
@@ -100,7 +101,8 @@ export default {
                 user_id: null,
                 ped_customerName: null
             },
-            options: null
+            options: null,
+            errMsg: null
         }
     },
 
@@ -153,7 +155,15 @@ export default {
                 this.$toast.success(response.data)
             }).catch((errors) => {
                 console.log(errors)
-                this.$toast.error(errors.response.data)
+                //this.$toast.error(errors.response.data)
+                if (errors.response.status === 500){
+                    this.visibleRight = false
+                    this.$swal.fire({
+                        text: errors.response.data.message,
+                        icon: "error"
+                    })
+                }
+                this.errMsg = errors.response.data.errors.ped_customerName
             })
         }
     },

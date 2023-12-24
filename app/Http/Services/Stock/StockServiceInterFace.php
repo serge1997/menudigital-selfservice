@@ -8,4 +8,5 @@
 
         public function CheckRuptureLowStockState(string $productID);
         public function StockOutProduct(array $item_ids, array $product_quantitys);
+        public static function SetItemSaldoZeroException(int $tableNumber);
     }
