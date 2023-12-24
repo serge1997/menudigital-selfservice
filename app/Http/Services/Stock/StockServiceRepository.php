@@ -171,7 +171,7 @@ class StockServiceRepository implements StockServiceInterFace
     /**
      * @throws \Exception
      */
-    public static function SetItemSaldoZeroException(int $tableNumber)
+    public static function SetItemSaldoZeroException(int $tableNumber): void
     {
         $cart = Cart::where('tableNumber', $tableNumber)->get();
         foreach ($cart as $item)
