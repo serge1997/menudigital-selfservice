@@ -118,38 +118,40 @@ class PedidoController extends Controller
                     $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
                     $confirm->role_id === Role::CAN_CANCEL_ORDER
                 ):
-
+                    DB::beginTransaction();
                     $order = new Pedido();
-                    $order->ped_tableNumber = $request->ped_tableNumber;
+                    $order->ped_tableNumber  = $request->ped_tableNumber;
                     $order->ped_customerName = $request->ped_customerName;
-                    $order->user_id = $auth;
-                    $order->ped_emissao = $this->hoje;
-                    $order->status_id = 6;
+                    $order->user_id          = $auth;
+                    $order->ped_emissao      = $this->hoje;
+                    $order->status_id        = 6;
                     $order->save();
 
                     foreach($orderItem as $itemPedido) {
                         $itens = new ItensPedido();
-                        $itens->item_emissao = $this->hoje;
-                        $itens->item_pedido = $order->id;
+                        $itens->item_emissao    = $this->hoje;
+                        $itens->item_pedido     = $order->id;
                         $itens->item_quantidade = $itemPedido->quantity;
-                        $itens->item_id = $itemPedido->item_id;
-                        $itens->item_price = $itemPedido->unit_price;
-                        $itens->item_total = $itemPedido->total;
-                        $itens->item_comments = $itemPedido->comments;
-                        $itens->item_option = $itemPedido->options;
+                        $itens->item_id         = $itemPedido->item_id;
+                        $itens->item_price      = $itemPedido->unit_price;
+                        $itens->item_total      = $itemPedido->total;
+                        $itens->item_comments   = $itemPedido->comments;
+                        $itens->item_option     = $itemPedido->options;
                         $itens->save();
-                        $this->Order_item_ids[] = $itemPedido->item_id;
+                        $this->Order_item_ids[]       = $itemPedido->item_id;
                         $this->Order_item_quantitys[] = $itemPedido->quantity;
                     }
                     $stockservice->StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
+                    $stockservice->ControleItemLowStockRupured($this->Order_item_ids);
+                    DB::commit();
                     DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
                         ->delete();
-                    $stockservice->ControleItemLowStockRupured($this->Order_item_ids);
                     return response()->json("Pedido confirmado", 200);
                 endif;
             endforeach;
             return response()->json("You don't have permission", 422);
         }catch (Exception $e){
+            DB::rollBack();
             return \response()->json($e->getMessage());
         }
     }
@@ -273,73 +275,86 @@ class PedidoController extends Controller
 
     public function postNewOrderItem(Request $request): JsonResponse
     {
-        $orderID = $request->orderID;
-        $itemID = $request->itemID;
-        $quantity = $request->quantity;
-        $auth = $request->session()->get('auth-vue');
+        try {
+            StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
+            $orderID = $request->orderID;
+            $itemID = $request->itemID;
+            $quantity = $request->quantity;
+            $auth = $request->session()->get('auth-vue');
+            $getFiche = Technicalfiche::where('itemID', $itemID)->get();
 
-        $menuitem = Menuitems::where('id', $itemID)->first();
-        $item = ItensPedido::where([
+            foreach ($getFiche as $product) {
+                $old_saldo = Saldo::where('productID', $product->productID)->first();
+                if ($old_saldo->saldoFinal < $quantity || !$old_saldo){
+                    return response()->json("Quantidade insuficiante", 500);
+                }
+            }
+
+
+
+            $menuitem = Menuitems::where('id', $itemID)->first();
+            $item = ItensPedido::where([
                 ['item_pedido', $orderID], ['item_id', $itemID]
             ])->first();
-
-        foreach (UserInstance::get_user_roles($auth) as $confirm):
-            if (
-                $confirm->role_id === Role::MANAGER ||
-                $confirm->role_id === Role::CAN_TAKE_ORDER ||
-                $confirm->role_id === Role::CAN_USE_CASHIER ||
-                $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
-                $confirm->role_id === Role::CAN_CANCEL_ORDER
-            ):
-
-                if ($item):
-                    $totalQuantity = $item->item_quantidade + $quantity;
-                    DB::table('itens_pedido')
-                        ->where([['item_pedido', $orderID], ['item_id', $itemID]])
+            foreach (UserInstance::get_user_roles($auth) as $confirm):
+                if (
+                    $confirm->role_id === Role::MANAGER ||
+                    $confirm->role_id === Role::CAN_TAKE_ORDER ||
+                    $confirm->role_id === Role::CAN_USE_CASHIER ||
+                    $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
+                    $confirm->role_id === Role::CAN_CANCEL_ORDER
+                ):
+                    DB::beginTransaction();
+                    if ($item):
+                        $totalQuantity = $item->item_quantidade + $quantity;
+                        DB::table('itens_pedido')
+                            ->where([['item_pedido', $orderID], ['item_id', $itemID]])
                             ->update([
                                 'item_quantidade' => $item->item_quantidade += $quantity,
                                 'item_total' => $menuitem->item_price * $totalQuantity
                             ]);
+                        $fiche = Technicalfiche::where('itemID', $itemID)->get();
 
-                    $fiche = Technicalfiche::where('itemID', $menuitem->id)->get();
-
-                    foreach ($fiche as $product){
-                        $old_saldo = Saldo::where('productID', $product->productID)->first();
-
-                        if ($old_saldo->emissao == $this->hoje):
-                            DB::table('saldos')
-                                ->where('productID', $product->productID)
+                        foreach ($fiche as $product) {
+                            $old_saldo = Saldo::where('productID', $product->productID)->first();
+                            if ($old_saldo->emissao == $this->hoje):
+                                DB::table('saldos')
+                                    ->where('productID', $product->productID)
                                     ->update([
-                                        'saldoFinal' => $old_saldo->saldoFinal - $product->quantity,
+                                        'saldoFinal' => $old_saldo->saldoFinal - ($product->quantity * $request->quantity),
                                     ]);
-                        else:
-                             DB::table('saldos')
-                                 ->where('productID', $item->productID)
-                                     ->update([
-                                         'emissao' => $this->hoje,
-                                         'saldoInicial' => $old_saldo->saldoFinal,
-                                         'saldoFinal' => $old_saldo->saldoFinal - $product->quantity
-                                     ]);
-                        endif;
-                    }
+                            else:
+                                DB::table('saldos')
+                                    ->where('productID', $item->productID)
+                                    ->update([
+                                        'emissao' => $this->hoje,
+                                        'saldoInicial' => $old_saldo->saldoFinal,
+                                        'saldoFinal' => $old_saldo->saldoFinal - ($product->quantity * $request->quantity)
+                                    ]);
+                            endif;
+                        }
+                        return response()
+                            ->json("Item adicionado com sucesso", 200);
+                    endif;
+                    $itens = new ItensPedido();
+                    $itens->item_pedido     = $orderID;
+                    $itens->item_id         = $itemID;
+                    $itens->item_quantidade = $quantity;
+                    $itens->item_price      = $menuitem->item_price;
+                    $itens->item_total      = $menuitem->item_price * $quantity;
+                    $itens->item_emissao    = $this->hoje;
+                    $itens->save();
+                    event(new StockReduced($itens));
+                    DB::commit();
                     return response()
-                        ->json("Item adicionado com sucesso", 200);
+                        ->json("Item adicionado com sucesso ", 200);
                 endif;
-                $itens = new ItensPedido();
-                $itens->item_pedido = $orderID;
-                $itens->item_id = $itemID;
-                $itens->item_quantidade = $quantity;
-                $itens->item_price = $menuitem->item_price;
-                $itens->item_total = $menuitem->item_price * $quantity;
-                $itens->item_emissao = $this->hoje;
-                $itens->save();
-                event(new StockReduced($itens));
-
-                return response()
-                    ->json("Item adicionado com sucesso ", 200);
-            endif;
-        endforeach;
-        return response()->json("You don't have permission", 422);
+            endforeach;
+            return response()->json("You don't have permission", 422);
+        }catch (Exception $e){
+            DB::rollBack();
+            return \response()->json($e->getMessage());
+        }
     }
 
     public function getBillHistory(): JsonResponse

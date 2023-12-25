@@ -212,12 +212,19 @@ export default {
             }).catch((errors) => {
                 console.log(errors);
             })
+        },
+
+        stockCureentlyCheck(){
+            axios.put("/api/current/stock-rest").then((response) => {
+                console.log(response);
+            })
         }
 
     },
 
     mounted() {
         this.getMenuType()
+        this.stockCureentlyCheck()
         //this.getMenuItems()
         //this.checkCart()
         //localStorage.removeItem('userRole')

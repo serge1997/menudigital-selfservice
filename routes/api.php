@@ -114,6 +114,7 @@ Route::controller(StockController::class)->group(function() {
     Route::post('update/technical-fiche', 'Update_technical_fiche');
     Route::get('inventory', 'get_inventory');
     Route::put('reset-saldo', 'resetSaldo');
+    Route::put("current/stock-rest", "cureentSaldoCheck");
 });
 
 //produto

@@ -27,7 +27,7 @@
                                 <h6 class="text-white text-center fw-normal">Mesa {{ tab.table }}<br><small>livre</small></h6>
                             </div>
                         </button>
-                       <button data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn" @click.prevent="getOrderItem(busy.id)">
+                       <button @click="visibleStockAddModal = true" data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn" @click.prevent="getOrderItem(busy.id)">
                             <div class="bg-danger border p-0">
                                 <h6 class="text-white text-center fw-normal">Mesa {{ busy.ped_tableNumber }}<br><small>ocupada</small><br><small>{{ busy.name }}</small></h6>
                             </div>
@@ -35,48 +35,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content rounded-0">
-                    <div class="modal-header">
-                        <button class="btn rounded-0 bg-dark text-white capitalize" data-bs-toggle="modal" data-bs-target="#AddMenu">
-                            Adicionar
-                        </button>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <table class="table table-active">
-                            <thead>
-                                <tr>
-                                    <th>Item</th>
-                                    <th>Quantidade</th>
-                                    <th>Valor</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="item in itens">
-                                    <td>{{ item.item_name }}</td>
-                                    <td>{{ item.item_quantidade }}</td>
-                                    <td>{{ item.item_price }}</td>
-                                    <td>{{ item.item_total }}</td>
-                                </tr>
-                            </tbody>
-                            <tfoot>
-                                <tr class="fw-medium fs-5">
-                                    <td>Totais</td>
-                                    <td>{{ billTotalItem }}</td>
-                                    <td class="bg-dark"></td>
-                                    <td class="bg-dark text-white"><span>{{ billTotal.toFixed(2) }} R$</span></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                    <div class="modal-footer">
-                    </div>
-                    </div>
-                </div>
-            </div>
+
             <div class="modal fade" id="AddMenu" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-xl">
                     <div class="modal-content rounded-0">
@@ -92,6 +51,27 @@
                 </div>
             </div>
         </div>
+        <Dialog v-model:visible="visibleStockAddModal" maximizable modal header="Table order" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="w-100 d-flex flex-column">
+                <div class="w-100">
+                    <Button @click="visibleStockAddModal = false; visibleMenuModal = true" data-bs-toggle="modal" data-bs-target="#AddMenu">
+                        Adicionar
+                    </Button>
+                </div>
+                <div class="w-100">
+                    <DataTable :value="itens">
+                        <Column field="item_name" sortable style="width: 25%" exportHeader="Product Code" header="Item"></Column>
+                        <Column field="item_quantity" sortable style="width: 25%" header="Quantity"></Column>
+                        <Column field="item_price" sortable style="width: 25%" header="Cost"></Column>
+                        <Column field="item_total" sortable style="width: 25%" header="Subtotal"></Column>
+                    </DataTable>
+                </div>
+                <div class="w-100 p-2">
+                   <h6 class="fs-5">Total : {{billTotal.toFixed(2)}} R$</h6>
+                    <h6 class="fs-5">Total Itens: {{ billTotalItem }}</h6>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 
@@ -99,11 +79,19 @@
 import _ from 'lodash'
 import MenuComponent from './MenuComponent.vue';
 import authuser from "./auth.js";
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 export default {
     name: 'OperadorPanel',
 
     components: {
-        MenuComponent
+        MenuComponent,
+        Dialog,
+        Button,
+        DataTable,
+        Column
     },
 
     data() {
@@ -119,7 +107,9 @@ export default {
             addnewItem: null,
             billTotal: 0,
             billTotalItem: null,
-            username: null
+            username: null,
+            visibleStockAddModal:false,
+            visibleMenuModal: false
         }
     },
     watch:{

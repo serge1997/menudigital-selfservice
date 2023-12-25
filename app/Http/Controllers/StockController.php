@@ -341,4 +341,9 @@ class StockController extends Controller
 
         return response()->json("Journey reset successffully");
     }
+
+    public function cureentSaldoCheck(StockServiceRepository $stock)
+    {
+        return $stock->checkAllwaysRupture();
+    }
 }

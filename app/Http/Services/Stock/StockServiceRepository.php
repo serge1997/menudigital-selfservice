@@ -20,9 +20,9 @@ class StockServiceRepository implements StockServiceInterFace
         $sheet = Technicalfiche::where('itemID', $id)->get();
         foreach ($sheet as $item)
         {
-            $sheet_values["itemID"] = $item->itemID;
+            $sheet_values["itemID"]      = $item->itemID;
             $sheet_values["productID"][] = $item->productID;
-            $sheet_values["quantity"][] = $item->quantity;
+            $sheet_values["quantity"][]  = $item->quantity;
         }
         return $sheet_values;
     }
@@ -61,7 +61,7 @@ class StockServiceRepository implements StockServiceInterFace
                                     ->where('id', $item_id)
                                     ->update([
                                         'item_rupture' => true,
-                                        'is_lowstock' => false
+                                        'is_lowstock'  => false
                                     ]);
                              break;
                             endif;
@@ -81,7 +81,7 @@ class StockServiceRepository implements StockServiceInterFace
                                     ->where('id', $item_id)
                                     ->update([
                                         'item_rupture' => true,
-                                        'is_lowstock' => false
+                                        'is_lowstock'  => false
                                     ]);
                                 break;
                             endif;
@@ -94,6 +94,9 @@ class StockServiceRepository implements StockServiceInterFace
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function StockOutProduct(array $item_ids, array $product_quantitys)
     {
         $hoje = new \DateTime();
@@ -107,6 +110,9 @@ class StockServiceRepository implements StockServiceInterFace
                     ->select(DB::raw('CAST(saldoFinal AS DECIMAL(6, 2)) AS saldoFinal'), 'emissao')
                     ->where('productID', $item->productID)->first();
                 $date = $old_saldo->emissao ?? $hoje;
+                if ($old_saldo->saldoFinal < $product_quantitys[$key] || !$old_saldo){
+                    throw new Exception("Quantidade em estoque insuficiante ");
+                }
                 if ($date == $hoje):
                     DB::table('saldos')
                         ->where('productID', $item->productID)
@@ -189,5 +195,48 @@ class StockServiceRepository implements StockServiceInterFace
                 }
             }
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function checkSetItemSaldoZeroAddItemToOrder(int $itemID)
+    {
+        $item_sheets = Technicalfiche::where("itemID",$itemID)->get();
+        foreach ($item_sheets as $sheet)
+        {
+            $productID = $sheet->productID ?? 19;
+            $saldo = Saldo::where('productID', $productID)->first();
+            $inventoty = $saldo->saldoFinal ?? 0;
+
+            if (!$inventoty|| $inventoty <= 0){
+                throw new Exception("Ação não pode ser concluida. O item está com estoque zerado. {$productID}");
+            }
+        }
+    }
+
+    public function checkAllwaysRupture()
+    {
+        $menuitem = Menuitems::all();
+
+        foreach ($menuitem as $item){
+            $sheet = Technicalfiche::where("itemID", $item->id)->get();
+
+            foreach ($sheet as $saldo)
+            {
+                $checksaldo = Saldo::where("productID", $saldo->productID)->first();
+                $inventory = $checksaldo->saldoFinal ?? 0;
+                if ($inventory  <= 0 || !$checksaldo)
+                {
+                    DB::table("menuitems")
+                        ->where("id", $item->id)
+                            ->update([
+                                "is_lowstock"  => false,
+                                "item_rupture" => true
+                            ]);
+                }
+            }
+        }
+        return response()->json("Caiu aqui");
     }
 }

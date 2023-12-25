@@ -13,21 +13,14 @@
                 </div>
                 <div class="col-2">
                     <div class="input-group">
-                        <button class="btn border card-btn" @click="addItemToOrder.quantity--">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff"
-                                stroke-width="6" stroke-linecap="round" stroke-linejoin="round" class="feather feather-minus"><line x1="5" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </button>
+                        <Button icon="pi pi-minus" @click="addItemToOrder.quantity--">
+                        </Button>
                         <span class="px-1"></span>
                         <input class="form-control border-secondary rounded-0" type="text" v-model="addItemToOrder.quantity">
                         <input type="hidden" :value="newOrderItem.iteminfo.id" id="item-id">
                         <span class="px-1"></span>
-                        <button class="btn border card-btn" @click="addItemToOrder.quantity++">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="6"
-                                stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line>
-                                <line x1="4" y1="12" x2="19" y2="12"></line>
-                            </svg>
-                        </button>
+                        <Button icon="pi pi-plus" @click="addItemToOrder.quantity++">
+                        </Button>
                     </div>
                 </div>
                 <div class="col-2">
@@ -57,17 +50,14 @@
                             <img class="w-100 h-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
+                            <small class="m-auto" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
+                            <small class="m-auto" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="order-btn-box text-white mt-2 d-flex justify-content-end">
-                                <button v-if="!item.item_rupture" @click="addToOrder(item.id)" class="btn add-btn p-1 px-2 py-1 border-dark">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
-                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                </button>
-                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToOrder(item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="addToOrder(item.id)" disabled />
                             </div>
                         </div>
                     </div>
@@ -80,17 +70,14 @@
                             <img class="w-100" src="/img/banner.jpg" alt="">
                         </div>
                         <div class="w-100 d-flex flex-column justify-content-between p-1">
-                            <h5 class="text-center">{{ item.item_name }}</h5>
+                            <small class="m-auto" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
+                            <small class="m-auto" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                            <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <h6 class="col-lg-4 text-center m-auto text-white py-2 px-2 shadow rounded-4 price">R$ {{ item.item_price }} </h6>
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="order-btn-box text-white mt-2 d-flex justify-content-end">
-                                <button v-if="!item.item_rupture" @click="addToOrder(item.id)" class="btn add-btn p-1 px-2 py-1 border-dark">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                         stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
-                                        <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                    </svg>
-                                </button>
-                                <p class="alert alert-danger p-2 px-2" v-else>Indisponivel</p>
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToOrder(item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="addToOrder(item.id)" disabled />
                             </div>
                         </div>
                     </div>
@@ -103,12 +90,16 @@
 <script>
 import axios from 'axios';
 import SearchComponent from '../SearchComponent.vue';
+import Button from "primevue/button";
+import Tag from "primevue/tag";
 
 export default {
     name: 'Menu',
 
     components: {
-        SearchComponent
+        SearchComponent,
+        Button,
+        Tag
     },
 
     props: {
@@ -215,7 +206,14 @@ export default {
                 this.$toast.success(response.data)
             }).catch((errors) => {
                 console.log(errors)
-                this.$toast.error(errors.response.data)
+                //this.$toast.error(errors.response.data)
+                if (errors.response.status === 500){
+                    this.visibleRight = false
+                    this.$swal.fire({
+                        text: !errors.response.data.message ? errors.response.data : errors.response.data.message,
+                        icon: "error"
+                    })
+                }
             })
         }
 
