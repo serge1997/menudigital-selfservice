@@ -279,7 +279,7 @@ class PedidoController extends Controller
         foreach ($getFiche as $product) {
             $old_saldo = Saldo::where('productID', $product->productID)->first();
             if ($old_saldo->saldoFinal < $request->quantity || !$old_saldo){
-                return response()->json("Quantidade insuficiante", 500);
+                return response()->json("Quantidade em estoque está insuficiante", 500);
             }
         }
         try {

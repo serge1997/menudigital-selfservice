@@ -16,10 +16,11 @@
                     </div>
                 </div>
                 <div class="w-100 py-2 d-flex">
-                    <Toolbar>
+                    <Toolbar class="w-100">
                         <template #start>
-                            <Button label="New order" @click="this.$router.push('/home')" icon="pi pi-plus" class="mr-2" />
-                            <Button label="inventory" data-bs-toggle="modal" icon="pi pi-eye" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)" class="mr-2" />
+                            <Button label="New order" @click="this.$router.push('/home')" icon="pi pi-plus" class="" />
+                            <!--<Button label="inventory" data-bs-toggle="modal" icon="pi pi-eye" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)" class="mr-2" />-->
+                            <InventoryComponent/>
                             <SellReportComponent/>
                             <BillHistoriyComponent :status="status" />
                         </template>
@@ -262,7 +263,6 @@
                 </div>
             </div>
         </div>
-        <InventoryComponent/>
     </div>
 </template>
 
