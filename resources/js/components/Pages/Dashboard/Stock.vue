@@ -22,7 +22,7 @@
             <StockEntryComponent />
             <SupplierComponent />
         </div>
-        <DataTable v-model:filters="filters" ref="dt" :value="products" selectionMode="single" dataKey="id" editMode="cell" @cell-edit-complete="onCellEditComplete"  filterDisplay="row"  paginator :rows="5" tableStyle="min-width: 50rem">
+        <DataTable ref="dt" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
             <div class="position-absolute" :class="{ 'place': placeh}"></div>
             <template #header>
                 <div style="text-align: left">
@@ -48,6 +48,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dialog from "primevue/dialog";
 import Button from "primevue/button"
+
 export default {
     name: "Stock",
 
@@ -82,6 +83,49 @@ export default {
                     })
                 }, 1000)
             })
+        },
+
+        convertToCSV(objArray) {
+            const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            let csv = '';
+            const headers = Object.keys(array[0]).join(',') + '\n';
+
+            csv += headers;
+            array.forEach((item) => {
+                let row = '';
+                Object.values(item).forEach((value) => {
+                    if (row !== '') row += ',';
+                    row += `"${value}"`;
+                });
+                csv += row + '\n';
+            });
+
+            return csv;
+        },
+
+        exportCSV(){
+            const fields = ['Product code', 'Product name', 'Cost', 'Supplier name', 'Saldo', 'Medida'];
+            const header = { fields };
+
+            try{
+                const csv = this.convertToCSV(this.products);
+
+                const blob = new Blob([csv], {type: '\'text/csv;charset=utf-8;\';'});
+                const link = document.createElement('a');
+
+                if (link.download !== undefined){
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'products.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+
+            }catch (error) {
+                console.error(error);
+            }
         }
     },
 
