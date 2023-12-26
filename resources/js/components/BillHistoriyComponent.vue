@@ -46,7 +46,7 @@
                                                 <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">pagamento</h6>
                                                 <div class="">
                                                     <li v-for="stat in status">
-                                                        <button @click="storeParam(bill.id)" class="btn dropdown-btn fw-medium text-capitalize" data-bs-toggle="modal" data-bs-target="#OrderStatHistory">{{ stat.stat_desc }}</button>
+                                                        <button v-if="stat.id !== 6" @click="storeParam(bill.id)" class="btn dropdown-btn fw-medium text-capitalize" data-bs-toggle="modal" data-bs-target="#OrderStatHistory">{{ stat.stat_desc }}</button>
                                                     </li>
                                                 </div>
                                             </ul>

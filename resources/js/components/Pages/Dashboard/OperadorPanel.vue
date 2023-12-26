@@ -21,6 +21,7 @@
                             <Button label="New order" @click="this.$router.push('/home')" icon="pi pi-plus" class="mr-2" />
                             <Button label="inventory" data-bs-toggle="modal" icon="pi pi-eye" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)" class="mr-2" />
                             <SellReportComponent/>
+                            <BillHistoriyComponent :status="status" />
                         </template>
                     </Toolbar>
                 </div>
