@@ -275,22 +275,19 @@ class PedidoController extends Controller
 
     public function postNewOrderItem(Request $request): JsonResponse
     {
+        $getFiche = Technicalfiche::where('itemID', $request->itemID)->get();
+        foreach ($getFiche as $product) {
+            $old_saldo = Saldo::where('productID', $product->productID)->first();
+            if ($old_saldo->saldoFinal < $request->quantity || !$old_saldo){
+                return response()->json("Quantidade insuficiante", 500);
+            }
+        }
         try {
             StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
             $orderID = $request->orderID;
             $itemID = $request->itemID;
             $quantity = $request->quantity;
             $auth = $request->session()->get('auth-vue');
-            $getFiche = Technicalfiche::where('itemID', $itemID)->get();
-
-            foreach ($getFiche as $product) {
-                $old_saldo = Saldo::where('productID', $product->productID)->first();
-                if ($old_saldo->saldoFinal < $quantity || !$old_saldo){
-                    return response()->json("Quantidade insuficiante", 500);
-                }
-            }
-
-
 
             $menuitem = Menuitems::where('id', $itemID)->first();
             $item = ItensPedido::where([
