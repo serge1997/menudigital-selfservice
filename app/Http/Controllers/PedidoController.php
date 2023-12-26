@@ -149,7 +149,9 @@ class PedidoController extends Controller
                     return response()->json("Pedido confirmado", 200);
                 endif;
             endforeach;
-            return response()->json("You don't have permission", 422);
+            Cart::where('tableNumber', $request->ped_tableNumber)
+                ->delete();
+            return response()->json("You don't have permission", 500);
         }catch (Exception $e){
             DB::rollBack();
             return \response()->json($e->getMessage());

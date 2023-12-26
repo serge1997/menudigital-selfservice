@@ -159,7 +159,7 @@ export default {
                 if (errors.response.status === 500){
                     this.visibleRight = false
                     this.$swal.fire({
-                        text: errors.response.data.message,
+                        text: !errors.response.data.message ? errors.response.data : errors.response.data.message  ,
                         icon: "error"
                     })
                 }
