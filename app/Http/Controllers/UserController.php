@@ -15,6 +15,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\ItensPedido;
 use App\Http\Services\UserRoleAcess;
 use App\Http\Services\UserInstance;
+use App\Http\Services\Permission\PermissionRepository;
 
 
 class UserController extends Controller
@@ -237,16 +238,25 @@ class UserController extends Controller
 
     }
 
-    public function updateEmployeStatus($id, $group_id): JsonResponse
+    public function updateEmployeStatus($id, $group_id, Request $request): JsonResponse
     {
-        DB::table("users")
-            ->where("id", $id)
-                ->update([
-                    "group_id" => $group_id
-                ]);
 
-        return response()
-            ->json("Hieraquia editada com sucesso");
+        $authID = UserInstance::AuthUser($request);
+        foreach (UserInstance::get_user_roles($authID) as $edituser):
+            if ($edituser->role_id == Role::MANAGER):
+                DB::table("users")
+                    ->where("id", $id)
+                    ->update([
+                        "group_id" => $group_id
+                    ]);
+
+                return response()
+                    ->json("Hieraquia editada com sucesso");
+            endif;
+        endforeach;
+
+        return response()->json("You dont have permission", 500);
+
     }
 
     public function EmployeUpdate(Request $request): JsonResponse

@@ -7,9 +7,12 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-75 form-header p-2 text-capitalize shadow-lg rounded-3 text-white m-auto">
+                        <div class="w-75 form-header p-2 text-capitalize rounded-3 text-white m-auto">
                             <h6>Personal management</h6>
                             <p>personal hr</p>
+                        </div>
+                        <div class="w-100 d-flex justify-content-center mt-4">
+                            <Button @click="$router.push({ name: 'Employe'})" label="New" icon="pi pi-plus" data-bs-dismiss="modal" />
                         </div>
                         <div v-if="ShowForm" class="w-100 edit-form mt-4">
                             <div class="col-md-4 m-auto d-flex justify-content-lg-center">
@@ -21,26 +24,26 @@
                                 <form class="d-flex flex-column justify-content-center w-100 p-2" v-for="user in userForEdit">
                                     <div class="w-75 d-flex m-auto">
                                         <input type="hidden" :value="user.id" id="user-id">
-                                        <div class="w-50">
-                                            <span class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></span>
-                                            <input type="text" class="form-control rounded-0 border-secondary" :value="user.name" id="user-name">
+                                        <div class="w-50 d-flex flex-column">
+                                            <InputText type="text" class="w-100" :value="user.name" id="user-name"/>
+                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></small>
                                         </div>
                                         <div class="px-2"></div>
-                                        <div class="w-50">
-                                            <span class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></span>
-                                            <input type="text" class="form-control rounded-0 border-secondary" :value="user.tel" id="user-tel">
+                                        <div class="w-50 d-flex flex-column">
+                                            <InputText type="text" class="w-100" :value="user.tel" id="user-tel"/>
+                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></small>
                                         </div>
                                     </div>
-                                    <div class="form-group w-100 align-items-center mt-2">
-                                        <p class="w-75 m-auto text-danger" v-if="errMsg" v-for="msg in errMsg.user_email" v-text="msg"></p>
-                                        <input type="text" class="form-control w-75 m-auto rounded-0 border-secondary" :value="user.email" id="user-email">
+                                    <div class="form-group w-100 d-flex align-items-center flex-column mt-2">
+                                        <InputText type="text" class="w-75 m-auto" :value="user.email" id="user-email"/>
+                                        <small class="w-75 m-auto text-danger" v-if="errMsg" v-for="msg in errMsg.user_email" v-text="msg"></small>
                                     </div>
                                     <div class="w-75 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
                                         <div v-for="roles in user_roles" class="form-check p-2 mt-1">
-                                            <button v-if="roles.role_id" @click.prevent="updateUserRoles(roles.id, roles.desc = true)" class="btn check shadow">
+                                            <button v-if="roles.role_id" @click.prevent="updateUserRoles(roles.id, roles.desc = true)" class="btn check">
                                                 {{ roles.role_name}}
                                             </button>
-                                            <button v-else @click.prevent="updateUserRoles(roles.id, roles.desc = false)" class="btn btn-roles shadow">
+                                            <button v-else @click.prevent="updateUserRoles(roles.id, roles.desc = false)" class="btn btn-roles">
                                                 {{ roles.role_name}}
                                             </button>
                                         </div>
@@ -49,7 +52,7 @@
                             </div>
                         </div>
                         <div class="">
-                            <table class="table m-auto stripped">
+                            <table class="table m-auto table-striped">
                                 <thead>
                                     <tr>
                                         <th>Code</th>
@@ -62,12 +65,12 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="employe in employes">
-                                        <td>{{ employe.id }}</td>
-                                        <td class="text-uppercase">{{ employe.name }}</td>
-                                        <td>{{ employe.email }}</td>
-                                        <td>{{ employe.tel }}</td>
-                                        <td class="text-uppercase">{{ employe.groupe }}</td>
-                                        <td>
+                                        <td class="p-3">{{ employe.id }}</td>
+                                        <td class="text-uppercase p-3">{{ employe.name }}</td>
+                                        <td class="p-3">{{ employe.email }}</td>
+                                        <td class="p-3">{{ employe.tel }}</td>
+                                        <td class="text-uppercase p-3">{{ employe.groupe }}</td>
+                                        <td class="p-3">
                                             <button class="btn" @click="ShowEmployeEditForm(employe.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -98,7 +101,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button @click="updateEmploye" type="button" class="btn text-white bg-dark rounded-0">Salvar</button>
+                        <Button @click="updateEmploye" type="button" label="Save" />
                     </div>
                 </div>
             </div>
@@ -108,12 +111,16 @@
 <script>
 import axios from 'axios';
 import SearchComponent from './SearchComponent.vue';
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
 export default {
 
     name: 'SettingPersonalComponent',
 
     components: {
-        SearchComponent
+        SearchComponent,
+        Button,
+        InputText
     },
 
     data(){
@@ -209,11 +216,13 @@ export default {
                     axios.post(`/api/employe-status/update/${id}/${group_id}`).then((response) => {
                         this.$swal.fire({
                             text: response.data,
+                            icon: "success",
                             confirmButtonColor: '#42b883'
                         })
+                        return this.getEmploye()
+                    }).catch((errors) => {
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: "error" }): "";
                     })
-
-                    return this.getEmploye()
                 }
             })
         },

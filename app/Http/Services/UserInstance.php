@@ -11,11 +11,9 @@
 
     class UserInstance
     {
-        protected $request;
-
         public function __construct()
         {
-            $this->request = new Request();
+
         }
 
         public static function get_user_instance($id)
@@ -29,9 +27,8 @@
                 ->get();
         }
 
-        public static function AuthUser()
+        public static function AuthUser($request)
         {
-            $request = new Request();
             return $request->session()->get('auth-vue');
         }
     }
