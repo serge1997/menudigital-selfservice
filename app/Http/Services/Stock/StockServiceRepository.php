@@ -183,6 +183,9 @@ class StockServiceRepository implements StockServiceInterFace
         foreach ($cart as $item)
         {
             $item_sheets = Technicalfiche::where("itemID",$item->item_id)->get();
+            if (!isset($item_sheets->itemID)){
+                throw new Exception("Ação não pode ser concluida. O item não tem ficha tecnica");
+            }
             foreach ($item_sheets as $sheet)
             {
                 $productID = $sheet->productID ?? 19;
@@ -225,6 +228,7 @@ class StockServiceRepository implements StockServiceInterFace
             foreach ($sheet as $saldo)
             {
                 $checksaldo = Saldo::where("productID", $saldo->productID)->first();
+                $product = Product::where('id', $saldo->productID)->first();
                 $inventory = $checksaldo->saldoFinal ?? 0;
                 if ($inventory  <= 0 || !$checksaldo)
                 {
@@ -234,6 +238,14 @@ class StockServiceRepository implements StockServiceInterFace
                                 "is_lowstock"  => false,
                                 "item_rupture" => true
                             ]);
+                }else {
+                    if ($inventory < $product->min_quantity){
+                        DB::table("menuitems")
+                            ->where("id", $item->id)
+                            ->update([
+                                "is_lowstock"  => true,
+                            ]);
+                    }
                 }
             }
         }

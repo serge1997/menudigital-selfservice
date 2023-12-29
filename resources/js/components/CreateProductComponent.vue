@@ -48,6 +48,7 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Dialog from "primevue/dialog";
+import _ from "lodash";
 export default{
     name: "CreateProductComponent",
     components:{
@@ -79,6 +80,12 @@ export default{
             ],
             visibleProductModal: false
         }
+    },
+
+    watch: {
+        suppliers: _.debounce(function (newSupplier) {
+            this.getSupplier()
+        }, 5000)
     },
     methods: {
         StoreProduct(){

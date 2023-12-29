@@ -20,8 +20,8 @@
             <div class="col-12 d-flex">
                 <div class="col-lg-6 col-md-12">
                     <div class="header d-flex align-items-center">
-                        <div class="border px-2 py-2 rounded-1 modal-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958"
+                        <div class="px-2 py-2 rounded-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
@@ -35,14 +35,14 @@
                     </div>
                 </div>
                 <div class="col-lg-6 col-md-12 d-flex justify-content-center align-items-center">
-                    <button class="setting-btn rounded-0 alert p-2" data-bs-toggle="modal" data-bs-target="#ModelPersonalSetting">Manage</button>
+                    <Button label="Manage"  data-bs-toggle="modal" data-bs-target="#ModelPersonalSetting"></Button>
                 </div>
             </div>
             <div class="col-12 d-flex mt-5">
                 <div class="col-lg-6 col-md-12">
                     <div class="header d-flex align-items-center">
-                        <div class="border px-2 py-2 rounded-1 modal-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="1.5"
+                        <div class="px-2 py-2 rounded-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             </svg>
                         </div>
@@ -54,14 +54,14 @@
                     </small>
                 </div>
                 <div class="col-lg-6 col-md-12 d-flex justify-content-center align-items-center">
-                    <button class="setting-btn p-2" data-bs-toggle="modal" data-bs-target="#ModelItemSetting">Menu Alteration</button>
+                    <Button data-bs-toggle="modal" data-bs-target="#ModelItemSetting" label="Menu Alteration"></Button>
                 </div>
             </div>
             <div class="col-12 d-flex mt-5">
                 <div class="col-6">
                     <div class="header d-flex align-items-center">
-                        <div class="border px-2 py-2 rounded-1 modal-btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63958" stroke-width="1.5"
+                        <div class="px-2 py-2 rounded-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-archive"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line>
                             </svg>
                         </div>
@@ -73,7 +73,7 @@
                         magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                     </small>
                     <div class="col-6 d-flex justify-content-start mt-2 align-items-center">
-                        <button class="setting-btn rounded-0 p-2" data-bs-toggle="modal" data-bs-target="#ModalRestaurantinfo">configuration</button>
+                        <Button label="General configuration" data-bs-toggle="modal" data-bs-target="#ModalRestaurantinfo"></Button>
                     </div>
                 </div>
             </div>
@@ -114,15 +114,15 @@
                                 <tbody>
                                     <tr v-for="fiche in showfiche" class="text-capitalize">
                                         <td><span class="fw-medium">{{ fiche.prod_name }}</span></td>
-                                        <td><span class="fw-medium">{{  fiche.quantity }} </span> {{ fiche.prod_unmed }}</td>
-                                        <td><span class="fw-medium">{{ fiche.cost }}</span> R$</td>
+                                        <td><Badge :value="fiche.quantity + '  ' + fiche.prod_unmed"></Badge></td>
+                                        <td><Badge severity="warning" :value="fiche.cost + ' ' + 'R$'"></Badge></td>
                                     </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <th colspan="1">Total</th>
-                                        <th class="bg-dark text-white" colspan="1">{{ totalContain }} Cl</th>
-                                        <th class="bg-dark text-white" colspan="1">{{ totalCost }} R$</th>
+                                        <th colspan="1">{{ totalContain }} Cl</th>
+                                        <th colspan="1">{{ totalCost }} R$</th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -172,6 +172,8 @@ import axios from 'axios';
 import SettingMenuComponent from '../../SettingMenuComponent.vue';
 import SettingPersonalComponent from '../../SettingPersonalComponent.vue';
 import SettingRestaurantInfo from '../../SettingRestaurantInfo.vue';
+import Badge from "primevue/badge";
+import Button from "primevue/button";
 
 export default{
     name: 'SettingPanel',
@@ -179,7 +181,9 @@ export default{
     components: {
         SettingMenuComponent,
         SettingPersonalComponent,
-        SettingRestaurantInfo
+        SettingRestaurantInfo,
+        Badge,
+        Button
     },
 
     data(){

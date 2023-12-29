@@ -1,8 +1,8 @@
 <template>
-    <div class="col-md-10" @click="reload">
+    <div class="col-lg-6 col-md-10" @click="reload">
         <Button v-if="!rupture" icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id)" />
         <Button v-else icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id, rupture)" disabled />
-        <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="w-50">
+        <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="col-lg-8 col-md-12">
             <Accordion class="p-accordion" :activeIndex="0">
                 <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
                     <div class="col-md-12 d-flex justify-content-evenly">

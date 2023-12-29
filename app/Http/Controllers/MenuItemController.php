@@ -63,9 +63,9 @@ class MenuItemController extends Controller
      */
     public function SaveType(Request $request) :JsonResponse
     {
-        /*$request->validate([
+        $request->validate([
             'desc_type' => ['required']
-        ]);*/
+        ]);
 
         $type = new MealType();
         $type->desc_type = $request->desc_type;
@@ -85,7 +85,7 @@ class MenuItemController extends Controller
                     return response()->json("Item casdastrado com successo", 200);
                 endif;
             endforeach;
-            return response()->json("You dont have permission", 422);
+            return response()->json("You dont have permission", 500);
         }catch (\Exception $e){
             return response()->json("Action cant be concluided".$e->getMessage(), 422);
         }

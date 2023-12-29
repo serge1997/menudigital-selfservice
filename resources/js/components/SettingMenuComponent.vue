@@ -1,33 +1,46 @@
 <template>
     <div class="container">
         <div class="modal fade" id="ModelItemSetting" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Menu Edition</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-100">
-                            <div class="col-md-10 m-auto d-flex justify-content-between p-3">
-                                <input type="search" placeholder="Search item here..." v-model="search" class="form-control rounded-0 search-input">
-                                <button class="btn border rounded-0" id="search-icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-                                        <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                                    </svg>
-                                </button>
+                        <div class="w-100 p-3 d-flex justify-content-center gap-2">
+                            <div v-for="type in MenuType" class="col-md-2 shadow">
+                                <div class="w-100 card">
+                                    <div class="card-header text-center border-0">
+                                        <h6 class="text-uppercase">{{ type.desc_type }}</h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="w-100 d-flex gap-2">
+                                            <small>Total item</small>
+                                            <Badge :value="type.item_qty"></Badge>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="w-100 m-auto d-flex justify-content-between flex-wrap">
-                            <button v-for="type in MenuType" class="type-btn border border-success px-4 alert alert-success w-25 rounded-0 py-4 shadow d-flex justify-content-between">
-                                <div>
-                                    <img class="type-img" :src="'/img/type/'+ type.foto_type" alt="">
-                                    {{ type.desc_type }}
-                                </div>
-                                <span class="fw-medium px-2 border border-secondary py-1">{{ type.item_qty }}</span>
-                            </button>
-                            <button class="border border-primary px-4 alert alert-primary w-25 rounded-0 py-4 shadow">Principal</button>
+                        <div class="w-100 py-2 d-flex">
+                            <Toolbar class="w-100">
+                                <template class="w-100 bg-dark" #start>
+                                    <Button @click="$router.push({ name: 'Stock'})" label="Stock panel" data-bs-dismiss="modal" icon="pi pi-external-link"/>
+                                    <Button @click="$router.push({ name: 'OperadorPanel'})" label="Principal panel" data-bs-dismiss="modal" icon="pi pi-external-link"/>
+                                </template>
+                                <template class="w-100 bg-dark" #center>
+                                    <span class="w-100 p-input-icon-left">
+                                        <i class="pi pi-search" />
+                                        <InputText icon="pi pi-search" type="search" style="width: 26rem" placeholder="Search item here..." v-model="search" />
+                                    </span>
+                                </template>
+                                <template #end>
+                                    <div>
+                                        <Button @click="$router.push({ name: 'NewItem'})" label="New" data-bs-dismiss="modal" icon="pi pi-plus"/>
+                                    </div>
+                                </template>
+                            </Toolbar>
                         </div>
                         <div v-if="ShowForm" class="w-100 edit-form">
                             <div class="">
@@ -59,24 +72,24 @@
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Item ID</th>
-                                        <th>Item name</th>
-                                        <th>Item Price</th>
-                                        <th>Type</th>
-                                        <th>Action</th>
+                                        <th class="p-3">Item ID</th>
+                                        <th class="p-3">Item name</th>
+                                        <th class="p-3">Item Price</th>
+                                        <th class="p-3">Type</th>
+                                        <th class="p-3">Action</th>
                                     </tr>
                                 </thead>
                                 <tbody v-if="!SearchResult">
                                     <tr v-for="item in MenuItems">
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.id }}</td>
-                                        <td v-else>{{ item.id }}</td>
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_name }}</td>
-                                        <td v-else>{{ item.item_name }}</td>
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_price }}</td>
-                                        <td v-else>{{ item.item_price }}</td>
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.desc_type }}</td>
-                                        <td v-else>{{ item.desc_type }}</td>
-                                        <td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.id }}</td>
+                                        <td class="p-3" v-else>{{ item.id }}</td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_name }}</td>
+                                        <td class="p-3" v-else>{{ item.item_name }}</td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_price }}</td>
+                                        <td class="p-3" v-else>{{ item.item_price }}</td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.desc_type }}</td>
+                                        <td class="p-3" v-else>{{ item.desc_type }}</td>
+                                        <td class="p-3">
                                             <button class="btn" @click="ShowEditForm(item.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -113,15 +126,15 @@
                                 </tbody>
                                 <tbody v-else>
                                     <tr v-for="item in SearchResult">
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.id }}</td>
-                                        <td v-else>{{ item.id }}</td>
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_name }}</td>
-                                        <td v-else>{{ item.item_name }}</td>
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_price }}</td>
-                                        <td v-else>{{ item.item_price }}</td>
-                                        <td v-if="item.item_rupture" :class="isRuptureClass">{{ item.desc_type }}</td>
-                                        <td v-else>{{ item.desc_type }}</td>
-                                        <td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.id }}</td>
+                                        <td class="p-3" v-else>{{ item.id }}</td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_name }}</td>
+                                        <td class="p-3" v-else>{{ item.item_name }}</td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.item_price }}</td>
+                                        <td class="p-3" v-else>{{ item.item_price }}</td>
+                                        <td class="p-3" v-if="item.item_rupture" :class="isRuptureClass">{{ item.desc_type }}</td>
+                                        <td class="p-3" v-else>{{ item.desc_type }}</td>
+                                        <td class="p-3">
                                             <button class="btn" @click="ShowEditForm(item.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
@@ -168,8 +181,21 @@
 </template>
 
 <script>
+import SellReportComponent from "@/components/SellReportComponent.vue";
+import Toolbar from "primevue/toolbar";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import Badge from "primevue/badge";
+
 export default {
     name: 'SettingMenuComponent',
+    components: {
+        SellReportComponent,
+        Toolbar,
+        Button,
+        InputText,
+        Badge
+    },
 
     watch: {
         search(before, after){
@@ -323,7 +349,7 @@ export default {
 }
 
 .Myalert-warning{
-    background-color: #fff3cd;
+    background-color: #f8d7da;
 }
 
 </style>

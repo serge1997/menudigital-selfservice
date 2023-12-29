@@ -48,6 +48,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Dialog from "primevue/dialog";
 import Button from "primevue/button"
+import _ from "lodash";
 
 export default {
     name: "Stock",
@@ -68,6 +69,12 @@ export default {
             products: null,
             placeh: true
         }
+    },
+
+    watch: {
+        products: _.debounce(function (newProducts){
+            this.get_stock_stat();
+        }, 4000)
     },
 
     methods: {
