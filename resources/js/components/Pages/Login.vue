@@ -10,6 +10,7 @@
                     <h5 class="text-center text-dark w-100 fw-medium p-3">Entra com suas credencias</h5>
                     <form @submit.prevent="login" class="w-100">
                         <div class="d-flex flex-column gap-2">
+                            <small class="text-danger" v-text="loginerrresponse"></small>
                             <label for="username">Username</label>
                             <InputText :class="invalid" type="text" id="username" v-model="credentials.username" aria-describedby="username-help" />
                             <small class="text-danger" v-if="msgerrors" v-for="err_username in msgerrors.username" id="err_username"  v-text="err_username"></small>
@@ -66,7 +67,7 @@ export default {
                 console.log(response.data)
                 this.$toast.success("Seja Bem vindo!");
             }).catch((errors) => {
-                this.loginerrresponse = errors.response.data.message;
+                errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
                 this.msgerrors = errors.response.data.errors
                 this.invalid = 'p-invalid'
             })

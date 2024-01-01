@@ -22,20 +22,71 @@
             <StockEntryComponent />
             <SupplierComponent />
         </div>
-        <DataTable ref="dt" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
+        <DataTable ref="dt" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row">
             <div class="position-absolute" :class="{ 'place': placeh}"></div>
             <template #header>
                 <div style="text-align: left">
                     <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
                 </div>
             </template>
-            <Column field="productID" sortable style="width: 25%" exportHeader="Product Code" header="Code"></Column>
+            <Column field="productID" sortable style="width: 10%" exportHeader="Product Code" header="Code"></Column>
             <Column field="prod_name" sortable style="width: 25%" header="Name"></Column>
-            <Column field="unitCost" sortable style="width: 25%" header="Cost"></Column>
+            <Column field="unitCost" sortable style="width: 10%" header="Cost"></Column>
             <Column field="sup_name" sortable style="width: 25%" header="Supplier"></Column>
-            <Column field="saldoFinal" sortable style="width: 25%" header="Quantity"></Column>
-            <Column field="prod_unmed" header="Medida"></Column>
+            <Column field="saldoFinal" sortable style="width: 10%" header="Quantity"></Column>
+            <Column field="prod_unmed" header="Status" style="width: 25%">
+                <template class="w-100" #body="{ data }">
+                    <Tag style="width: 90px" v-if="data.saldoFinal < data.min_quantity && data.saldoFinal > 0" value="Lowstock" severity="warning" />
+                    <Tag style="width: 90px" v-else-if="data.saldoFinal == 0" value="ruptured" severity="danger" />
+                    <Tag style="width: 90px" v-else value="In Stock" severity="success" />
+                </template>
+            </Column>
+            <Column field="prod_unmed" header="Status" style="width: 25%">
+                <template #body="{ data }">
+                    <div class="d-flex">
+                        <Button @click="showProductToEdit(data.productID)" icon="pi pi-pencil" text/>
+                        <Button @click="deleteProduct(data.productID)" icon="pi pi-trash" text/>
+                    </div>
+                </template>
+            </Column>
         </DataTable>
+        <div class="row">
+            <Dialog v-model:visible="visibleEditProductModal" maximizable modal header="Edit product information" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                <div class="d-flex mt-3">
+                    <div class="w-100 d-flex flex-column gap-2">
+                        <input type="hidden" id="prod-id" :value="product_edit.id" />
+                        <label for="prod-name">Product name</label>
+                        <InputText :class="invalid" type="text" id="prod-name" :value="product_edit.prod_name" aria-describedby="product-name" placeholder="product name"/>
+                        <small class="text-danger" v-if="errMsg" v-for="prod_name in errMsg.prod_name" id="product-name-err"  v-text="prod_name"></small>
+                    </div>
+                    <div class="px-2"></div>
+                    <div class="w-100 d-flex flex-column gap-2">
+                        <label for="prod-desc">Product description</label>
+                        <InputText type="text" id="prod-desc" v-model="product_edit.prod_desc" aria-describedby="item name" placeholder="product description"/>
+                        <small class="text-danger" v-if="errMsg" v-for="item_name in errMsg.item_name" id="prod-desc-err"  v-text="item_name"></small>
+                    </div>
+                </div>
+                <div class="d-flex mt-3">
+                    <div class="w-100 d-flex flex-column gap-2">
+                        <label for="prod-contain">Unit contain</label>
+                        <InputText :class="invalid" type="number" id="prod-contain" :value="product_edit.prod_contain" aria-describedby="item name" />
+                        <small class="text-danger" v-if="errMsg" v-for="contain in errMsg.prod_contain" id="product-contain-err"  v-text="contain"></small>
+                    </div>
+                </div>
+                <div class="w-100 d-flex flex-column gap-2 mt-3">
+                    <label for="prod-min">Minimum quantity</label>
+                    <InputText :class="invalid" type="number" id="prod-min" :value="product_edit.min_quantity" aria-describedby="product-min"  placeholder="minimum stock quantity"/>
+                    <small class="text-danger" v-if="errMsg" v-for="min in errMsg.min_quantity" id="product-min-err"  v-text="min"></small>
+                </div>
+                <div class="d-flex flex-column w-100 mt-4">
+                    <Dropdown v-model="product.prod_supplierID" option-value="id" :options="suppliers" optionLabel="sup_name" placeholder="Select a supplier" class="w-100 md:w-14rem" />
+                    <small class="text-danger" v-if="errMsg" v-for="supID_name in errMsg.prod_supplierID" id="prod-supplier-err"  v-text="supID_name"></small>
+                </div>
+                <div class="dialog-footer mt-3 p-2">
+                    <Button @click="editProduct" label="Save product edition" />
+                </div>
+            </Dialog>
+        </div>
     </div>
 </template>
 
@@ -45,9 +96,12 @@ import TechnicalSheetComponent from '../../TechnicalSheetComponent.vue';
 import StockEntryComponent from '../../StockEntryComponent.vue';
 import SupplierComponent from '../../SupplierComponent.vue';
 import DataTable from 'primevue/datatable';
+import Dropdown from "primevue/dropdown";
 import Column from 'primevue/column';
 import Dialog from "primevue/dialog";
-import Button from "primevue/button"
+import Button from "primevue/button";
+import Tag from "primevue/tag";
+import InputText from "primevue/inputtext";
 import _ from "lodash";
 
 export default {
@@ -61,13 +115,28 @@ export default {
         DataTable,
         Column,
         Dialog,
-        Button
+        Button,
+        Tag,
+        InputText,
+        Dropdown
     },
 
     data(){
         return {
             products: null,
-            placeh: true
+            visibleEditProductModal: false,
+            placeh: true,
+            product_edit: null,
+            suppliers: null,
+            product:{
+                id: null,
+                prod_desc: null,
+                prod_name: null,
+                prod_contain: null,
+                prod_supplierID: null,
+                min_quantity: null
+            },
+            errMsg: null
         }
     },
 
@@ -133,11 +202,66 @@ export default {
             }catch (error) {
                 console.error(error);
             }
+        },
+        showProductToEdit(id){
+            axios.get(`/api/product/${id}`).then((response) => {
+                this.visibleEditProductModal = true
+               this.product_edit = response.data
+                console.log(this.product_edit)
+            }).catch((errors) => {
+                console.log(errors);
+            })
+        },
+
+        editProduct(){
+            this.product.id           = document.getElementById('prod-id').value;
+            this.product.prod_name    = document.getElementById('prod-name').value;
+            this.product.prod_desc    = document.getElementById('prod-desc').value;
+            this.product.prod_contain = document.getElementById('prod-contain').value;
+            this.product.min_quantity = document.getElementById('prod-min').value;
+            axios.put('/api/product', this.product).then((response) => {
+                this.visibleEditProductModal = false
+                this.$swal.fire({
+                    text: response.data,
+                    icon: 'success'
+                })
+            }).catch((errors) => {
+                this.visibleEditProductModal = false
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : '';
+                console.log(errors)
+            })
+        },
+
+        deleteProduct(id){
+            this.$swal.fire({
+                html: '' +
+                    '<p>Quer apagar esse produto ?</p>' + '' +
+                    '<p>Após apagar esse produto não irá ser mais disponivel<br>para qualquer serviço</p>',
+                icon: "question",
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed){
+                    axios.delete(`/api/product/${id}`).then((response) => {
+                        this.$swal.fire({
+                            text: response.data,
+                            icon: 'success'
+                        })
+                    }).catch((errors) =>{
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : '';
+                        console.log(errors)
+                    })
+                }
+            })
         }
     },
 
     mounted(){
         this.get_stock_stat();
+        axios.get('/api/supplier').then((response) => {
+            this.suppliers = response.data;
+        }).catch((errors) => {
+            console.log(errors)
+        })
     }
 }
 

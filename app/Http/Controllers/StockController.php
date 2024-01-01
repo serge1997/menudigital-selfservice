@@ -216,6 +216,7 @@ class StockController extends Controller
                 max(st.unitCost) unitCost,
                 st.productID,
                 p.prod_name,
+                p.min_quantity,
                 sp.sup_name,
                 CASE
                     WHEN p.prod_unmed = 'bt' THEN sa.saldoFinal
@@ -228,6 +229,7 @@ class StockController extends Controller
                     ON sa.productID = st.productID
                 INNER join products p
                     ON p.id = st.productID
+                    AND p.is_delete = 0
                 INNER JOIN suppliers sp
                     ON sp.id = st.supplierID
             GROUP BY
@@ -236,6 +238,7 @@ class StockController extends Controller
                 sp.sup_name,
                 p.prod_unmed,
                 p.prod_contain,
+                p.min_quantity,
                 saldoFinal
             HAVING MAX(st.emissao)
             ORDER BY p.prod_name

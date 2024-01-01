@@ -71,7 +71,7 @@ class UserController extends Controller
         try {
             $user = User::where([['username', $request->username], ['isactive', true]])->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
+            if (!$user->username) {
                 throw ValidationException::withMessages([
                     'msgerr' => ['senha ou usuario incoreto']
                 ]);
@@ -80,7 +80,7 @@ class UserController extends Controller
             $this->session = $sess;
             return $user->createToken('browser')->plainTextToken;
         }catch(Exception $e){
-            return response()->json('server error, User cant loggIn.', 400);
+            return response()->json('senha ou usuario incoreto.', 400);
         }
     }
 

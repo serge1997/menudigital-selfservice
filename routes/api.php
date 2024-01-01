@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\RestaurantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -121,10 +122,18 @@ Route::controller(StockController::class)->group(function() {
 Route::controller(ProductController::class)->group(function(){
     Route::post('product', 'StoreProduct');
     Route::get('products', 'get_product');
+    Route::get('product/{id}', 'showProductToEdit');
+    Route::put('product', 'update');
+    Route::delete('product/{id}', 'delete');
 });
 
 Route::controller(UserRoleController::class)->group(function() {
     Route::get('rules', 'get_all_rules');
     Route::post('role-delete/{id}', 'delete_user_role');
     Route::post('role/{id}', 'store_user_role');
+});
+
+Route::controller(RestaurantController::class)->group(function() {
+    Route::post('rest-info', 'create');
+    Route::put('rest-info', 'update');
 });
