@@ -157,7 +157,7 @@ export default {
                     }).catch((errors) => {
                         console.log(errors)
                     })
-                }, 1000)
+                }, 3000)
             })
         },
 

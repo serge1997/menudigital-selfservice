@@ -18,6 +18,15 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        <div v-if="showBillItem" class="w-100 mb-4 p-3">
+                            <h6>Show bill</h6>
+                            <Datatable :value="itens">
+                                <Column field="id" header="Order id"/>
+                                <Column field="item_name" header="Item name"/>
+                                <Column field="item_quantidade" header="Quantity"/>
+                                <Column field="item_total" header="Subtotal"/>
+                            </Datatable>
+                        </div>
                         <table class="table table-active">
                             <thead>
                                 <tr>
@@ -50,6 +59,7 @@
                                                     </li>
                                                 </div>
                                             </ul>
+                                            <Button @click="getOrderItem(bill.id)" icon="pi pi-eye" text />
                                         </div>
                                     </td>
                                 </tr>
@@ -95,10 +105,19 @@
 
 <script>
 
+import Button from "primevue/button";
+import Datatable from "primevue/datatable";
+import Column from "primevue/column";
 import axios from "axios";
 
 export default {
     name: 'BillHistoryComponent',
+
+    components: {
+        Button,
+        Datatable,
+        Column
+    },
 
     props: ['status'],
 
@@ -112,6 +131,8 @@ export default {
                 password: null,
                 status_id: null
             },
+            itens: null,
+            showBillItem: false,
 
         }
     },
@@ -140,7 +161,15 @@ export default {
             localStorage.removeItem('orderID');
             localStorage.setItem('orderHistory', id);
             this.order_id = localStorage.getItem('orderHistory');
-        }
+        },
+        getOrderItem(id) {
+            axios.get('/api/dashboard/item/' + id).then((response) => {
+                this.itens = response.data
+                this.showBillItem = !this.showBillItem
+            }).catch((errors) => {
+                console.log(errors)
+            })
+        },
     },
 
     mounted(){
