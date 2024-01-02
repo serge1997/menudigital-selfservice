@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\SupplierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,8 +107,6 @@ Route::controller(UserController::class)->group(function() {
 
 //stock
 Route::controller(StockController::class)->group(function() {
-    Route::post('supplier', 'StoreSupplier');
-    Route::get('supplier', 'getSupplier');
     Route::post('stock-entry', 'storeStockEntry');
     Route::post('technical-fiche', 'store_technical_fiche');
     Route::get('products-stat', 'get_stock_stat');
@@ -136,4 +135,12 @@ Route::controller(UserRoleController::class)->group(function() {
 Route::controller(RestaurantController::class)->group(function() {
     Route::post('rest-info', 'create');
     Route::put('rest-info', 'update');
+});
+
+Route::controller(SupplierController::class)->group(function() {
+    Route::post('supplier', 'StoreSupplier');
+    Route::get('supplier', 'getSuppliers');
+    Route::get('supplier/{id}', 'getToUpdate');
+    Route::put('supplier', 'update');
+    Route::delete('supplier/{id}', 'delete');
 });

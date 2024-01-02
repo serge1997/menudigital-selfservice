@@ -27,37 +27,6 @@ class StockController extends Controller
         $this->supplier = new Supplier();
         $this->product = new Product();
     }
-
-    public function StoreSupplier(Request $request): JsonResponse
-    {
-        $request->validate([
-            "sup_name" => ["required"],
-            "sup_tel" => ["required"],
-        ],
-        [
-            "sup_name.required" => "name is required",
-            "sup_tel.required" => "contact is required"
-        ]);
-
-        try {
-
-            $data = $request->all();
-            Supplier::create($data);
-            return response()
-                ->json("supplier created successfully",200);
-
-        }catch(\Exception $e){
-            return response()
-                ->json("Action can't be realised", 400);
-        }
-    }
-
-    public function getSupplier()
-    {
-        return response()
-            ->json($this->supplier::select('id', 'sup_name')->get());
-    }
-
     public function storeStockEntry(Request $request, StockServiceRepository $service) :JsonResponse
     {
         $request->validate([

@@ -42,6 +42,7 @@ class ProductController extends Controller
         ]);
 
         try {
+            ProductRepositoty::checkProductNameCreate($request->prod_name);
             $auth = $request->session()->get('auth-vue');
             $data = $request->all();
             foreach (UserInstance::get_user_roles($auth) as $create):
@@ -53,9 +54,9 @@ class ProductController extends Controller
             endforeach;
             return response()
                 ->json("You dont have permission", 400);
-        }catch(\Exception){
+        }catch(\Exception $e){
             return response()
-                ->json("Action can't be realised", 400);
+                ->json($e->getMessage(), 500);
         }
     }
 
@@ -91,7 +92,7 @@ class ProductController extends Controller
     {
         try{
             if ($request->isMethod('put')){
-                //ProductRepositoty::checkProductName($request->prod_name);
+                ProductRepositoty::checkProductNameUpdate($request->prod_name, $request->id);
                 $auth = $request->session()->get('auth-vue');
                 foreach (UserInstance::get_user_roles($auth) as $create):
                     if ($create->role_id === Role::CAN_CREATE_PRODUCT || $create->role_id === Role::MANAGER):

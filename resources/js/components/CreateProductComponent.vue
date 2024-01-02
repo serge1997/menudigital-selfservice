@@ -102,7 +102,7 @@ export default{
                 this.errMsg = errors.response.data.errors
                 this.invalid = "p-invalid"
                 this.visibleProductModal = false
-                errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'error'}): null
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}): null
             })
         },
 
