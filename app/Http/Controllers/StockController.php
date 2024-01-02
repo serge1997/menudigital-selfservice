@@ -137,7 +137,7 @@ class StockController extends Controller
                 $item_exist = Technicalfiche::where('itemID', $itemID)
                     ->first();
 
-                if ($item_exist){
+                if (isset($item_exist)){
                     return response()->json("Technical fiche already exist", 400);
                 }
 

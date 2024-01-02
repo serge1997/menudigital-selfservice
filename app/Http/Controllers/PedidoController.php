@@ -303,18 +303,17 @@ class PedidoController extends Controller
                     $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
                     $confirm->role_id === Role::CAN_CANCEL_ORDER
                 ):
-                    DB::beginTransaction();
-                    if ($item):
+                    //DB::beginTransaction();
+                    if (isset($item)):
                         $totalQuantity = $item->item_quantidade + $quantity;
                         DB::table('itens_pedido')
                             ->where([['item_pedido', $orderID], ['item_id', $itemID]])
                             ->update([
-                                'item_quantidade' => $item->item_quantidade += $quantity,
+                                'item_quantidade' => $totalQuantity,
                                 'item_total' => $menuitem->item_price * $totalQuantity
                             ]);
-                        $fiche = Technicalfiche::where('itemID', $itemID)->get();
 
-                        foreach ($fiche as $product) {
+                        foreach ($getFiche as $product) {
                             $old_saldo = Saldo::where('productID', $product->productID)->first();
                             if ($old_saldo->emissao == $this->hoje):
                                 DB::table('saldos')
@@ -344,14 +343,14 @@ class PedidoController extends Controller
                     $itens->item_emissao    = $this->hoje;
                     $itens->save();
                     event(new StockReduced($itens));
-                    DB::commit();
+                    //DB::commit();
                     return response()
                         ->json("Item adicionado com sucesso ", 200);
                 endif;
             endforeach;
             return response()->json("You don't have permission", 422);
         }catch (Exception $e){
-            DB::rollBack();
+            //DB::rollBack();
             return \response()->json($e->getMessage());
         }
     }

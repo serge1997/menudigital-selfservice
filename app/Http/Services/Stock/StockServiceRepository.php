@@ -182,8 +182,8 @@ class StockServiceRepository implements StockServiceInterFace
         $cart = Cart::where('tableNumber', $tableNumber)->get();
         foreach ($cart as $item)
         {
-            $item_sheets = Technicalfiche::where("itemID",$item->item_id)->get();
-            if (!isset($item_sheets->itemID)){
+            $item_sheets = Technicalfiche::where("itemID", $item->item_id)->get();
+            if (!isset($item_sheets)){
                 throw new Exception("Ação não pode ser concluida. O item não tem ficha tecnica");
             }
             foreach ($item_sheets as $sheet)
