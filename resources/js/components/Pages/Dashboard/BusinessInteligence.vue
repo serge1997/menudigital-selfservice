@@ -3,49 +3,49 @@
         <div class="position-fixed z-3">
             <SideBarComponent/>
         </div>
+        <div class="col-md-10 m-auto py-2 d-flex">
+            <Toolbar class="w-100">
+                <template #start>
+                    <div class="d-flex gap-2">
+                        <Calendar v-model="dateFilter.start" showIcon placeholder="start"/>
+                        <Calendar v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
+                        <Button @click.prevent="getGeneralStat" icon="pi pi-filter"></Button>
+                    </div>
+                </template>
+                <template #end>
+                    <div>
+                        <Button @click="$router.push({ name: 'OperadorPanel'})" label="Panel" data-bs-dismiss="modal" icon="pi pi-plus"/>
+                    </div>
+                </template>
+            </Toolbar>
+        </div>
         <div class="col-md-8 m-auto d-flex justify-content-between p-2">
-            <div class="card col-2">
-                <div class="card-header bg-white">
+            <div class="card col-3">
+                <div class="card-header bg-white border-0">
                     <div class="d-flex justify-content-between">
                         <h6 class="text-center">Venda do dia</h6>
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                stroke="#d9534f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                                class="feather feather-arrow-up-right"><line x1="7" y1="17" x2="17" y2="7"></line>
-                                <polyline points="7 7 17 7 17 17"></polyline>
-                            </svg>
-                        </div>
                     </div>
                 </div>
                 <div class="card-body">
 
                 </div>
             </div>
-            <div class="card col-2" id="score">
-                <div class="card-header" id="score">
-                    <h6 class="text-center">Media venda / dia</h6>
+            <div class="card col-3" id="score">
+                <div class="card-header border-0 bg-white" id="score">
+                    <h6 class="text-center">Venda Mes atual</h6>
+                </div>
+                <div class="card-body p-1">
+                    <p v-for="sell in monthlySell.currentMonth">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</p>
                 </div>
             </div>
-            <div class="card col-2">
-                <div class="card-header bg-white">
+            <div class="card col-3">
+                <div class="card-header bg-white border-0">
                     <div class="d-flex justify-content-between">
-                        <h6 class="text-center">Venda Total</h6>
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                stroke="#d9534f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                                class="feather feather-arrow-up-right"><line x1="7" y1="17" x2="17" y2="7"></line>
-                                <polyline points="7 7 17 7 17 17"></polyline>
-                            </svg>
-                        </div>
+                        <h6 class="text-center">Venda Mes anterior</h6>
                     </div>
                 </div>
-                <div class="card-body">
-
-                </div>
-            </div>
-            <div class="card col-2">
-                <div class="card-header bg-white">
-                    <h6 class="text-center">Venda mes anterior</h6>
+                <div class="card-body p-1">
+                    <p v-for="sell in monthlySell.lastMonth">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</p>
                 </div>
             </div>
         </div>
@@ -64,7 +64,7 @@
                 </div>
             </div>
             <div class="col-md-12">
-                <DataTable v-model:filters="filters" ref="dt" :value="dataTable" selectionMode="single" dataKey="id" editMode="cell" @cell-edit-complete="onCellEditComplete"  filterDisplay="row"  paginator :rows="5" tableStyle="min-width: 50rem">
+                <DataTable v-model:filters="filters" ref="dt" :value="dataTable" selectionMode="single" dataKey="id" editMode="cell" @cell-edit-complete="onCellEditComplete"  filterDisplay="row"  paginator :rows="40" tableStyle="min-width: 50rem">
                     <div class="position-absolute" :class="{ 'place': placeh}"></div>
                     <template #header>
                         <div style="text-align: left">
@@ -73,8 +73,8 @@
                     </template>
                     <Column field="item_emissao" sortable style="width: 25%" exportHeader="Product Code" header="Date"></Column>
                     <Column field="item_name" sortable style="width: 25%" header="Meal name"></Column>
-                    <Column field="quantidade" sortable style="width: 25%" header="Quantity"></Column>
-                    <Column field="venda" sortable style="width: 25%" header="Sell"></Column>
+                    <Column field="quantidade" sortable style="width: 15%" header="Quantity"></Column>
+                    <Column field="venda" sortable style="width: 15%" header="Sell"></Column>
                     <Column field="name" sortable style="width: 25%" header="Waiter"></Column>
                 </DataTable>
             </div>
@@ -88,6 +88,8 @@ import SideBarComponent from './SideBarComponent.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from "primevue/button";
+import Toolbar from "primevue/toolbar";
+import Calendar from "primevue/calendar";
 
 export default {
     name: 'BusinessInteligence',
@@ -97,7 +99,9 @@ export default {
         InputText,
         DataTable,
         Column,
-        Button
+        Button,
+        Toolbar,
+        Calendar
     },
 
     data() {
@@ -115,33 +119,70 @@ export default {
                 principal: 0,
                 drinks: 0,
                 dessert: 0,
-                def: 0
+                def: 0,
+                wine: 0
             },
             barchart:{
                 date: [],
                 sell: []
+            },
+            dateFilter: {
+                start: null,
+                end: null
+            },
+            monthlySell:{
+                currentMonth: null,
+                lastMonth: null
             }
         }
     },
 
     methods: {
         getGeneralStat() {
-            axios.get('/api/bi/general-stat').then((response) => {
-                console.log(response.data)
+            this.barchart.date = [];
+            this.barchart.sell = [];
+            this.typesCollection = [];
+            this.type.starter = 0;
+            this.type.principal = 0;
+            this.type.wine = 0;
+            this.type.dessert = 0;
+            this.type.drinks = 0;
+            this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
+            this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
+            let start = this.dateFilter.start.toString();
+            let end = this.dateFilter.end.toString();
+            const params = [
+                {'start': start.substr(0, 15),},
+                {'end': end.substr(0, 15)}
+            ]
+            axios.get(`/api/bi/general-stat/${params[0].start}/${params[1].end}`).then((response) => {
+                console.log("response")
+                console.log(response)
                 for (let data of response.data){
                     let sell = Number(data.total)
                     this.barchart.date.push(data.item_emissao);
                     this.barchart.sell.push(sell)
                 }
+
                 this.SetDoubleBarChart()
-                //this.barchart.sell = [...this.waiterSell];
-                console.log(this.barchart.sell)
+                console.log(this.typesCollection)
+                this.get_type_waiter_dash(params[0].start, params[1].end)
             })
         },
 
-        get_type_waiter_dash(){
-            axios.get('/api/bi/dash-type-waiter').then((response) => {
+        get_type_waiter_dash(start, end){
+            this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
+            this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
+            start = this.dateFilter.start.toString();
+            end = this.dateFilter.end.toString();
+            const params = [
+                {'start': start.substr(0, 15),},
+                {'end': end.substr(0, 15)}
+            ]
+            axios.get(`/api/bi/dash-type-waiter/${params[0].start}/${params[1].end}`).then((response) => {
                 console.log(response.data)
+                this.monthlySell.currentMonth = response.data.thisMonth;
+                this.monthlySell.lastMonth = response.data.lastMonth;
                 this.dataTable = response.data.itemsCollection
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
@@ -157,6 +198,10 @@ export default {
                         case "DRINKS":
                             this.type.drinks += Number(typename.typevenda)
                             console.log(this.type.drinks)
+                            break;
+                        case "VINHO":
+                            this.type.wine += Number(typename.typevenda)
+                            console.log(this.type.wine)
                             break;
                         case "DESSERT":
                             this.type.dessert += Number(typename.typevenda);
@@ -200,9 +245,9 @@ export default {
             var chart = bb.generate({
                 data: {
                     columns: [
-                        [this.typesCollection[0], this.type.drinks],
-                        [this.typesCollection[1], this.type.starter],
-                        [this.typesCollection[2], this.type.principal]
+                        ["DRINKS", this.type.drinks],
+                        ["PRINCIPAL", this.type.principal],
+                        ["VINHO", this.type.wine]
                     ],
                     type: donut(), // for ESM specify as: donut()
                     onclick: function(d, i) {
@@ -220,12 +265,23 @@ export default {
                 },
                 bindto: "#charDonut"
             })
+        },
+        FilterData(){
+
+            let start = this.dateFilter.start.toString();
+            let end = this.dateFilter.end.toString();
+            const params = [
+                {'start': start.substr(0, 15),},
+                {'end': end.substr(0, 15)}
+            ]
+
+            console.log(params[1].end);
         }
     },
 
     mounted() {
         this.getGeneralStat()
-        this.get_type_waiter_dash()
+        //this.get_type_waiter_dash()
         //this.donut()
         console.log(this.typesCollection)
     }

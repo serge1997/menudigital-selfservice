@@ -108,7 +108,6 @@ class PedidoController extends Controller
             StockServiceRepository::SetItemSaldoZeroException($request->ped_tableNumber);
             $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
                 ->get();
-            //$user_auth = $request->session()->get('auth-vue');
             $auth = $request->session()->get('auth-vue');
             foreach (UserInstance::get_user_roles($auth) as $confirm):
                 if (

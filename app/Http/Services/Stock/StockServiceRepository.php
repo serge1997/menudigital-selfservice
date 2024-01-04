@@ -177,13 +177,15 @@ class StockServiceRepository implements StockServiceInterFace
     /**
      * @throws \Exception
      */
-    public static function SetItemSaldoZeroException(int $tableNumber): void
+    public static function SetItemSaldoZeroException(string $tableNumber): void
     {
         $cart = Cart::where('tableNumber', $tableNumber)->get();
         foreach ($cart as $item)
         {
             $item_sheets = Technicalfiche::where("itemID", $item->item_id)->get();
-            if (!isset($item_sheets)){
+            if (count($item_sheets) < 1){
+                Cart::where('tableNumber', $tableNumber)
+                    ->delete();
                 throw new Exception("Ação não pode ser concluida. O item não tem ficha tecnica");
             }
             foreach ($item_sheets as $sheet)

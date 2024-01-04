@@ -83,8 +83,8 @@ Route::controller(OrderTransfertController::class)->group(function() {
 
 //BI
 ROute::controller(BiController::class)->group(function (){
-    Route::get('/bi/general-stat', 'getGeneralStat');
-    Route::get('/bi/dash-type-waiter', 'waiterStat');
+    Route::get('/bi/general-stat/{start}/{end}', 'getGeneralStat');
+    Route::get('/bi/dash-type-waiter/{start}/{end}', 'waiterStat');
 });
 Route::get('waiter/stats', [BiController::class, 'waiterStat']);
 

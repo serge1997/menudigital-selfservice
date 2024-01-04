@@ -100,8 +100,8 @@ export default{
                 this.invalid = null
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors
-                this.invalid = "p-invalid"
-                this.visibleProductModal = false
+                this.invalid = "p-invalid";
+                errors.response.status !== 500 ? "" : this.visibleProductModal = false
                 errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}): null
             })
         },
