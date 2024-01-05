@@ -74,6 +74,9 @@ export default {
                 res_email: null,
                 res_city: null,
                 res_neighborhoods: null,
+                rest_cep: null,
+                rest_street: null,
+                rest_adressNumber: null,
                 res_logo: null,
                 res_open: null,
                 res_close: null

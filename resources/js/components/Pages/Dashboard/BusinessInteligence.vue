@@ -20,32 +20,65 @@
             </Toolbar>
         </div>
         <div class="col-md-8 m-auto d-flex justify-content-between p-2">
-            <div class="card col-3">
-                <div class="card-header bg-white border-0">
-                    <div class="d-flex justify-content-between">
-                        <h6 class="text-center">Venda do dia</h6>
+            <div class="col-md-3 shadow p-2" id="score">
+                <div class="d-flex justify-content-between border-0 bg-white" id="score">
+                    <div class="d-flex justify-content-center alert alert-warning py-0 rounded-circle px-2 py-2">
+                        <i class="pi pi-dollar" style="font-size: 1.2rem; color: #f0ad4e;"></i>
                     </div>
                 </div>
-                <div class="card-body">
-
-                </div>
-            </div>
-            <div class="card col-3" id="score">
-                <div class="card-header border-0 bg-white" id="score">
-                    <h6 class="text-center">Venda Mes atual</h6>
-                </div>
-                <div class="card-body p-1">
-                    <p v-for="sell in monthlySell.currentMonth">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</p>
-                </div>
-            </div>
-            <div class="card col-3">
-                <div class="card-header bg-white border-0">
-                    <div class="d-flex justify-content-between">
-                        <h6 class="text-center">Venda Mes anterior</h6>
+                <div class="d-flex justify-content-between p-0 bg-white">
+                    <div class="d-flex flex-column">
+                        <p class="d-flex flex-column p-0" v-for="sell in monthlySell.totalDay">
+                            <span class="fw-medium">{{ sell.totalDay == null ? '00 ' + 'R$' : sell.totalDay + ' R$' }}</span>
+                            <small>Venda hoje</small>
+                        </p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="pi pi-chart-line" style="color: #e63958; font-weight: 400; font-size: 1.3rem"></i>
                     </div>
                 </div>
-                <div class="card-body p-1">
-                    <p v-for="sell in monthlySell.lastMonth">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</p>
+            </div>
+            <div class="col-md-3 shadow p-2" id="score">
+                <div class="d-flex justify-content-between border-0 bg-white" id="score">
+                    <div class="d-flex justify-content-center alert alert-primary py-0 rounded-circle px-2 py-2">
+                        <i class="pi pi-dollar" style="font-size: 1.2rem; color: #0275d8;"></i>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between p-0 bg-white">
+                    <div class="d-flex flex-column">
+                        <p class="d-flex flex-column p-0" v-for="sell in monthlySell.currentMonth">
+                            <span class="fw-medium">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</span>
+                            <small>Venda mes atual</small>
+                        </p>
+                    </div>
+                   <div class="d-flex justify-content-center align-items-center">
+                       <div class="d-flex justify-content-center align-items-center rounded-circle" :class="cardClass.cardClassThis">
+                           <i v-if="monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
+                           <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
+                       </div>
+                       <small class="text-success px-1 fw-medium">+53%</small>
+                   </div>
+                </div>
+            </div>
+            <div class="col-md-3 shadow p-2" id="score">
+                <div class="d-flex justify-content-between border-0 bg-white" id="score">
+                    <div class="d-flex justify-content-center alert alert-danger py-0 rounded-circle px-2 py-2">
+                        <i class="pi pi-dollar" style="font-size: 1.2rem; color: #e63958;"></i>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between p-0 bg-white">
+                    <div class="d-flex flex-column">
+                        <p class="d-flex flex-column" v-for="sell in monthlySell.lastMonth">
+                            <span class="fw-medium">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</span>
+                            <small>Venda mes anetrior</small>
+                        </p>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <div class="d-flex justify-content-center align-items-center rounded-circle" :class="cardClass.cardClassLast">
+                            <i v-if="!monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
+                            <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -132,7 +165,13 @@ export default {
             },
             monthlySell:{
                 currentMonth: null,
-                lastMonth: null
+                lastMonth: null,
+                totalDay: null
+            },
+            monthlyComparaison: 0,
+            cardClass: {
+                cardClassThis: null,
+                cardClassLast: null
             }
         }
     },
@@ -170,7 +209,7 @@ export default {
             })
         },
 
-        get_type_waiter_dash(start, end){
+        async get_type_waiter_dash(start, end){
             this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
             this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
             start = this.dateFilter.start.toString();
@@ -180,9 +219,10 @@ export default {
                 {'end': end.substr(0, 15)}
             ]
             axios.get(`/api/bi/dash-type-waiter/${params[0].start}/${params[1].end}`).then((response) => {
-                console.log(response.data)
                 this.monthlySell.currentMonth = response.data.thisMonth;
                 this.monthlySell.lastMonth = response.data.lastMonth;
+                this.monthlySell.totalDay = response.data.totalDay
+                console.log("day" + this.monthlySell.totalDay)
                 this.dataTable = response.data.itemsCollection
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
@@ -211,6 +251,7 @@ export default {
                     }
                 }
                 this.donut()
+                this.monthCompare(response.data.thisMonth, response.data.lastMonth)
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -266,24 +307,35 @@ export default {
                 bindto: "#charDonut"
             })
         },
-        FilterData(){
+       monthCompare(actualy, lasmonth){
+            let result;
+           Object.keys(actualy).forEach(function(key){
+               let lastMonth = lasmonth[key].total == null ? 0 : lasmonth[key].total;
+               let thisMonth = actualy[key].total == null ? 0 : actualy[key].total
+               if (thisMonth > lastMonth){
+                   result = true;
+               }else {
+                   result = false
+               }
+           })
 
-            let start = this.dateFilter.start.toString();
-            let end = this.dateFilter.end.toString();
-            const params = [
-                {'start': start.substr(0, 15),},
-                {'end': end.substr(0, 15)}
-            ]
-
-            console.log(params[1].end);
-        }
+           if (result){
+               this.cardClass.cardClassThis = 'alert alert-success';
+               this.cardClass.cardClassLast = 'alert alert-danger'
+           }else{
+               this.cardClass.cardClassThis = 'alert alert-danger';
+               this.cardClass.cardClassLast = 'alert alert-success'
+           }
+           //result === false ? this.cardClass = 'alert alert-danger' : this.cardClass = 'alert alert-success'
+           this.monthlyComparaison = result;
+       }
     },
 
     mounted() {
-        this.getGeneralStat()
+        this.getGeneralStat();
+        //this.monthCompare();
         //this.get_type_waiter_dash()
         //this.donut()
-        console.log(this.typesCollection)
     }
 
 }

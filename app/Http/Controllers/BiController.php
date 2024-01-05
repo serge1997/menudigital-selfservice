@@ -11,6 +11,9 @@ use DateInterval;
 
 class BiController extends Controller
 {
+    /**
+     * @throws \Exception
+     */
     public function waiterStat($start, $end){
 
         $startDate = new DateTime($start);
@@ -34,6 +37,15 @@ class BiController extends Controller
         $sellThisMonthQuery.= "INNER JOIN pedidos AS pd ON pd.id = itens.item_pedido ";
         $sellThisMonthQuery .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%'";
         $sellThisMonthValue = DB::select($sellThisMonthQuery);
+
+        //sell today
+        $today = new DateTime();
+        $today = $today->format('Y-m-d');
+        $sellingToday = DB::table('itens_pedido')
+            ->select(DB::raw('SUM(itens_pedido.item_total) AS totalDay'))
+                ->join('pedidos', 'itens_pedido.item_pedido', '=', 'pedidos.id')
+                    ->where([['status_id', '<>', 6], ['pedidos.ped_emissao', '=' ,$today]])
+                        ->get();
 
         $waiter = DB::table("pedidos")
             ->select(
@@ -102,7 +114,8 @@ class BiController extends Controller
                     'type'=>$mealType,
                     'itemsCollection' => $itemsColection,
                     'lastMonth' => $sellLastMontValue,
-                    'thisMonth' => $sellThisMonthValue
+                    'thisMonth' => $sellThisMonthValue,
+                    'totalDay' => $sellingToday
                 ]
             );
     }
