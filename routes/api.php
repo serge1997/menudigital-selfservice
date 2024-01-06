@@ -134,6 +134,7 @@ Route::controller(UserRoleController::class)->group(function() {
 
 Route::controller(RestaurantController::class)->group(function() {
     Route::post('rest-info', 'create');
+    Route::get('rest-info', 'index');
     Route::put('rest-info', 'update');
 });
 

@@ -7,17 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Restaurant extends Model
 {
-    CONST RESTAURANT_KEY = 1;
     use HasFactory;
+    /**
+     * @const RESTAURANT_LOGO_SIZE
+     */
+    CONST RESTAURANT_LOGO_SIZE = 360000;
+    CONST RESTAURANT_KEY = 1;
 
-    protected $table = 'restaurant';
+    protected $table = 'restaurants';
     protected $fillable = [
-        'name',
-        'email',
-        'city',
-        'neighborhoods',
-        'logo',
-        'open_hour',
-        'close_hour'
+        'rest_name',
+        'rest_email',
+        'rest_cnpj',
+        'res_city',
+        'res_neighborhood',
+        'rest_cep',
+        'rest_streetName',
+        'rest_StreetNumber',
+        'res_logo',
+        'res_open',
+        'res_close'
     ];
 }
