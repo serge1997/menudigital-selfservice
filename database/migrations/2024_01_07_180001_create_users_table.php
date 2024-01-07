@@ -18,10 +18,13 @@ return new class extends Migration
             $table->string('tel')->nullable();
             $table->string('username')->unique();
             $table->string('password');
-            $table->integer('group_id')->unsigned();
-            $table->foreign('group_id')->references('id')
-                ->on('users_group')->onDelete('cascade');
-                $table->boolean('isactive')->default(true);
+            $table->integer('position_id')->unsigned();
+            $table->foreign('position_id')->references('id')
+                ->on('positions')->onDelete('cascade');
+            $table->integer('department_id')->unsigned();
+            $table->foreign('department_id')->references('id')
+                ->on('departments')->onDelete('cascade');
+            $table->boolean('isactive')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

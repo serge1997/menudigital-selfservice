@@ -18,7 +18,6 @@ return new class extends Migration
             $table->float("saldoInicial");
             $table->float("saldoFinal");
             $table->date("emissao");
-            $table->timestamps();
         });
     }
 

@@ -4,12 +4,12 @@ namespace App\Http\Services\Restaurant;
 use App\Models\Restaurant;
 class RestaurantRepository
 {
-    public function getOpenTime(): string
+    public static function getOpenTime(): string
     {
         return Restaurant::select('res_open')->limit(1);
     }
 
-    public function getCloseTime(): string
+    public static function getCloseTime(): string
     {
         return Restaurant::select('res_close')->limit(1);
     }

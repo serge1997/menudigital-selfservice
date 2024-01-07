@@ -11,6 +11,7 @@ use App\Models\Pedido;
 use App\Models\PaiementType;
 use DateTime;
 use App\Http\Services\UserInstance;
+use App\Http\Services\Restaurant\RestaurantRepository;
 class OrderTransfertController extends Controller
 {
     public $paimentStatus;

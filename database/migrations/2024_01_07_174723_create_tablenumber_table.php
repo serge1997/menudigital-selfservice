@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users_group', function (Blueprint $table) {
+        Schema::create('tablenumber', function (Blueprint $table) {
             $table->increments("id");
-            $table->string("groupe");
-            $table->timestamps();
+            $table->integer("table");
         });
     }
 
@@ -23,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users_group');
+        Schema::dropIfExists('tablenumber');
     }
 };
