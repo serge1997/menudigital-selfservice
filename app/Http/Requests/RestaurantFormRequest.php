@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\EmailValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
-use App\Rules\EmailValidation;
+//use App\Rules\EmailValidation;
 
 class RestaurantFormRequest extends FormRequest
 {
@@ -29,13 +30,12 @@ class RestaurantFormRequest extends FormRequest
     {
         return [
             'rest_name'          => ['required'],
-            'rest_email'         => ['required', new EmailValidation()],
+            'rest_email'         => ['required', new EmailValidation],
             'rest_cnpj'         => ['required'],
             'res_city'          => ['required'],
             'res_neighborhood'  => ['required'],
             'rest_streetName'   => ['required'],
             'rest_StreetNumber' => ['required'],
-            'res_logo'          => ['required'],
             'res_open'          => ['required'],
             'res_close'         => ['required']
         ];
@@ -51,7 +51,6 @@ class RestaurantFormRequest extends FormRequest
             'res_neighborhood.required'  => 'bairro obrigatório',
             'rest_streetName.required'   => 'rua obrigatório',
             'rest_StreetNumber.required' => 'numero obrigatório',
-            'res_logo.required'          => 'logo obrigatório',
             'res_open.required'          => 'hora obrigatório',
             'res_close.required'         => 'hora obrigatório'
         ];

@@ -3,7 +3,9 @@
         <template #container="{ closeCallback }">
             <div class="d-flex flex-column align-content-between h-full">
                 <div class="d-flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
-                    <span class="font-semibold text-2xl text-primary">Casino bar</span>
+                    <div v-for="rest in restaurant">
+                        <img class="w-25 type-btn" :src="'/img/logo/'+ rest.res_logo" alt="">
+                    </div>
                     <span>
                         <Button text type="button" @click="closeCallback" icon="pi pi-times" rounded outlined class="h-2rem w-2rem"></Button>
                     </span>
@@ -52,6 +54,12 @@
                                 Stock
                             </router-link>
                         </li>
+                        <li class="list-group-item rounded-0 border-0 border-top">
+                            <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
+                                <span class="pi pi-cart-plus"></span>
+                                Compras
+                            </router-link>
+                        </li>
                         <li class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'SettingPanel'}">
                             <span class="pi pi-cog"></span>
@@ -89,7 +97,8 @@ export default {
         return {
             sidebar: true,
             username: null,
-            visibleSidebar: false
+            visibleSidebar: false,
+            restaurant: null
         }
     },
 
@@ -114,6 +123,12 @@ export default {
     async mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
         authuser.then(result => {this.username = result.name})
+        axios.get('/api/rest-info').then((response) => {
+            console.log(response.data)
+            this.restaurant = response.data
+        }).catch((errors) => {
+            console.log(errors)
+        })
     }
 }
 </script>

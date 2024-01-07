@@ -12,7 +12,7 @@ class Restaurant extends Model
      * @const RESTAURANT_LOGO_SIZE
      */
     CONST RESTAURANT_LOGO_SIZE = 360000;
-    CONST RESTAURANT_KEY = 1;
+    CONST RESTAURANT_KEY = 10;
 
     protected $table = 'restaurants';
     protected $fillable = [

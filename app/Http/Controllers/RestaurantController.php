@@ -20,28 +20,40 @@ class RestaurantController extends Controller
     {
         if ($request->isMethod("post")){
             try {
-
                 $request->validated();
                 $values = $request->all();
                 $restaurant = new Restaurant($values);
-                if($request->hasFile('res_logo') && $request->file('res_logo')->isValid()){
-                    $logo = $request->res_logo;
-                    $extension = $logo->extension();
-                    $fotoname = md5($logo->getClientOriginalName(). strtotime("now")). ".". $extension;
-                    $logo->move(public_path('img/logo'), $fotoname);
-                    $restaurant->res_logo = $fotoname;
-                    list($width, $height) = getimagesize('img/logo/'.$fotoname);
-                    if (($width * $height) > Restaurant::RESTAURANT_LOGO_SIZE) {
-                        unlink('img/logo/'.$fotoname);
-                        return response()->json("logo muito grande");
-                    }
-                }
+                $restaurant->res_logo = "waiting logo update";
                 $restaurant->save();
                 return response()->json("Informação salvou com successo");
             }catch (Exception $e){
                 return response()->json($e->getMessage(), 422);
             }
         }
+    }
+
+    public function createLogo(Request $request)
+    {
+       if ($request->isMethod('post')){
+           if($request->hasFile('res_logo') && $request->file('res_logo')->isValid()){
+               $logo = $request->res_logo;
+               $extension = $logo->extension();
+               $fotoname = md5($logo->getClientOriginalName(). strtotime("now")). ".". $extension;
+               $logo->move(public_path('img/logo'), $fotoname);
+               list($width, $height) = getimagesize('img/logo/'.$fotoname);
+               if (($width * $height) > Restaurant::RESTAURANT_LOGO_SIZE) {
+                   unlink('img/logo/'.$fotoname);
+                   return response()->json("logo muito grande", 422);
+               }
+               DB::table('restaurants')
+                   ->where('id', Restaurant::RESTAURANT_KEY)
+                   ->update([
+                       'res_logo' => $fotoname
+                   ]);
+               return response()->json("Logo Salvou com sucesso");
+           }
+        return response()->json("Campo logo obrigatorio", 422);
+       }
     }
 
     public function update(Request $request)

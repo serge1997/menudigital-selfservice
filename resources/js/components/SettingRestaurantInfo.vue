@@ -7,9 +7,19 @@
                     <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                     <div class="modal-body p-4">
-                        <div class="d-flex justify-content-center align-items-center py-4">
+                        <div class="d-flex justify-content-center align-items-center mt-3">
                             <div class="res-header">
                                 <h6 class="text-capitalize">Salvar informação geral</h6>
+                            </div>
+                        </div>
+                        <div v-if="restaurant.id" class="d-flex flex-column align-items-center py-4">
+                            <div class="res-header">
+                                <Button @click="createLogo" label="Salvar logo" icon="pi pi-plus" />
+                            </div>
+                            <div class="d-flex flex-column mt-2">
+                                <label class="" id="rest-logo">Logo: </label>
+                                <InputText class="col-md-12" :class="logoInvalid" type="file" @change="logoHandle" id="rest-logo"/>
+                                <small class="text-danger" v-if="errMsgLogo" v-text="errMsgLogo"></small>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
@@ -57,11 +67,6 @@
                                 <InputText type="text" :class="invalidInput" v-model="restaurant.rest_StreetNumber" placeholder="" id="rest-StreetNumber" />
                                 <small class="text-danger" v-if="errMsg" v-for="errStreetNumber in errMsg.rest_StreetNumber" v-text="errStreetNumber"></small>
                             </div>
-                        </div>
-                        <div v-if="!restaurant.id" class="d-flex flex-column mt-2">
-                            <label class="" id="rest-logo">Logo: </label>
-                            <InputText :class="invalidInput" type="file" @change="logoHandle" id="rest-logo"/>
-                            <small class="text-danger" v-if="errMsg" v-for="errlogo in errMsg.res_logo" v-text="errlogo"></small>
                         </div>
                         <div class="d-flex gap-2 mt-2">
                             <div class="w-75 d-flex flex-column">
@@ -111,7 +116,9 @@ export default {
                 res_close: null
             },
             errMsg: null,
-            invalidInput: null
+            errMsgLogo: null,
+            invalidInput: null,
+            logoInvalid: null,
         }
     },
 
@@ -143,22 +150,10 @@ export default {
         },
         postRestInfo(){
             let method;
-            let data = new FormData()
-            data.append('id', this.restaurant.id);
-            data.append('res_logo', this.restaurant.res_logo);
-            data.append('rest_name', this.restaurant.rest_name);
-            data.append('rest_email', this.restaurant.rest_email);
-            data.append('rest_cnpj', this.restaurant.rest_cnpj);
-            data.append('res_city', this.restaurant.res_city);
-            data.append('res_neighborhood', this.restaurant.res_neighborhood);
-            data.append('rest_cep', this.restaurant.rest_cep);
-            data.append('rest_streetName', this.restaurant.rest_streetName);
-            data.append('rest_StreetNumber', this.restaurant.rest_StreetNumber);
-            data.append('res_open', this.restaurant.res_open);
-            data.append('res_close', this.restaurant.res_close);
             this.restaurant.id == null ? method = axios.post: method = axios.put;
-            method("/api/rest-info", this.restaurant.id == null ? data : this.restaurant).then((response) => {
+            method("/api/rest-info", this.restaurant).then((response) => {
                 console.log(response.data)
+                this.invalidInput = ''
                 this.$toast.success(response.data);
             }).catch((errors) => {
                 this.invalidInput = 'p-invalid';
@@ -166,6 +161,18 @@ export default {
                 console.log(errors.response.data);
             })
         },
+        createLogo(){
+            let logo = new FormData();
+            logo.append('res_logo', this.restaurant.res_logo);
+            axios.post('/api/rest-logo', logo).then((response) => {
+                console.log(response.data);
+                this.$toast.success(response.data)
+                this.logoInvalid = ''
+            }).catch((errors) => {
+                this.errMsgLogo = errors.response.data
+                this.logoInvalid = 'p-invalid';
+            })
+        }
     },
 
     mounted(){

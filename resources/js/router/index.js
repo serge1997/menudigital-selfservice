@@ -15,7 +15,7 @@ import BusinessInteligence from '../components/Pages/Dashboard/BusinessInteligen
 import SettingPanel from '../components/Pages/Dashboard/SettingPanel.vue';
 import Stock from '../components/Pages/Dashboard/Stock.vue';
 import PublicMenu from '../components/Pages/PublicMenu.vue'
-import { defaults } from "lodash";
+import PurchaseRequisition from "../components/Pages/Dashboard/Purchase/PurchaseRequisition.vue";
 
 
 
@@ -180,7 +180,12 @@ const routes = [
         path: '/public-menu',
         name: 'PublicMenu',
         component:PublicMenu
-    }
+    },
+    {
+        path: '/dashboard/purchase/',
+        name: 'PurchaseRequisition',
+        component: PurchaseRequisition
+    },
 ]
 
 const router = createRouter({
