@@ -71,8 +71,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-
-                if (response.data.group_id != 1 && response.data.group_id != 2){
+                if (response.data.department_id !== 1 && response.data.department_id !== 2 && response.data.position_id !== 1 && response.data.position_id !== 4 ){
                     next('/home')
                 }else{
                     next()
@@ -90,7 +89,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
 
-                if (response.data.group_id != 1 && response.data.group_id != 2){
+                if (response.data.department_id !== 1){
                     next('/home')
                 }else{
                     next()
@@ -120,7 +119,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-                if (response.data.group_id != 1 && response.data.group_id != 2) {
+                if (response.data.department_id !== 1 && response.data.department_id !== 2) {
                     next('/home')
                 }else{
                     next()
@@ -138,7 +137,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-                if (response.data.group_id != 1 && response.data.group_id != 2) {
+                if (response.data.department_id !== 1) {
                     next('/home')
                 }else{
                     next()
@@ -166,7 +165,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
 
-                if (response.data.group_id != 1 && response.data.group_id != 2){
+                if (response.data.department_id !== 1 && response.data.position_id !== 4 && response.data.position_id !== 5){
                     next('/home')
                 }else{
                     next()

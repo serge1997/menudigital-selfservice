@@ -14,6 +14,7 @@ use App\Models\Technicalfiche;
 use DateTime;
 use Exception;
 use App\Http\Services\Stock\StockServiceRepository;
+use App\Http\Requests\StockEntryRequest;
 
 class StockController extends Controller
 {
@@ -27,31 +28,12 @@ class StockController extends Controller
         $this->supplier = new Supplier();
         $this->product = new Product();
     }
-    public function storeStockEntry(Request $request, StockServiceRepository $service) :JsonResponse
+    public function storeStockEntry(StockEntryRequest $request, StockServiceRepository $service) :JsonResponse
     {
-        $request->validate([
-            'productID'=> ['required'],
-            'supplierID'=> ['required',''],
-            'quantity'=> ['required'],
-            'unitCost'=> ['required']
-        ],
-        [
-            'productID.required'=> 'product is required',
-            'supplierID.required' => 'supplier is required',
-            'quantity.required' => 'quantity is required',
-            'unitCost.required' => 'cost is required'
-        ]);
 
+        $request->validated();
         $hoje = new DateTime();
         $hoje = $hoje->format("Y-m-d");
-
-        $request->validate([
-            'productID'=> ['required'],
-            'supplierID' => ['required'],
-            'quantity' => ['required'],
-            'unitCost' => ['required'],
-        ]);
-
         $produtData = Product::where('id', $request->productID)
             ->first();
         $product = Saldo::select(DB::raw('MAX(emissao) emissao'), 'productID', 'saldoInicial', 'saldoFinal')

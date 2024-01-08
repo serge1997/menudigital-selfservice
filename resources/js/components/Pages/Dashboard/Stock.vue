@@ -1,12 +1,7 @@
 <template>
     <div class="container-fluid">
+        <SideBarComponent />
         <div class="col-md-2 d-flex justify-content-between">
-            <router-link class="btn border-0 p-0" :to="{name: 'OperadorPanel'}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="feather feather-corner-down-left">
-                    <polyline points="9 10 4 15 9 20"></polyline><path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
-                </svg>
-            </router-link>
             <h6 class="mt-5 p-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database">
@@ -95,6 +90,7 @@ import CreateProductComponent from '../../CreateProductComponent.vue';
 import TechnicalSheetComponent from '../../TechnicalSheetComponent.vue';
 import StockEntryComponent from '../../StockEntryComponent.vue';
 import SupplierComponent from '../../SupplierComponent.vue';
+import SideBarComponent from "./SideBarComponent.vue";
 import DataTable from 'primevue/datatable';
 import Dropdown from "primevue/dropdown";
 import Column from 'primevue/column';
@@ -112,6 +108,7 @@ export default {
         TechnicalSheetComponent,
         StockEntryComponent,
         SupplierComponent,
+        SideBarComponent,
         DataTable,
         Column,
         Dialog,

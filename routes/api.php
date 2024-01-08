@@ -12,6 +12,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\PurchaseRequisitionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -145,4 +146,8 @@ Route::controller(SupplierController::class)->group(function() {
     Route::get('supplier/{id}', 'getToUpdate');
     Route::put('supplier', 'update');
     Route::delete('supplier/{id}', 'delete');
+});
+
+Route::controller(PurchaseRequisitionController::class)->group(function() {
+
 });

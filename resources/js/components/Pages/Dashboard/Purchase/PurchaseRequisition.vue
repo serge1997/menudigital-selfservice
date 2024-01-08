@@ -17,9 +17,9 @@
             <Dialog v-model:visible="visibleNewPurchaseModal" maximizable modal header="Nova requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="w-100 mt-3">
                     <div class="w-100 m-auto d-flex justify-content-between align-items-center">
-                        <h6>Requerente: Serge Gogo</h6>
+                        <h6>Requerente: {{ user.name }}</h6>
                        <div class="w-50">
-                           <Dropdown v-model="purchaseData.sector_id" :options="sector" option-value="un" option-label="un" placeholder="Selecione setor " class="w-100 md:w-14rem" />
+                           <Dropdown v-model="purchaseData.department_id" :options="departments" option-value="id" option-label="name" placeholder="Selecione o departamento" class="w-100 md:w-14rem" />
                        </div>
                        <Calendar v-model="purchaseData.delivery_date" showIcon placeholder="Data entrega desejada"/>
                     </div>
@@ -45,6 +45,7 @@
 <script>
 import SideBarComponent from "../SideBarComponent.vue";
 import PurchaseRequisitionEdition from "./PurchaseRequisitionEdition.vue";
+import authuser from "./../../auth.js";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
 import Dialog from "primevue/dialog";
@@ -73,21 +74,20 @@ export default {
     data(){
         return {
             visibleNewPurchaseModal: false,
-            sector: [
-                { un: 'Cozinha' },
-                { un: 'Bar' },
-                { un: 'Sala' },
-                { un: 'Economat' },
-            ],
+            departments: null,
             purchaseData: {
-                sector_id: null,
+                department_id: null,
                 user_id: null,
                 delivery_date: null,
                 products_id: [],
                 products_quantity: []
             },
             incrementProductInput: [],
-            products: null
+            products: null,
+            user: {
+                name: null,
+                id: null
+            }
         }
     },
     methods: {
@@ -106,7 +106,15 @@ export default {
             this.suppliers = response.data.suppliers
         }).catch((errors) => {
             console.log(errors)
+        });
+
+        axios.get('/api/group').then((response) => {
+            this.departments = response.data.departments;
+        }).catch((error) => {
+            console.log(error)
         })
+
+        authuser.then(result => { this.user.name = result.name});
     }
 }
 </script>

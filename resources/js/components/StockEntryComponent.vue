@@ -3,6 +3,11 @@
         <Button label="Save a product delivery" icon="pi pi-external-link" @click="visibleStockEntryModal = true" />
         <Dialog v-model:visible="visibleStockEntryModal" maximizable modal header="Save product Delivery" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
+                <div class="w-100 d-flex flex-column gap-2 mt-3">
+                    <label for="product-quantity">Numero da requisição: </label>
+                    <InputText :class="invalid" type="text" id="product-quantity" v-model="stockEntry.requisition_id" aria-describedby="product-name" placeholder="Digite o numero da requisição"/>
+                    <small class="text-danger" v-if="errMsg" v-for="requisition_id in errMsg.requisition_id" id="product-quantity-err"  v-text="requisition_id"></small>
+                </div>
                 <div class="w-100 d-flex flex-column gap-2">
                     <label for="product-name">Product name</label>
                     <Dropdown v-model="stockEntry.productID" :options="products" option-value="id" option-label="prod_name" placeholder="product"/>
@@ -54,6 +59,7 @@ export default{
         return {
             stockEntry: {
                 productID: null,
+                requisition_id: null,
                 unitCost: null,
                 quantity: null,
                 supplierID: null

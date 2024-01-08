@@ -23,7 +23,8 @@ class User extends Authenticatable
         'tel',
         'username',
         'password',
-        'group_id',
+        'department_id',
+        'position_id',
         'email'
     ];
 

@@ -14,6 +14,7 @@ class StockEntry extends Model
         [
             'productID',
             'supplierID',
+            'requisition_id',
             'unitCost',
             'quantity',
             'totalCost'

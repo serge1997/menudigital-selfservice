@@ -22,10 +22,26 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'tel' => ['required'],
-            'email' => ['required'],
-            'password' => ['required']
+            'name'          => ['required'],
+            'tel'           => ['required'],
+            'email'         => ['required'],
+            'password'      => ['required'],
+            'department_id' => ['required'],
+            'position_id'   => ['required'],
+            'username'      => ['required']
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required'              => 'nome obrigatório',
+            'tel.required'               => 'telefone obrigatório',
+            'email.required'             => 'email obrigatório',
+            'password.required'          => 'senha obrigatório',
+            'department_id.required'     => 'departamento é obrigatório',
+            'position_id.required'       => 'cargo é obrigatório',
+            'username.required'          => 'nome de usuário é obrigatório'
         ];
     }
 }

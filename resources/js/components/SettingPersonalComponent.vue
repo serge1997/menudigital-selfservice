@@ -69,7 +69,7 @@
                                         <td class="text-uppercase p-3">{{ employe.name }}</td>
                                         <td class="p-3">{{ employe.email }}</td>
                                         <td class="p-3">{{ employe.tel }}</td>
-                                        <td class="text-uppercase p-3">{{ employe.groupe }}</td>
+                                        <td class="text-uppercase p-3">{{ employe.position }}</td>
                                         <td class="p-3">
                                             <button class="btn" @click="ShowEmployeEditForm(employe.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -88,7 +88,7 @@
                                                     <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">Poste</h6>
                                                     <div class="w-100">
                                                         <li class="w-100">
-                                                            <button v-for="group in groups" @click="updateEmployeStatus(employe.id, group.id)" class="btn fw-medium dropdown-btn p-2 w-100 rounded-0 text-left border-bottom text-capitalize">{{ group.groupe }}</button>
+                                                            <button v-for="position in positions" @click="updateEmployeStatus(employe.id, position.id)" class="btn fw-medium dropdown-btn p-2 w-100 rounded-0 text-left border-bottom text-capitalize">{{ position.name }}</button>
                                                             <button class="btn"></button>
                                                         </li>
                                                     </div>
@@ -134,7 +134,7 @@ export default {
                 user_tel: null
             },
             userForEdit: null,
-            groups: null,
+            positions: null,
             errMsg: null,
             load: false,
             user_roles: null,
@@ -198,7 +198,7 @@ export default {
 
         getUsergroup() {
             axios.get('/api/group').then((response) => {
-                this.groups = response.data
+                this.positions = response.data.positions
             }).catch((error) => {
                 console.log(error)
             })

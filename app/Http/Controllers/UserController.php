@@ -32,11 +32,17 @@ class UserController extends Controller
 
     public function getGroup()
     {
-        $group = DB::table('users_group')
+        $departments = DB::table('departments')
             ->select('*')
                 ->get();
 
-        return response()->json($group);
+        $positions = DB::table('positions')
+            ->get();
+
+        return response()->json([
+            'departments' => $departments,
+            'positions'   => $positions
+        ]);
     }
 
     public function create(StoreUserRequest $request)
@@ -52,10 +58,10 @@ class UserController extends Controller
             foreach ($roles as $manager) {
                 if ($manager->role_id == Role::MANAGER) {
                     $create->save();
-                    return response()->json(["msg" => "Usuario criado com sucesso !", "status"=>200]);
+                    return response()->json("Usuario criado com sucesso !");
                 }
             };
-            return response()->json(["msg" => "User don't have permission", "status" => 401]);
+            return response()->json("Voçê não tem permissão", 500);
         }catch(Exception $e){
             echo "Usuario não pode ser cadastrado";
 
@@ -197,10 +203,10 @@ class UserController extends Controller
                 "users.name",
                 "users.email",
                 "users.tel",
-                "users_group.groupe",
-                "users_group.id as group_id"
+                "positions.name AS position",
+                "positions.id"
             )
-                ->join("users_group", "users.group_id", "=", "users_group.id")
+                ->join("positions", "users.position_id", "=", "positions.id")
                     ->where('isactive', true)
                         ->get();
 

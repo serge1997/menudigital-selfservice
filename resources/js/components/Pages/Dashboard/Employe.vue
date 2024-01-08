@@ -47,8 +47,15 @@
                                     <small class="text-danger" v-if="errMsg" v-for="errpassword in errMsg.password" id="user-password-err"  v-text="errpassword"></small>
                                 </div>
                             </div>
-                            <div class="col-mt-12 mt-3">
-                                <Dropdown v-model="user.group_id" option-value="id" :options="groups" optionLabel="groupe" placeholder="Select user function" class="w-100 md:w-14rem" />
+                            <div class="col-md-12 d-flex mt-3 gap-1">
+                                <div class="col-md-6">
+                                    <Dropdown v-model="user.department_id" option-value="id" :options="departments" optionLabel="name" placeholder="Departamento.." class="w-100 md:w-14rem" />
+                                    <small class="text-danger" v-if="errMsg" v-for="errdepartment in errMsg.department_id" id="user-department-err"  v-text="errdepartment"></small>
+                                </div>
+                                <div class="col-md-6">
+                                    <Dropdown v-model="user.position_id" option-value="id" :options="positions" optionLabel="name" placeholder="Cargo.." class="w-100 md:w-14rem" />
+                                    <small class="text-danger" v-if="errMsg" v-for="errposition in errMsg.position_id" id="user-password-err"  v-text="errposition"></small>
+                                </div>
                             </div>
                         </div>
                         <div class="mt-3">
@@ -78,13 +85,15 @@ export default {
 
     data(){
         return {
-            groups: null,
+            departments: null,
+            positions: null,
             user: {
                 name: null,
                 tel: null,
                 username: null,
                 password: null,
-                group_id: null,
+                department_id: null,
+                position_id: null,
                 email: null
             },
             errMsg: null,
@@ -95,7 +104,8 @@ export default {
     methods: {
         getUsergroup() {
             axios.get('/api/group').then((response) => {
-                this.groups = response.data
+                this.departments = response.data.departments;
+                this.positions = response.data.positions;
             }).catch((error) => {
                 console.log(error)
             })
@@ -103,19 +113,21 @@ export default {
 
         createUser() {
             axios.post('/api/create/user', this.user).then((response) => {
-                if (response.data.status === 200) {
-                    this.$toast.success(response.data.msg);
-                }else{
-                    this.$toast.error(response.data.msg);
-                }
-                this.user.email = ""
-                this.user.name = ""
-                this.user.tel = ""
-                this.user.group_id = ""
-                this.user.password = ""
+                this.user.email = "";
+                this.user.name = "";
+                this.user.tel = "";
+                this.user.group_id = "";
+                this.user.password = "";
+                this.invalid = '';
+                this.errMsg = null;
+                this.$swal.fire({
+                    text: response.data,
+                    icon: 'success'
+                });
             }).catch((errors) => {
                 console.log(errors.response.data.errors);
                 this.errMsg = errors.response.data.errors;
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : null;
                 this.invalid = 'p-invalid'
             })
         }
