@@ -2,7 +2,9 @@
 namespace App\Http\Services\Product;
 
 use App\Models\Product;
+use App\Models\StockEntry;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ProductRepositoty
 {
@@ -29,5 +31,18 @@ class ProductRepositoty
                 throw new Exception("Para mudar o nome do produto escolhe um nome ainda não cadastrado. Esse nome já existe.");
             }
         }
+    }
+
+    public function getLastProductCost($id)
+    {
+        $lastCost = DB::table('stock_entries')->select(
+                DB::raw('MAX(emissao) AS emissao'),
+                'unitCost',
+                'productID',
+            )->where('productID', $id)
+                ->groupBy('unitCost', 'productID')
+                    ->first();
+
+        return  $lastCost;
     }
 }

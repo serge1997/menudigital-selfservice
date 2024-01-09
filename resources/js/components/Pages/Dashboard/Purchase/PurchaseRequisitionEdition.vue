@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <Button @click="visibleEditionPurchaseModal= true" label="Editar requisição" icon="pi pi-plus"/>
+        <Button @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
         <Dialog v-model:visible="visibleEditionPurchaseModal" maximizable modal header="Edição requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
                 <h6>Lista dos itens</h6>
@@ -60,6 +60,7 @@ export default {
         Badge,
         Textarea
     },
+    props: ['id'],
 
     data(){
         return {
@@ -80,6 +81,17 @@ export default {
                 products_id: null,
                 status_id: null
             }
+        }
+    },
+    methods: {
+        getRequisitionItens(id){
+            axios.get(`/api/purchase-requisition/${id}`).then((response) => {
+                console.log(response.data)
+                this.visibleEditionPurchaseModal = true;
+            }).catch((errors) => {
+                console.log(errors)
+            })
+
         }
     }
 }

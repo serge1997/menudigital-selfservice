@@ -10,6 +10,7 @@ class RequisitionItem extends Model
     use HasFactory;
 
     protected $table = 'itens_requisitions';
+    public $timestamps = false;
     protected $fillable = [
         'requisition_id',
         'product_id',

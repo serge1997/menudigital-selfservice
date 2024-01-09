@@ -9,6 +9,10 @@ class PurchaseRequisition extends Model
 {
     use HasFactory;
 
+    CONST REQUISITION_WAITING = 1;
+    CONST REQUISITION_APPROVED = 2;
+    CONST REQUISITION_REJECTED = 3;
+
     protected $table = 'purchase_requisitions';
     protected $fillable = [
         'user_id',

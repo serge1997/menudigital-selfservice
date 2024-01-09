@@ -149,5 +149,7 @@ Route::controller(SupplierController::class)->group(function() {
 });
 
 Route::controller(PurchaseRequisitionController::class)->group(function() {
-
+    Route::post('purchase-requisition', 'create');
+    Route::get('purchase-requisition', 'index');
+    Route::get('purchase-requisition/{id}', 'getRequisitionToUpdate');
 });

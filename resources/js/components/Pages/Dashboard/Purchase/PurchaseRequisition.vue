@@ -5,7 +5,7 @@
             <Toolbar class="w-100">
                 <template #start>
                     <div>
-                        <PurchaseRequisitionEdition />
+
                     </div>
                 </template>
                 <template #end>
@@ -14,21 +14,32 @@
                     </div>
                 </template>
             </Toolbar>
+
             <Dialog v-model:visible="visibleNewPurchaseModal" maximizable modal header="Nova requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="w-100 mt-3">
                     <div class="w-100 m-auto d-flex justify-content-between align-items-center">
                         <h6>Requerente: {{ user.name }}</h6>
-                       <div class="w-50">
-                           <Dropdown v-model="purchaseData.department_id" :options="departments" option-value="id" option-label="name" placeholder="Selecione o departamento" class="w-100 md:w-14rem" />
+                       <div class="w-50 d-flex flex-column">
+                           <Dropdown v-model="purchaseData.department_id" :class="invalidInput" :options="departments" option-value="id" option-label="name" placeholder="Selecione o departamento" class="w-100 md:w-14rem" />
+                           <small class="text-danger" v-if="errMsg" v-for="errdepartment in errMsg.department_id" v-text="errdepartment"></small>
                        </div>
-                       <Calendar v-model="purchaseData.delivery_date" showIcon placeholder="Data entrega desejada"/>
+                       <div class="w-25 d-flex flex-column">
+                           <Calendar :class="invalidInput" v-model="purchaseData.delivery_date" showIcon placeholder="Data entrega desejada"/>
+                           <small class="text-danger" v-if="errMsg" v-for="errdata in errMsg.delivery_date" v-text="errdata"></small>
+                       </div>
                     </div>
                 </div>
                 <div class="w-100 d-flex flex-column align-items-center gap-2 mt-4">
                     <Button @click="incrementProductInput.push('')" icon="pi pi-plus" label="Adicionar produto" />
                    <div v-for="(field, index) in incrementProductInput" class="w-100 d-flex justify-content-center gap-2 mt-4">
-                       <Dropdown v-model="purchaseData.products_id[index]" :options="products" option-value="id" option-label="prod_name" placeholder="Selecione o produto" class="w-100 md:w-14rem" />
-                       <InputText class="col-md-5" type="number" v-model="purchaseData.products_quantity[index]"  placeholder="Quantidade"/>
+                       <div class="col-md-5 d-flex flex-column">
+                           <Dropdown :class="invalidInput" v-model="purchaseData.products_id[index]" :options="products" option-value="id" option-label="prod_name" placeholder="Selecione o produto" class="w-100 md:w-14rem" />
+                           <small class="text-danger" v-if="errMsg" v-for="errproduct in errMsg.product_id" v-text="errproduct"></small>
+                       </div>
+                       <div class="col-md-5">
+                           <InputText :class="invalidInput" class="w-100" type="number" v-model="purchaseData.quantity[index]"  placeholder="Quantidade"/>
+                           <small class="text-danger" v-if="errMsg" v-for="errquantity in errMsg.quantity" v-text="errquantity"></small>
+                       </div>
                        <Button icon="pi pi-plus" text @click="incrementProductInput.push('')" />
                        <Button icon="pi pi-trash" style="color: red" text @click="decrementProductInput(index)" />
                    </div>
@@ -38,7 +49,31 @@
                 </div>
             </Dialog>
         </div>
-        <div class="col-md-10 m-auto p-4">
+        <div class="col-md-12 m-auto p-4">
+            <DataTable :value="requisitions" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
+                <Column field="requisition_code" sortable style="width: 15%" header="Code"></Column>
+                <Column field="require_name" sortable style="width: 20%" header="Requerente"></Column>
+                <Column field="name" sortable style="width: 25%" header="Departamento"></Column>
+                <Column header="Status" style="width: 25%">
+                    <template class="w-100" #body="{ data }">
+                        <Tag style="width: 90px" v-if="data.stat_desc === requisition_status.waiting" :value="data.stat_desc" severity="warning" />
+                        <Tag style="width: 90px" v-else-if="data.stat_desc === requisition_status.rejected" :value="stat_desc" severity="danger" />
+                        <Tag style="width: 90px" v-else :value="stat_desc" severity="success" />
+                    </template>
+                </Column>
+                <Column field="prod_unmed" header="Status" style="width: 25%">
+                    <template #body="{ data }">
+                        <div class="d-flex">
+                            <div>
+                                <PurchaseRequisitionEdition :id="data.id" />
+                            </div>
+                            <div>
+                                <Button @click="deleteProduct(data.id)" style="color: red" icon="pi pi-trash" text/>
+                            </div>
+                        </div>
+                    </template>
+                </Column>
+            </DataTable>
         </div>
     </div>
 </template>
@@ -54,6 +89,7 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
+import Tag from "primevue/tag";
 
 export default {
     name: 'PurchaseRequisition',
@@ -68,7 +104,8 @@ export default {
         DataTable,
         Button,
         Dropdown,
-        Calendar
+        Calendar,
+        Tag
     },
 
     data(){
@@ -80,27 +117,51 @@ export default {
                 user_id: null,
                 delivery_date: null,
                 products_id: [],
-                products_quantity: []
+                quantity: []
             },
             incrementProductInput: [],
             products: null,
             user: {
                 name: null,
                 id: null
+            },
+            errMsg: null,
+            invalidInput: null,
+            requisitions: null,
+            requisition_status:{
+                waiting: "Pendente",
+                approved: "Aprovado",
+                rejected: "Recusado",
             }
         }
     },
     methods: {
         createPurchaseRequisition(){
-            console.log(this.purchaseData)
+            axios.post('/api/purchase-requisition', this.purchaseData).then((response) => {
+                console.log(response.data)
+                this.invalidInput = ''
+            }).catch((errors) => {
+                this.invalidInput = 'p-invalid';
+                this.errMsg = errors.response.data.errors
+            })
         },
         decrementProductInput(index){
             this.purchaseData.products_quantity.splice(index, 1);
             this.purchaseData.products_id.splice(index, 1);
             this.incrementProductInput.splice(index, 1);
+        },
+
+        index(){
+            axios.get('/api/purchase-requisition').then((response) => {
+                console.log(response.data);
+                this.requisitions = response.data
+            }).catch((errors) => {
+                console.log(errors)
+            })
         }
     },
     mounted(){
+        this.index();
         axios.get('/api/products').then((response) => {
             this.products = response.data.products
             this.suppliers = response.data.suppliers
@@ -114,7 +175,7 @@ export default {
             console.log(error)
         })
 
-        authuser.then(result => { this.user.name = result.name});
+        authuser.then(result => { this.user.name = result.name; this.purchaseData.user_id = result.id});
     }
 }
 </script>
