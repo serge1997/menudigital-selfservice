@@ -77,7 +77,7 @@ class UserController extends Controller
         try {
             $user = User::where([['username', $request->username], ['isactive', true]])->first();
 
-            if (!$user->username) {
+            if (!$user->username || !Hash::check($request->password, $user->password)) {
                 throw ValidationException::withMessages([
                     'msgerr' => ['senha ou usuario incoreto']
                 ]);

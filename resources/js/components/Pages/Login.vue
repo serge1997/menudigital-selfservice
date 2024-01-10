@@ -64,7 +64,6 @@ export default {
             axios.post('/api/login', this.credentials).then((response) => {
                 this.$router.push({path: '/dashboard/operador'})
                 localStorage.setItem('token', response.data)
-                console.log(response.data)
                 this.$toast.success("Seja Bem vindo!");
             }).catch((errors) => {
                 errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""

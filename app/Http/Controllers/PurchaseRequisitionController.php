@@ -12,6 +12,7 @@ use App\Http\Services\Product\ProductRepositoty;
 use Exception;
 use App\Http\Services\Util\Util;
 use Illuminate\Support\Facades\DB;
+use App\Models\RequisitionStatus;
 
 class PurchaseRequisitionController extends Controller
 {
@@ -85,8 +86,10 @@ class PurchaseRequisitionController extends Controller
                 'purchase_requisitions.id',
                 'purchase_requisitions.delivery_date',
                 'users.name AS require_name',
+                'itens_requisitions.product_id',
+                'itens_requisitions.quantity',
                 'products.prod_name',
-                'departments.name'
+                'departments.name AS department_name'
             )
             ->join('itens_requisitions', 'purchase_requisitions.id', '=', 'itens_requisitions.requisition_id')
                 ->join('departments','purchase_requisitions.department_id', '=', 'departments.id')
@@ -94,6 +97,9 @@ class PurchaseRequisitionController extends Controller
                         ->join('products','itens_requisitions.product_id', '=', 'products.id' )
                             ->where('purchase_requisitions.id', $id)
                                 ->get();
-        return response()->json($requisition);
+        return response()->json([
+            'requisition_itens' => $requisition,
+            'requisition_status'      => RequisitionStatus::all()
+            ]);
     }
 }
