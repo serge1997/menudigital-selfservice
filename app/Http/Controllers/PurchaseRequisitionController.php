@@ -87,7 +87,7 @@ class PurchaseRequisitionController extends Controller
                 'purchase_requisitions.delivery_date',
                 'users.name AS require_name',
                 'itens_requisitions.product_id',
-                'itens_requisitions.quantity',
+                DB::raw('CASE WHEN itens_requisitions.confirm_quantity = 0 THEN itens_requisitions.quantity ELSE itens_requisitions.confirm_quantity END AS quantity'),
                 'products.prod_name',
                 'departments.name AS department_name'
             )
@@ -101,5 +101,49 @@ class PurchaseRequisitionController extends Controller
             'requisition_itens' => $requisition,
             'requisition_status'      => RequisitionStatus::all()
             ]);
+    }
+
+    public function searchRequisitionCode($requisitionCode)
+    {
+        $code = DB::table('purchase_requisitions')->select('requisition_code')
+            ->where([['requisition_code', 'like', '%'.$requisitionCode.'%'], ['status_id', '<>', PurchaseRequisition::REQUISITION_REJECTED]])
+            ->get();
+
+        return response()->json($code);
+    }
+
+    public function getRequisitionProduct(Request $request)
+    {
+        $code = $request->requisition_code;
+        $requisition = DB::table('itens_requisitions')
+            ->select(
+                'itens_requisitions.product_id',
+                'suppliers.sup_name',
+                'itens_requisitions.quantity',
+                'itens_requisitions.confirm_quantity',
+                'products.prod_name',
+            )
+            ->join('products', 'itens_requisitions.product_id', '=', 'products.id')
+               // ->join('products','itens_requisitions.product_id', '=', 'products.id' )
+                    ->join('suppliers', 'products.prod_supplierID', '=', 'suppliers.id')
+                        ->where('itens_requisitions.requisition_code', $code)
+                            ->get();
+
+        return response()->json($requisition);
+
+    }
+
+    public function updateRequisitionProductQuantity(Request $request)
+    {
+        if ($request->isMethod("post")){
+
+            DB::table('itens_requisitions')
+                ->where([['requisition_id', $request->requisition_id], ['product_id', $request->product_id]])
+                    ->update([
+                        'confirm_quantity' => $request->quantity
+                    ]);
+
+            return response()->json("Quantidade editado com sucesso", 200);
+        }
     }
 }

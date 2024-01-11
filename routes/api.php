@@ -152,4 +152,7 @@ Route::controller(PurchaseRequisitionController::class)->group(function() {
     Route::post('purchase-requisition', 'create');
     Route::get('purchase-requisition', 'index');
     Route::get('purchase-requisition/{id}', 'getRequisitionToUpdate');
+    Route::get('purchase-requisition/search/{requisitionCode}', 'searchRequisitionCode');
+    Route::post('purchase-requisition-product/quantity', 'updateRequisitionProductQuantity');
+    Route::post('purchase-requisition/filter-item', 'getRequisitionProduct');
 });

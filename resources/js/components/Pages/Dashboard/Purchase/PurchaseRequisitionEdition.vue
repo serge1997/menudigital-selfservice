@@ -11,15 +11,22 @@
                     <div class="col-md-8 mb-2">
                         <label class="fw-medium" for="requisition-status">Status da requisição: </label>
                     </div>
+                    {{ requisitionData.products_id }}
                     <Dropdown v-model="requisitionData.status_id" option-value="id" id="requisition-status" class="col-md-8" :options="status" option-label="stat_desc" />
+                   <div class="mt-2 d-flex justify-content-center align-items-center">
+                       <div v-if="loadQuantity" class="spinner-grow" style="width: 2rem; height: 2rem;" role="status">
+                           <span class="visually-hidden">Loading...</span>
+                       </div>
+                   </div>
                 </div>
-                <div class="w-75 m-auto gap-2 p-3 d-flex flex-column">
+                <div class="w-75 m-auto gap-2 p-1 d-flex flex-column">
                    <div class="w-100 d-flex justify-content-between p-3 rounded border" v-for="(item, index) in itens" style="background-color: #f3f4f6">
                        <div class="col-md-7 d-flex justify-content-between align-items-center gap-1">
                            <div class="col-md-3 d-flex justify-content-start">
+                               <input type="hidden" id="post-requisition-id" :value="item.id" />
                                <Button v-if="!showEditInput[index]" @click=" showEditInput[index] = true " icon="pi pi-pencil" text/>
                                <Button v-if="showEditInput[index]" @click=" showEditInput[index] = false " style="color: red" icon="pi pi-times" text/>
-                               <Button style="color: red" icon="pi pi-trash" text/>
+                               <Button @click="updateRequisitionItemStatus(item.id, item.product_id)" style="color: red" icon="pi pi-trash" text/>
                            </div>
                            <div class="col-md-10 d-flex justify-content-start gap-2">
                                <Checkbox v-model="requisitionData.products_id" id="product-id" :value="item.product_id" />
@@ -27,7 +34,7 @@
                            </div>
                        </div>
                        <div class="col-md-3 d-flex justify-content-center">
-                           <InputText class="w-100" v-if="showEditInput[index]" type="number" :value="item.quantity" />
+                           <InputText :id="item.prod_name.replace(' ', '')" class="w-100 quantity-input" v-if="showEditInput[index]" type="number" :value="item.quantity" @blur="updateRequisitionProductQuantity(item.product_id, item.prod_name, item.id)" />
                        </div>
                        <div class="col-md-1">
                             <Badge :value="item.quantity" />
@@ -39,7 +46,7 @@
                     </div>
                     <div v-if="requisitionData.status_id === paymentApproved" class="w-100 d-flex justify-content-between mt-2">
                         <div class="col-md-6 d-flex flex-column align-items-center justify-content-center gap-4">
-                            <div @click="selectPaymentType; this.paymentSelectedStyle.isMoney =true; this.paymentSelectedStyle.isBank = false" class="card col-md-5 position-relative" :class="{paymentSelected : this.paymentSelectedStyle.isMoney}">
+                            <div @click="this.paymentSelectedStyle.isMoney =true; this.paymentSelectedStyle.isBank = false" class="card col-md-5 position-relative" :class="{paymentSelected : this.paymentSelectedStyle.isMoney}">
                                 <div class="card-header">
                                     <h6>Dinheiro</h6>
                                 </div>
@@ -49,7 +56,7 @@
                             </div>
                         </div>
                         <div class="col-md-6 d-flex flex-column align-items-center justify-content-center">
-                            <div @click="selectPaymentType;this.paymentSelectedStyle.isBank = true; this.paymentSelectedStyle.isMoney =false;" class="card col-md-5 position-relative" :class="{paymentSelected : this.paymentSelectedStyle.isBank}">
+                            <div @click="this.paymentSelectedStyle.isBank = true; this.paymentSelectedStyle.isMoney =false;" class="card col-md-5 position-relative" :class="{paymentSelected : this.paymentSelectedStyle.isBank}">
                                 <div class="card-header">
                                     <h6>Banco</h6>
                                 </div>
@@ -73,7 +80,7 @@
                     </div>
                 </div>
                 <div class="w-100 d-flex justify-content-end">
-                    <Button label="confirmar a requisição de compra"/>
+                    <Button @click="confirmRequisition" label="confirmar a requisição de compra"/>
                 </div>
             </div>
         </Dialog>
@@ -108,7 +115,9 @@ export default {
             status: null,
             showEditInput: [],
             requisitionData: {
+                requisition_id: null,
                 products_id: null,
+                confirm_quantity: null,
                 status_id: null
             },
             department_name: null,
@@ -116,7 +125,8 @@ export default {
                 isBank: false,
                 isMoney: false
             },
-            paymentApproved: 2
+            paymentApproved: 2,
+            loadQuantity: false
         }
     },
     methods: {
@@ -134,10 +144,38 @@ export default {
            }
             //console.log(this.department_name)
         },
-        selectPaymentType(){
-            //this.paymentSelected[0] = 'border border-primary shadow';
-            //this.paymentSelected[1] = 'border border-primary shadow'
-        }
+
+        updateRequisitionItemStatus(requisition_id, product_id){
+            console.log(requisition_id, product_id);
+        },
+
+        confirmRequisition(){
+            this.requisitionData.requisition_id = document.getElementById('post-requisition-id').value;
+        },
+        updateRequisitionProductQuantity(product_id, idValue, requisition_id){
+            let dynamicID = idValue.replace(' ', '');
+            let quantity = document.getElementById(`${dynamicID}`).value;
+            const data = {
+                "requisition_id": requisition_id,
+                "product_id" : product_id,
+                "quantity": quantity
+            };
+            this.loadQuantity = true;
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/purchase-requisition-product/quantity', data).then((response) => {
+                        console.log(response.status);
+                        response.status === 200 ? this.$toast.success(response.data) : null;
+                        return this.getRequisitionItens(requisition_id);
+                    }).catch((errors) => {
+                        console.log(errors);
+                    })
+                    this.loadQuantity = false;
+                }, 2000)
+            })
+
+        },
+
 
 
 

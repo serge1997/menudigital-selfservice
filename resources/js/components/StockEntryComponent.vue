@@ -3,10 +3,22 @@
         <Button label="Save a product delivery" icon="pi pi-external-link" @click="visibleStockEntryModal = true" />
         <Dialog v-model:visible="visibleStockEntryModal" maximizable modal header="Save product Delivery" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
-                <div class="w-100 d-flex flex-column gap-2 mt-3">
+                <div class="w-100 d-flex flex-column gap-2 mb-3">
                     <label for="product-quantity">Numero da requisição: </label>
-                    <InputText :class="invalid" type="text" id="product-quantity" v-model="stockEntry.requisition_id" aria-describedby="product-name" placeholder="Digite o numero da requisição"/>
-                    <small class="text-danger" v-if="errMsg" v-for="requisition_id in errMsg.requisition_id" id="product-quantity-err"  v-text="requisition_id"></small>
+                    <AutoComplete v-model="stockEntry.requisition_code" dropdown :suggestions="requisitionCode" @complete="searchRequisitionCode" @blur="getRequisitionProduct" placeholder="Digite o código da requisição"/>
+                    <small class="text-danger" v-if="errMsg" v-for="requisition_code in errMsg.requisition_code" id="product-quantity-err"  v-text="requisition_code"></small>
+                </div>
+                <div class="w-100 m-auto d-flex flex-column align-items-center" v-if="requisitionProduct">
+                    <DataTable class="w-100" :value="requisitionProduct" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row">
+                        <Column field="prod_name" sortable style="width: 20%" header="Nome"></Column>
+                        <Column field="quantity" sortable style="width: 20%" header="Quantidade pedido"></Column>
+                        <Column field="confirm_quantity" sortable style="width: 20%" header="Quantidade confirmado"></Column>
+                        <Column field="sup_name" sortable style="width: 20%" header="Fornecedor"></Column>
+                        <Column field="" sortable style="width: 20%" header="Ultimo preço de compra"></Column>
+                    </DataTable>
+                    <div v-if="reqItemLoad" class="spinner-grow" role="status" style="width: 4rem; height: 4rem;">
+                        <span class="sr-only"></span>
+                    </div>
                 </div>
                 <div class="w-100 d-flex flex-column gap-2">
                     <label for="product-name">Product name</label>
@@ -44,6 +56,9 @@ import InputText from "primevue/inputtext";
 import Dialog from "primevue/dialog";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
+import AutoComplete from "primevue/autocomplete";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 
 export default{
     name: 'StockEntryComponent',
@@ -52,14 +67,17 @@ export default{
         InputText,
         Dialog,
         Dropdown,
-        Button
+        AutoComplete,
+        Button,
+        DataTable,
+        Column
     },
 
     data(){
         return {
             stockEntry: {
                 productID: null,
-                requisition_id: null,
+                requisition_code: null,
                 unitCost: null,
                 quantity: null,
                 supplierID: null
@@ -68,7 +86,10 @@ export default{
             suppliers: null,
             errMsg: null,
             visibleStockEntryModal: false,
-            invalid: null
+            invalid: null,
+            requisitionCode: [],
+            requisitionProduct: null,
+            reqItemLoad: false
         }
     },
 
@@ -86,6 +107,24 @@ export default{
                 this.invalid = "p-invalid"
                 errors.response.status === 400 ? this.$toast.error(errors.response.data): null
             })
+        },
+        searchRequisitionCode(){
+            let code = [];
+            axios.get('/api/purchase-requisition/search/' + this.stockEntry.requisition_code).then((response) => {
+                response.data.forEach(e => code.push(e.requisition_code));
+                this.requisitionCode = [...code];
+            })
+            console.log(this.requisitionCode)
+        },
+
+        getRequisitionProduct(){
+            setTimeout(() => {
+                axios.post('/api/purchase-requisition/filter-item', this.stockEntry).then((response) => {
+                    this.requisitionProduct = response.data
+                    console.log(response.data);
+                })
+            }, 500)
+
         }
     },
 
