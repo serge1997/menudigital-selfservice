@@ -29,14 +29,14 @@
             <Column field="unitCost" sortable style="width: 10%" header="Cost"></Column>
             <Column field="sup_name" sortable style="width: 25%" header="Supplier"></Column>
             <Column field="saldoFinal" sortable style="width: 10%" header="Quantity"></Column>
-            <Column field="prod_unmed" header="Status" style="width: 25%">
+            <Column header="Status" style="width: 15%">
                 <template class="w-100" #body="{ data }">
                     <Tag style="width: 90px" v-if="data.saldoFinal < data.min_quantity && data.saldoFinal > 0" value="Lowstock" severity="warning" />
                     <Tag style="width: 90px" v-else-if="data.saldoFinal == 0" value="ruptured" severity="danger" />
                     <Tag style="width: 90px" v-else value="In Stock" severity="success" />
                 </template>
             </Column>
-            <Column field="prod_unmed" header="Status" style="width: 25%">
+            <Column field="prod_unmed" header="Ação" style="width: 25%">
                 <template #body="{ data }">
                     <div class="d-flex">
                         <Button @click="showProductToEdit(data.productID)" icon="pi pi-pencil" text/>

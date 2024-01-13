@@ -155,4 +155,6 @@ Route::controller(PurchaseRequisitionController::class)->group(function() {
     Route::get('purchase-requisition/search/{requisitionCode}', 'searchRequisitionCode');
     Route::post('purchase-requisition-product/quantity', 'updateRequisitionProductQuantity');
     Route::post('purchase-requisition/filter-item', 'getRequisitionProduct');
+    Route::post('purchase-requisition/confirm', 'confirmPurchaseRequisition');
+    Route::put('purchase-requisition-item/rejected/{requisition_id}/{product_id}', 'setRequisitionItemStatusToRejected');
 });

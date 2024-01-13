@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Services\Util;
 
+use DateTime;
 class Util
 {
     public static function randomString(): string
@@ -21,5 +22,17 @@ class Util
     {
         return rand(1, 999);
     }
+
+    /**
+     * @return string
+     */
+    public static function Today(): string
+    {
+        $date = new DateTime();
+        $date = $date->format("Y-m-d");
+
+        return $date;
+    }
+
 
 }

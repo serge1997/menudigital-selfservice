@@ -10,6 +10,7 @@
                 </template>
                 <template #end>
                     <div>
+                        <Button @click="this.$router.push({name: 'Stock'})" label="Consultar estoque" icon="pi pi-database" text/>
                         <Button @click="visibleNewPurchaseModal= true" label="Nova requisição" icon="pi pi-plus"/>
                     </div>
                 </template>
@@ -57,15 +58,15 @@
                 <Column header="Status" style="width: 25%">
                     <template class="w-100" #body="{ data }">
                         <Tag style="width: 90px" v-if="data.stat_desc === requisition_status.waiting" :value="data.stat_desc" severity="warning" />
-                        <Tag style="width: 90px" v-else-if="data.stat_desc === requisition_status.rejected" :value="stat_desc" severity="danger" />
-                        <Tag style="width: 90px" v-else :value="stat_desc" severity="success" />
+                        <Tag style="width: 90px" v-else-if="data.stat_desc === requisition_status.rejected" :value="data.stat_desc" severity="danger" />
+                        <Tag style="width: 90px" v-else severity="success" :value="data.stat_desc"/>
                     </template>
                 </Column>
                 <Column field="prod_unmed" header="Status" style="width: 25%">
                     <template #body="{ data }">
                         <div class="d-flex">
                             <div>
-                                <PurchaseRequisitionEdition :id="data.id" />
+                                <PurchaseRequisitionEdition :id="data.id" :status_desc="data.stat_desc" />
                             </div>
                             <div>
                                 <Button @click="deleteProduct(data.id)" style="color: red" icon="pi pi-trash" text/>

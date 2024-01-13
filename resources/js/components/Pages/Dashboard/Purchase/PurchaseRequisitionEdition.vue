@@ -1,17 +1,19 @@
 <template>
     <div class="container">
-        <Button @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
+        <Button v-if="status_desc != 'Recusado'" @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
+        <Button v-else @click="getRequisitionItens(id)"  icon="pi pi-pencil" disabled text/>
         <Dialog v-model:visible="visibleEditionPurchaseModal" maximizable modal header="Edição requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
                 <h6>Lista dos itens</h6>
                 <div class="col-md-12 d-flex flex-column align-items-center mt-3 p-3">
+                    <small class="text-danger" v-if="errMsg" v-for="prducts_ids in errMsg.products_id" v-text="prducts_ids"></small>
                     <div class="com-md-8 d-flex justify-content-start">
                         <p>Departamento requerente: <span class="fw-medium text-uppercase">{{ department_name }}</span></p>
                     </div>
                     <div class="col-md-8 mb-2">
                         <label class="fw-medium" for="requisition-status">Status da requisição: </label>
                     </div>
-                    {{ requisitionData.products_id }}
+                    {{ requisitionData.products_id }} {{requisitionData.confirm_quantity}}
                     <Dropdown v-model="requisitionData.status_id" option-value="id" id="requisition-status" class="col-md-8" :options="status" option-label="stat_desc" />
                    <div class="mt-2 d-flex justify-content-center align-items-center">
                        <div v-if="loadQuantity" class="spinner-grow" style="width: 2rem; height: 2rem;" role="status">
@@ -26,20 +28,25 @@
                                <input type="hidden" id="post-requisition-id" :value="item.id" />
                                <Button v-if="!showEditInput[index]" @click=" showEditInput[index] = true " icon="pi pi-pencil" text/>
                                <Button v-if="showEditInput[index]" @click=" showEditInput[index] = false " style="color: red" icon="pi pi-times" text/>
-                               <Button @click="updateRequisitionItemStatus(item.id, item.product_id)" style="color: red" icon="pi pi-trash" text/>
+                               <Button @click="setRequisitionItemStatusToRejected(item.id, item.product_id)" style="color: red" icon="pi pi-trash" text/>
                            </div>
                            <div class="col-md-10 d-flex justify-content-start gap-2">
-                               <Checkbox v-model="requisitionData.products_id" id="product-id" :value="item.product_id" />
+                               <Checkbox v-model="requisitionData.products_id" class="product-id" :value="item.product_id" />
                                <label for="ingredient1" class="ml-2 fw-medium"> {{ item.prod_name }}</label>
                            </div>
                        </div>
                        <div class="col-md-3 d-flex justify-content-center">
+                           <input type="hidden" :value="item.quantity" class="quantity-data"/>
                            <InputText :id="item.prod_name.replace(' ', '')" class="w-100 quantity-input" v-if="showEditInput[index]" type="number" :value="item.quantity" @blur="updateRequisitionProductQuantity(item.product_id, item.prod_name, item.id)" />
                        </div>
                        <div class="col-md-1">
                             <Badge :value="item.quantity" />
                        </div>
                    </div>
+                    <div class="d-flex gap-2">
+                        <input type="checkbox" @change="onSelectAll" id="select-all" v-model="selectAll"/>
+                        <label>Selecionar todos</label>
+                    </div>
                     <div class="w-100 d-flex flex-column m-auto mt-2">
                         <label>Faz um descrição curta: </label>
                         <Textarea class="w-100 mt-1" placeholder="Observação..." />
@@ -79,8 +86,10 @@
                         </div>
                     </div>
                 </div>
+                <input type="checkbox" class="product-id" value="1"/>
+                <input type="checkbox" class="product-id" value="1"/>
                 <div class="w-100 d-flex justify-content-end">
-                    <Button @click="confirmRequisition" label="confirmar a requisição de compra"/>
+                    <Button @click="confirmPurchaseRequisition" label="confirmar a requisição de compra"/>
                 </div>
             </div>
         </Dialog>
@@ -106,7 +115,7 @@ export default {
         Badge,
         Textarea
     },
-    props: ['id'],
+    props: ['id', 'status_desc'],
 
     data(){
         return {
@@ -126,7 +135,9 @@ export default {
                 isMoney: false
             },
             paymentApproved: 2,
-            loadQuantity: false
+            loadQuantity: false,
+            errMsg: null,
+            selectAll: false
         }
     },
     methods: {
@@ -145,13 +156,45 @@ export default {
             //console.log(this.department_name)
         },
 
-        updateRequisitionItemStatus(requisition_id, product_id){
-            console.log(requisition_id, product_id);
+        setRequisitionItemStatusToRejected(requisition_id, product_id){
+            this.$swal.fire({
+                text: "Quer rejeitar esse item",
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed){
+                    axios.put('/api/purchase-requisition-item/rejected/' + requisition_id + '/' + product_id).then((response) => {
+                        console.log(response.data);
+                        this.$swal.fire({
+                            text: response.data,
+                            icon: "success"
+                        })
+                        return this.getRequisitionItens(requisition_id);
+                    }).catch(errors => {
+                        console.log(errors)
+                    })
+                }
+            })
         },
 
-        confirmRequisition(){
+        confirmPurchaseRequisition(){
+            let input = document.querySelectorAll('.quantity-data');
+            this.requisitionData.confirm_quantity = [].map.call(input, value => value.value);
             this.requisitionData.requisition_id = document.getElementById('post-requisition-id').value;
+            axios.post('/api/purchase-requisition/confirm', this.requisitionData).then((response) => {
+                console.log(response.data);
+                this.visibleEditionPurchaseModal = false;
+                this.$swal.fire({
+                    text: response.data,
+                    icon: 'success'
+                })
+            }).catch((errors) => {
+                console.log(errors)
+                this.errMsg = errors.response.data.errors
+            })
         },
+
         updateRequisitionProductQuantity(product_id, idValue, requisition_id){
             let dynamicID = idValue.replace(' ', '');
             let quantity = document.getElementById(`${dynamicID}`).value;
@@ -164,9 +207,11 @@ export default {
             return new Promise(resolve => {
                 setTimeout(() => {
                     axios.post('/api/purchase-requisition-product/quantity', data).then((response) => {
-                        console.log(response.status);
-                        response.status === 200 ? this.$toast.success(response.data) : null;
-                        return this.getRequisitionItens(requisition_id);
+                        if (response && response.status === 200){
+                            resolve(true);
+                            this.$toast.success(response.data);
+                            return this.getRequisitionItens(requisition_id);
+                        }
                     }).catch((errors) => {
                         console.log(errors);
                     })
@@ -176,6 +221,12 @@ export default {
 
         },
 
+        onSelectAll(){
+            let checkboxes = document.querySelectorAll("product-id");
+            checkboxes.forEach(function(e) {
+                e.checked;
+            })
+        }
 
 
 
@@ -190,4 +241,5 @@ export default {
     border: 1px #0275d8 solid;
     box-shadow: 1px 3px 2px rgba(145, 144, 144, 0.6);
 }
+
 </style>

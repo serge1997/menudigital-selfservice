@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use http\Env\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -95,7 +96,7 @@ class PurchaseRequisitionController extends Controller
                 ->join('departments','purchase_requisitions.department_id', '=', 'departments.id')
                     ->join('users', 'purchase_requisitions.user_id', 'users.id')
                         ->join('products','itens_requisitions.product_id', '=', 'products.id' )
-                            ->where('purchase_requisitions.id', $id)
+                            ->where([['purchase_requisitions.id', $id], ['itens_requisitions.status_id', '<>', PurchaseRequisition::REQUISITION_REJECTED]])
                                 ->get();
         return response()->json([
             'requisition_itens' => $requisition,
@@ -135,15 +136,96 @@ class PurchaseRequisitionController extends Controller
 
     public function updateRequisitionProductQuantity(Request $request)
     {
-        if ($request->isMethod("post")){
+        try{
+            if ($request->isMethod("post")){
 
-            DB::table('itens_requisitions')
-                ->where([['requisition_id', $request->requisition_id], ['product_id', $request->product_id]])
+                DB::table('itens_requisitions')
+                    ->where([['requisition_id', $request->requisition_id], ['product_id', $request->product_id]])
                     ->update([
                         'confirm_quantity' => $request->quantity
                     ]);
 
-            return response()->json("Quantidade editado com sucesso", 200);
+                return response()->json("Quantidade editado com sucesso", 200);
+            }
+        }catch(Exception $e){
+            return response()->json("Ação não pode ser concluída", 422);
         }
+    }
+
+    public function confirmPurchaseRequisition(Request $request)
+    {
+        $request->validate([
+            'products_id' => ['required'],
+        ],
+        [
+            'products_id.required' => "Verifique todos os campos sejam preenchido"
+        ]);
+
+        try{
+
+            $products = $request->products_id;
+            $requisition_id = filter_var($request->requisition_id, FILTER_SANITIZE_NUMBER_INT);
+            $status_id = filter_var($request->status_id, FILTER_SANITIZE_NUMBER_INT);
+            foreach ($products as $key => $product)
+            {
+                $check_product = RequisitionItem::where([['product_id', $product], ['requisition_id',$requisition_id]])
+                    ->first();
+                $check_requisition_id = PurchaseRequisition::where('id', $requisition_id)->first();
+                if ($status_id != PurchaseRequisition::REQUISITION_REJECTED && $check_product->status_id != PurchaseRequisition::REQUISITION_REJECTED && $check_requisition_id->status_id != PurchaseRequisition::REQUISITION_REJECTED)
+                {
+                    // quantity already updated
+                    if ($check_product->confirm_quantity)
+                    {
+                        DB::table('itens_requisitions')
+                            ->where([['product_id', $product], ['requisition_id',$requisition_id]])
+                            ->update([
+                                'status_id' => $status_id ?? PurchaseRequisition::REQUISITION_APPROVED
+                            ]);
+                    }else {
+                        // update with the quantity who are coming from the request
+
+                        DB::table('itens_requisitions')
+                            ->where([['product_id', $product], ['requisition_id',$requisition_id]])
+                            ->update([
+                                'status_id' => $status_id ?? PurchaseRequisition::REQUISITION_APPROVED,
+                                    'quantity' => $request->quantity[$key]
+                            ]);
+                    }
+                }
+                DB::table('itens_requisitions')
+                    ->where([['product_id', $product], ['requisition_id',$requisition_id]])
+                    ->update([
+                        'status_id' => $status_id
+                    ]);
+                DB::table('purchase_requisitions')
+                    ->where('id', $requisition_id)
+                    ->update([
+                        'status_id' => $status_id,
+                        'response_date' => Util::Today()
+                    ]);
+            }
+            $message = $status_id == PurchaseRequisition::REQUISITION_REJECTED ? "Requsição foi rejectada com sucesso" : "Requisição confirmado com sucesso";
+            return response()->json($message, 200);
+        }catch(Exception $e) {
+            return response()->json("Ação não pode ser concluída ".$e->getMessage(). " ".$e->getLine(), 500);
+        }
+    }
+
+    public function setRequisitionItemStatusToRejected($requisition_id, $product_id)
+    {
+        try {
+            $requisition_id = filter_var($requisition_id, FILTER_SANITIZE_NUMBER_INT);
+            $product_id = filter_var($product_id, FILTER_SANITIZE_NUMBER_INT);
+            RequisitionItem::where([['requisition_id', $requisition_id], ['product_id', $product_id]])
+                ->update([
+                    'status_id' => PurchaseRequisition::REQUISITION_REJECTED
+                ]);
+
+            return response()->json("Produto foi rejeitado", 200);
+        }catch(Exception $e) {
+            return response()->json("Ação não pode ser concluída", 500);
+        }
+
+
     }
 }
