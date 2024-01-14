@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('purchase_requisitions', function (Blueprint $table) {
-            $table->text("observation")->default("Nada foi postado como observação");
+            $table->text("observation")->nullable()->default("Nada foi postado como observação");
         });
     }
 

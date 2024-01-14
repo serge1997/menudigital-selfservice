@@ -156,6 +156,7 @@ class PurchaseRequisitionController extends Controller
             ->select(
                 'itens_requisitions.product_id',
                 'suppliers.sup_name',
+                'itens_requisitions.requisition_id',
                 'itens_requisitions.quantity',
                 'itens_requisitions.confirm_quantity',
                 'requisitions_status.stat_desc',

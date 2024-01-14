@@ -34,10 +34,10 @@ class StockEntryRequest extends FormRequest
     {
         return [
             'productID.required'  => 'produto é obrigatório',
-            'requisition_id.required' => 'numero da requisition é obrigatório',
+            'requisition_id.required' => 'código da requisition é obrigatório',
             'supplierID.required' => 'fornecedor é obrigatório',
             'quantity.required'   => 'quantidade é obrigatório',
-            'unitCost.required'   => 'custo é obrigatório'
+            'unitCost.required'   => 'custo é obrigatório',
         ];
     }
 }

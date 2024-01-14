@@ -11,6 +11,7 @@ class Saldo extends Model
 
     //public int $productID;
     protected $table = 'saldos';
+    public $timestamps = false;
     protected $fillable =
         [
             'productID',

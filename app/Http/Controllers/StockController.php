@@ -15,6 +15,7 @@ use DateTime;
 use Exception;
 use App\Http\Services\Stock\StockServiceRepository;
 use App\Http\Requests\StockEntryRequest;
+use App\Http\Services\Requisition\RequisitionRepository;
 
 class StockController extends Controller
 {
@@ -28,7 +29,7 @@ class StockController extends Controller
         $this->supplier = new Supplier();
         $this->product = new Product();
     }
-    public function storeStockEntry(StockEntryRequest $request, StockServiceRepository $service) :JsonResponse
+    public function storeStockEntry(StockEntryRequest $request, StockServiceRepository $service, RequisitionRepository $requisition) :JsonResponse
     {
 
         $request->validated();
@@ -41,11 +42,11 @@ class StockController extends Controller
                 ->groupby('emissao', 'productID', 'saldoInicial', 'saldoFinal')
                     ->first();
         try {
-
             $data = $request->all();
             $entry = new StockEntry($data);
             $entry->totalCost = $request->unitCost * $request->quantity;
             $entry->emissao = $hoje;
+            $requisition->checkRequisitionID($request->requisition_id, $request->productID);
             $entry->save();
             if ($product):
                 if ($produtData->prod_unmed != "bt"):
@@ -94,7 +95,7 @@ class StockController extends Controller
 
         }catch(\Exception $e){
             return response()
-                ->json("Action can't be completed".$e->getMessage(), 400);
+                ->json($e->getMessage(), 400);
         }
 
     }

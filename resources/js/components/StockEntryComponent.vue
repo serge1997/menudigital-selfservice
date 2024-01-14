@@ -4,9 +4,10 @@
         <Dialog v-model:visible="visibleStockEntryModal" maximizable modal header="Save product Delivery" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
                 <div class="w-100 d-flex flex-column gap-2 mb-3">
+                    <input type="hidden" v-model="stockEntry.requisition_id"/>
                     <label for="product-quantity">Numero da requisição: </label>
                     <AutoComplete v-model="stockEntry.requisition_code" dropdown :suggestions="requisitionCode" @complete="searchRequisitionCode" @blur="getRequisitionProduct" placeholder="Digite o código da requisição"/>
-                    <small class="text-danger" v-if="errMsg" v-for="requisition_code in errMsg.requisition_code" id="product-quantity-err"  v-text="requisition_code"></small>
+                    <small class="text-danger" v-if="errMsg" v-for="requisition_code in errMsg.requisition_id" id="product-quantity-err"  v-text="requisition_code"></small>
                 </div>
                 <div class="w-100 m-auto d-flex flex-column align-items-center" v-if="requisitionProduct">
                     <DataTable class="w-100" :value="requisitionProduct" selectionMode="single"  paginator :rows="4" tableStyle="min-width: 50rem" edit-mode="row">
@@ -87,6 +88,7 @@ export default{
             stockEntry: {
                 productID: null,
                 requisition_code: null,
+                requisition_id: null,
                 unitCost: null,
                 quantity: null,
                 supplierID: null
@@ -115,11 +117,12 @@ export default{
                     this.stockEntry.supplierID = "";
                     this.stockEntry.unitCost = ""
                     this.$toast.success(response.data)
+                    this.invalid = ""
                     this.errMsg = null
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors
                 this.invalid = "p-invalid"
-                errors.response.status === 400 ? this.$toast.error(errors.response.data): null
+                errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
             })
         },
         searchRequisitionCode(){
@@ -136,6 +139,12 @@ export default{
                 axios.post('/api/purchase-requisition/filter-item', this.stockEntry).then((response) => {
                     this.requisitionProduct = response.data
                     console.log(response.data);
+                    for (let req of response.data){
+                        if (req.requisition_id !== null){
+                            this.stockEntry.requisition_id = req.requisition_id;
+                            break;
+                        }
+                    }
                 })
             }, 500)
 
