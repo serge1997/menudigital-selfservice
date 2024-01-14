@@ -151,6 +151,8 @@ Route::controller(SupplierController::class)->group(function() {
 Route::controller(PurchaseRequisitionController::class)->group(function() {
     Route::post('purchase-requisition', 'create');
     Route::get('purchase-requisition', 'index');
+    Route::get('purchase-requisition-show/{id}', 'show');
+    Route::delete('purchase-requisition/{id}', 'deleteRequisition');
     Route::get('purchase-requisition/{id}', 'getRequisitionToUpdate');
     Route::get('purchase-requisition/search/{requisitionCode}', 'searchRequisitionCode');
     Route::post('purchase-requisition-product/quantity', 'updateRequisitionProductQuantity');

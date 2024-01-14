@@ -54,7 +54,9 @@
             <DataTable :value="requisitions" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
                 <Column field="requisition_code" sortable style="width: 15%" header="Code"></Column>
                 <Column field="require_name" sortable style="width: 20%" header="Requerente"></Column>
-                <Column field="name" sortable style="width: 25%" header="Departamento"></Column>
+                <Column field="name" sortable style="width: 15%" header="Departamento"></Column>
+                <Column field="created_at" sortable style="width: 15%" header="Emissao"></Column>
+                <Column field="delivery_date" sortable style="width: 15%" header="A entregar"></Column>
                 <Column header="Status" style="width: 25%">
                     <template class="w-100" #body="{ data }">
                         <Tag style="width: 90px" v-if="data.stat_desc === requisition_status.waiting" :value="data.stat_desc" severity="warning" />
@@ -69,8 +71,12 @@
                                 <PurchaseRequisitionEdition :id="data.id" :status_desc="data.stat_desc" />
                             </div>
                             <div>
-                                <Button @click="deleteProduct(data.id)" style="color: red" icon="pi pi-trash" text/>
+                                <ShowRequisition :id="data.id"/>
                             </div>
+                            <div>
+                                <Button @click="deleteRequisition(data.id)" style="color: red" icon="pi pi-trash" text/>
+                            </div>
+
                         </div>
                     </template>
                 </Column>
@@ -81,6 +87,7 @@
 <script>
 import SideBarComponent from "../SideBarComponent.vue";
 import PurchaseRequisitionEdition from "./PurchaseRequisitionEdition.vue";
+import ShowRequisition from "./ShowRequisition.vue";
 import authuser from "./../../auth.js";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
@@ -91,6 +98,7 @@ import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import Tag from "primevue/tag";
+import _ from "lodash";
 
 export default {
     name: 'PurchaseRequisition',
@@ -98,6 +106,7 @@ export default {
     components: {
         SideBarComponent,
         PurchaseRequisitionEdition,
+        ShowRequisition,
         Toolbar,
         Dialog,
         Column,
@@ -107,6 +116,11 @@ export default {
         Dropdown,
         Calendar,
         Tag
+    },
+    watch: {
+        requisitions: _.debounce(function(newRequisition){
+            this.index()
+        }, 10000)
     },
 
     data(){
@@ -140,14 +154,24 @@ export default {
         createPurchaseRequisition(){
             axios.post('/api/purchase-requisition', this.purchaseData).then((response) => {
                 console.log(response.data)
+                this.$swal.fire({
+                    text: response.data,
+                    icon: 'success'
+                })
                 this.invalidInput = ''
+                this.visibleNewPurchaseModal = false
+                this.purchaseData.quantity = [];
+                this.purchaseData.products_id = []
+                this.purchaseData.delivery_date = "";
+                this.errMsg = "";
             }).catch((errors) => {
                 this.invalidInput = 'p-invalid';
                 this.errMsg = errors.response.data.errors
+                console.log(errors)
             })
         },
         decrementProductInput(index){
-            this.purchaseData.products_quantity.splice(index, 1);
+            this.purchaseData.quantity.splice(index, 1);
             this.purchaseData.products_id.splice(index, 1);
             this.incrementProductInput.splice(index, 1);
         },
@@ -159,6 +183,30 @@ export default {
             }).catch((errors) => {
                 console.log(errors)
             })
+        },
+        deleteRequisition(id){
+            this.$swal.fire({
+                text: "Quer realmente apagar esta requisição ?",
+                icon: 'question',
+                showCancelButton: true,
+            }).then(result => {
+                if (result.isConfirmed){
+                    axios.delete(`/api/purchase-requisition/${id}`).then(response => {
+                        console.log(response.data);
+                        this.$swal.fire({
+                            text: response.data,
+                            icon: 'success'
+                        })
+                        return this.index();
+                    }).catch(errors => {
+                        console.log(errors);
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning' }): null;
+                    })
+                }
+            })
+        },
+        showRequisition(id){
+
         }
     },
     mounted(){

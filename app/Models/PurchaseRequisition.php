@@ -18,6 +18,7 @@ class PurchaseRequisition extends Model
         'user_id',
         'status_id',
         'department_id',
-        'delivery_date'
+        'delivery_date',
+        'observation'
     ];
 }

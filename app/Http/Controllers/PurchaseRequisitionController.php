@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use http\Env\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +15,7 @@ use Exception;
 use App\Http\Services\Util\Util;
 use Illuminate\Support\Facades\DB;
 use App\Models\RequisitionStatus;
+use App\Http\Services\UserInstance;
 
 class PurchaseRequisitionController extends Controller
 {
@@ -46,10 +48,11 @@ class PurchaseRequisitionController extends Controller
                 $item->requisition_code = $requisition_code;
                 $item->status_id = PurchaseRequisition::REQUISITION_WAITING;
                 $item->quantity = $request->quantity[$key];
+                $item->confirm_quantity = 0;
                 $item->total = $cost * $request->quantity[$key];
                 $item->save();
             }
-            return response()->json("Requisição salvou com sucesso");
+            return response()->json("Requisição enviando com sucesso");
         }catch (Exception $e){
             return response($e->getMessage(), 422);
         }
@@ -67,7 +70,8 @@ class PurchaseRequisitionController extends Controller
                 'purchase_requisitions.id',
                 'purchase_requisitions.delivery_date',
                 'purchase_requisitions.requisition_code',
-                'purchase_requisitions.delivery_date',
+                DB::raw("DATE_FORMAT(purchase_requisitions.delivery_date, '%d-%m-%Y') as delivery_date"),
+                DB::raw("DATE_FORMAT(purchase_requisitions.created_at, '%d-%m-%Y') as created_at"),
                 'users.name AS require_name',
                 'requisitions_status.stat_desc',
                 'departments.name'
@@ -80,6 +84,36 @@ class PurchaseRequisitionController extends Controller
         return response()->json($requisition);
     }
 
+    /**
+     * @param $id
+     * @return JsonResponse
+     * @see PurchaseRequisition
+     * @HTTP_METHOD GET
+     */
+    public function show($id): JsonResponse
+    {
+        $requisition = DB::table('purchase_requisitions')
+            ->select(
+                'itens_requisitions.product_id',
+                'purchase_requisitions.observation',
+                'itens_requisitions.status_id as show_status',
+                'itens_requisitions.confirm_quantity',
+                'itens_requisitions.quantity',
+                'products.prod_name',
+            )
+                ->join('itens_requisitions', 'itens_requisitions.requisition_id', 'purchase_requisitions.id')
+                ->join('products','itens_requisitions.product_id', '=', 'products.id' )
+                    ->where('purchase_requisitions.id', $id)
+                        ->get();
+
+        return response()->json($requisition,);
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     * @see PurchaseRequisition
+     */
     public function getRequisitionToUpdate($id): JsonResponse
     {
         $requisition = DB::table('purchase_requisitions')
@@ -88,6 +122,8 @@ class PurchaseRequisitionController extends Controller
                 'purchase_requisitions.delivery_date',
                 'users.name AS require_name',
                 'itens_requisitions.product_id',
+                'itens_requisitions.status_id as show_status',
+                'itens_requisitions.confirm_quantity as show_quantity',
                 DB::raw('CASE WHEN itens_requisitions.confirm_quantity = 0 THEN itens_requisitions.quantity ELSE itens_requisitions.confirm_quantity END AS quantity'),
                 'products.prod_name',
                 'departments.name AS department_name'
@@ -122,10 +158,11 @@ class PurchaseRequisitionController extends Controller
                 'suppliers.sup_name',
                 'itens_requisitions.quantity',
                 'itens_requisitions.confirm_quantity',
+                'requisitions_status.stat_desc',
                 'products.prod_name',
             )
             ->join('products', 'itens_requisitions.product_id', '=', 'products.id')
-               // ->join('products','itens_requisitions.product_id', '=', 'products.id' )
+                ->join('requisitions_status','itens_requisitions.status_id', '=', 'requisitions_status.id' )
                     ->join('suppliers', 'products.prod_supplierID', '=', 'suppliers.id')
                         ->where('itens_requisitions.requisition_code', $code)
                             ->get();
@@ -179,7 +216,7 @@ class PurchaseRequisitionController extends Controller
                         DB::table('itens_requisitions')
                             ->where([['product_id', $product], ['requisition_id',$requisition_id]])
                             ->update([
-                                'status_id' => $status_id ?? PurchaseRequisition::REQUISITION_APPROVED
+                                'status_id' => $status_id
                             ]);
                     }else {
                         // update with the quantity who are coming from the request
@@ -187,8 +224,9 @@ class PurchaseRequisitionController extends Controller
                         DB::table('itens_requisitions')
                             ->where([['product_id', $product], ['requisition_id',$requisition_id]])
                             ->update([
-                                'status_id' => $status_id ?? PurchaseRequisition::REQUISITION_APPROVED,
-                                    'quantity' => $request->quantity[$key]
+                                'status_id' => $status_id,
+                                'quantity' => $request->confirm_quantity[$key],
+                                'confirm_quantity' => $request->confirm_quantity[$key]
                             ]);
                     }
                 }
@@ -201,7 +239,8 @@ class PurchaseRequisitionController extends Controller
                     ->where('id', $requisition_id)
                     ->update([
                         'status_id' => $status_id,
-                        'response_date' => Util::Today()
+                        'response_date' => Util::Today(),
+                        'observation' => $request->observation
                     ]);
             }
             $message = $status_id == PurchaseRequisition::REQUISITION_REJECTED ? "Requsição foi rejectada com sucesso" : "Requisição confirmado com sucesso";
@@ -227,5 +266,22 @@ class PurchaseRequisitionController extends Controller
         }
 
 
+    }
+
+    public function deleteRequisition($id, Request $request)
+    {
+        try{
+            $auth = $request->session()->get('auth-vue');
+            foreach (UserInstance::get_user_roles($auth) as $delete):
+                if ($delete->role_id === Role::MANAGER):
+                    PurchaseRequisition::where('id', $id)
+                        ->delete();
+                    return response()->json("Requisição deletado com sucesso");
+                endif;
+            endforeach;
+            return response()->json("Você não tem permissão", 500);
+        }catch(Exception $e){
+            return response()->json(Util::ERROR_EXCEPTION_MESSAGE, 500);
+        }
     }
 }

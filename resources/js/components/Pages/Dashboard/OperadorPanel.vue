@@ -322,7 +322,7 @@ export default {
         order: _.debounce(function(newOrder){
             this.getOrder();
             this.getTable()
-        }, 10000)
+        }, 8000)
     },
 
     async created() {

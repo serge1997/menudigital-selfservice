@@ -4,6 +4,7 @@ namespace App\Http\Services\Util;
 use DateTime;
 class Util
 {
+    CONST ERROR_EXCEPTION_MESSAGE = "Ação não pode ser concluída";
     public static function randomString(): string
     {
         $charactere = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";

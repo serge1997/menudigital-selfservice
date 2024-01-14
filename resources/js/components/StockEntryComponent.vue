@@ -9,12 +9,19 @@
                     <small class="text-danger" v-if="errMsg" v-for="requisition_code in errMsg.requisition_code" id="product-quantity-err"  v-text="requisition_code"></small>
                 </div>
                 <div class="w-100 m-auto d-flex flex-column align-items-center" v-if="requisitionProduct">
-                    <DataTable class="w-100" :value="requisitionProduct" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row">
+                    <DataTable class="w-100" :value="requisitionProduct" selectionMode="single"  paginator :rows="4" tableStyle="min-width: 50rem" edit-mode="row">
                         <Column field="prod_name" sortable style="width: 20%" header="Nome"></Column>
-                        <Column field="quantity" sortable style="width: 20%" header="Quantidade pedido"></Column>
+                        <Column field="quantity" sortable style="width: 10%" header="Quantidade"></Column>
                         <Column field="confirm_quantity" sortable style="width: 20%" header="Quantidade confirmado"></Column>
                         <Column field="sup_name" sortable style="width: 20%" header="Fornecedor"></Column>
                         <Column field="" sortable style="width: 20%" header="Ultimo preço de compra"></Column>
+                        <Column header="Status" style="width: 25%">
+                            <template class="w-100" #body="{ data }">
+                                <Tag style="width: 90px" v-if="data.stat_desc === requisition_status.waiting" :value="data.stat_desc" severity="warning" />
+                                <Tag style="width: 90px" v-else-if="data.stat_desc === requisition_status.rejected" :value="data.stat_desc" severity="danger" />
+                                <Tag style="width: 90px" v-else severity="success" :value="data.stat_desc"/>
+                            </template>
+                        </Column>
                     </DataTable>
                     <div v-if="reqItemLoad" class="spinner-grow" role="status" style="width: 4rem; height: 4rem;">
                         <span class="sr-only"></span>
@@ -59,6 +66,7 @@ import Button from "primevue/button";
 import AutoComplete from "primevue/autocomplete";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Tag from "primevue/tag"
 
 export default{
     name: 'StockEntryComponent',
@@ -70,7 +78,8 @@ export default{
         AutoComplete,
         Button,
         DataTable,
-        Column
+        Column,
+        Tag
     },
 
     data(){
@@ -89,7 +98,12 @@ export default{
             invalid: null,
             requisitionCode: [],
             requisitionProduct: null,
-            reqItemLoad: false
+            reqItemLoad: false,
+            requisition_status:{
+                waiting: "Pendente",
+                approved: "Aprovado",
+                rejected: "Recusado",
+            }
         }
     },
 

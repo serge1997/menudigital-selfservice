@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <Button v-if="status_desc != 'Recusado'" @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
+        <Button v-if="status_desc !== 'Recusado' && status_desc !== 'Aprovado'" @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
         <Button v-else @click="getRequisitionItens(id)"  icon="pi pi-pencil" disabled text/>
         <Dialog v-model:visible="visibleEditionPurchaseModal" maximizable modal header="Edição requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
@@ -13,7 +13,6 @@
                     <div class="col-md-8 mb-2">
                         <label class="fw-medium" for="requisition-status">Status da requisição: </label>
                     </div>
-                    {{ requisitionData.products_id }} {{requisitionData.confirm_quantity}}
                     <Dropdown v-model="requisitionData.status_id" option-value="id" id="requisition-status" class="col-md-8" :options="status" option-label="stat_desc" />
                    <div class="mt-2 d-flex justify-content-center align-items-center">
                        <div v-if="loadQuantity" class="spinner-grow" style="width: 2rem; height: 2rem;" role="status">
@@ -49,7 +48,7 @@
                     </div>
                     <div class="w-100 d-flex flex-column m-auto mt-2">
                         <label>Faz um descrição curta: </label>
-                        <Textarea class="w-100 mt-1" placeholder="Observação..." />
+                        <Textarea v-model="requisitionData.observation" class="w-100 mt-1" placeholder="Observação..." />
                     </div>
                     <div v-if="requisitionData.status_id === paymentApproved" class="w-100 d-flex justify-content-between mt-2">
                         <div class="col-md-6 d-flex flex-column align-items-center justify-content-center gap-4">
@@ -86,8 +85,6 @@
                         </div>
                     </div>
                 </div>
-                <input type="checkbox" class="product-id" value="1"/>
-                <input type="checkbox" class="product-id" value="1"/>
                 <div class="w-100 d-flex justify-content-end">
                     <Button @click="confirmPurchaseRequisition" label="confirmar a requisição de compra"/>
                 </div>
@@ -127,7 +124,8 @@ export default {
                 requisition_id: null,
                 products_id: null,
                 confirm_quantity: null,
-                status_id: null
+                status_id: null,
+                observation: null
             },
             department_name: null,
             paymentSelectedStyle: {
