@@ -11,19 +11,18 @@ use App\Http\Requests\StoreProductRequest;
 use App\Models\Menuitems;
 use App\Models\Cart;
 use App\Models\MealType;
-use App\Models\Technicalfiche;
+use App\Http\Services\Menuitem\MenuItemRepository;
 use DateTime;
-use Illuminate\Database\Eloquent\Collection;
-use App\Http\Services\UserRoleAcess;
 
 class MenuItemController extends Controller
 {
     public $items;
-    public $options;
+    protected MenuItemRepository $menuItemRepository;
 
-    public function __construct()
+    public function __construct(MenuItemRepository $menuItemRepository)
     {
         $this->items = new MenuItems();
+        $this->menuItemRepository = $menuItemRepository;
     }
     public function getMealType()
     {
@@ -41,6 +40,7 @@ class MenuItemController extends Controller
         $user_id = $request->session()->get('auth-vue');
         $values = $request->all();
         try{
+            $this->menuItemRepository->beforeSave($request->item_name);
             foreach (UserInstance::get_user_roles($user_id) as $item_role):
                 if ($item_role->role_id === Role::MANAGER):
                     $item = new Menuitems($values);
@@ -51,7 +51,7 @@ class MenuItemController extends Controller
             return response()->json("User don't have permission", 400);
         }catch(\Exception $e) {
             DB::rollBack();
-            return response()->json("O item não pode ser salvou",400);
+            return response()->json($e->getMessage(),400);
         }
     }
 
@@ -78,6 +78,8 @@ class MenuItemController extends Controller
             $type->foto_type = $fotoname;
         }
         try{
+            $this->menuItemRepository->beforeSaveMealType($request->desc_type);
+
             $auth = $request->session()->get('auth-vue');
             foreach (UserInstance::get_user_roles($auth) as $menu):
                 if ($menu->role_id === Role::MANAGER):
@@ -87,7 +89,7 @@ class MenuItemController extends Controller
             endforeach;
             return response()->json("You dont have permission", 500);
         }catch (\Exception $e){
-            return response()->json("Action cant be concluided".$e->getMessage(), 422);
+            return response()->json($e->getMessage(), 400);
         }
 
 

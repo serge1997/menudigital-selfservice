@@ -72,7 +72,7 @@ export default {
                this.$toast.success(response.data);
             }).catch((errors) => {
                 console.log(errors)
-                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: "error"}): "";
+                errors.response.status === 500 ||  errors.response.status === 400? this.$swal.fire({text: errors.response.data, icon: "warning"}): "";
                 //this.$toast.error(errors.response.data)
             })
         }

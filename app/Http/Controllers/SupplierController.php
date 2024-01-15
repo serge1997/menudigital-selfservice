@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Http\Services\Supplier\SupplierRepository;
 use App\Models\Role;
 use App\Models\Supplier;
 use Exception;
@@ -12,7 +13,12 @@ use Exception;
 
 class SupplierController extends Controller
 {
+    protected SupplierRepository $supplierRespository;
 
+    public function __construct(SupplierRepository $supplierRespository)
+    {
+        $this->supplierRespository = $supplierRespository;
+    }
     public function StoreSupplier(Request $request): JsonResponse
     {
         $request->validate([
@@ -26,6 +32,7 @@ class SupplierController extends Controller
 
         try {
 
+            $this->supplierRespository->beforeSave($request->sup_name);
             $data = $request->all();
             Supplier::create($data);
             return response()
@@ -33,7 +40,7 @@ class SupplierController extends Controller
 
         }catch(\Exception $e){
             return response()
-                ->json("Action can't be realised", 400);
+                ->json($e->getMessage(), 400);
         }
     }
 

@@ -124,7 +124,7 @@ export default{
                 console.log(errors)
                 this.errMsg = errors.response.data.errors
                 this.invalid = "p-invalid"
-                errors.response.status === 400 ? this.$toast.error(errors.response.data) :null
+                errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}) :null
             })
         },
         showSupplierToEdit(id){
