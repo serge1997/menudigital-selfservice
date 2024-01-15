@@ -27,7 +27,7 @@
                                 <h6 class="text-white text-center fw-normal">Mesa {{ tab.table }}<br><small>livre</small></h6>
                             </div>
                         </button>
-                       <button @click="visibleStockAddModal = true" data-bs-toggle="modal" data-bs-target="#staticBackdrop" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn" @click.prevent="getOrderItem(busy.id)">
+                       <button @click="visibleStockAddModal = true" data-bs-toggle="modal" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn" @click.prevent="getOrderItem(busy.id)">
                             <div class="bg-danger border p-0">
                                 <h6 class="text-white text-center fw-normal">Mesa {{ busy.ped_tableNumber }}<br><small>ocupada</small><br><small>{{ busy.name }}</small></h6>
                             </div>
@@ -61,7 +61,7 @@
                 <div class="w-100">
                     <DataTable :value="itens">
                         <Column field="item_name" sortable style="width: 25%" exportHeader="Product Code" header="Item"></Column>
-                        <Column field="item_quantity" sortable style="width: 25%" header="Quantity"></Column>
+                        <Column field="item_quantidade" sortable style="width: 25%" header="Quantity"></Column>
                         <Column field="item_price" sortable style="width: 25%" header="Cost"></Column>
                         <Column field="item_total" sortable style="width: 25%" header="Subtotal"></Column>
                     </DataTable>

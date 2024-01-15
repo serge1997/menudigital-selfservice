@@ -24,16 +24,18 @@ use Mockery\Exception;
 
 class PedidoController extends Controller
 {
+    protected StockServiceRepository $stockServiceRepository;
     public $hoje ;
     public $orderStatus;
     public array $Order_item_ids = [];
     public array $Order_item_quantitys = [];
 
-    public function __construct()
+    public function __construct(StockServiceRepository $stockServiceRepository)
     {
         $date = new DateTime();
         $this->hoje = $date->format('Y-m-d');
         $this->orderStatus = new PaiementType();
+        $this->stockServiceRepository = $stockServiceRepository;
     }
 
     public function getOrderList($table): JsonResponse
@@ -96,7 +98,7 @@ class PedidoController extends Controller
         ]);
     }
 
-    public function  confirmOrder(Request $request, StockServiceRepository $stockservice): JsonResponse
+    public function  confirmOrder(Request $request): JsonResponse
     {
         $request->validate([
             'ped_customerName' => ['required']
@@ -105,7 +107,8 @@ class PedidoController extends Controller
             'ped_customerName.required' => "customer name is required"
         ]);
         try {
-            StockServiceRepository::SetItemSaldoZeroException($request->ped_tableNumber);
+            $menuitem = null;
+            StockServiceRepository::SetItemSaldoZeroException($request->ped_tableNumber, $menuitem);
             $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
                 ->get();
             $auth = $request->session()->get('auth-vue');
@@ -140,8 +143,8 @@ class PedidoController extends Controller
                         $this->Order_item_ids[]       = $itemPedido->item_id;
                         $this->Order_item_quantitys[] = $itemPedido->quantity;
                     }
-                    $stockservice->StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
-                    $stockservice->ControleItemLowStockRupured($this->Order_item_ids);
+                    $this->stockServiceRepository->StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
+                    $this->stockServiceRepository->ControleItemLowStockRupured($this->Order_item_ids);
                     DB::commit();
                     DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
                         ->delete();
@@ -284,10 +287,13 @@ class PedidoController extends Controller
             }
         }
         try {
+            $tableNumber = null;
+            StockServiceRepository::SetItemSaldoZeroException($tableNumber, $request->itemID);
             StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
             $orderID = $request->orderID;
             $itemID = $request->itemID;
             $quantity = $request->quantity;
+            $itemIdToArray = [];
             $auth = $request->session()->get('auth-vue');
 
             $menuitem = Menuitems::where('id', $itemID)->first();
@@ -330,6 +336,10 @@ class PedidoController extends Controller
                                     ]);
                             endif;
                         }
+                        $itemID = str_split($itemID);
+                        $quantity = str_split($quantity);
+                        //$itemIdToArray = array_push($itemID);
+                        $this->stockServiceRepository->StockOutProduct($itemID, $quantity);
                         return response()
                             ->json("Item adicionado com sucesso", 200);
                     endif;
