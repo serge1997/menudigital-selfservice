@@ -42,11 +42,11 @@ class StockController extends Controller
                 ->groupby('emissao', 'productID', 'saldoInicial', 'saldoFinal')
                     ->first();
         try {
+            $requisition->checkRequisitionID($request->requisition_id, $request->productID, $request->quantity);
             $data = $request->all();
             $entry = new StockEntry($data);
             $entry->totalCost = $request->unitCost * $request->quantity;
             $entry->emissao = $hoje;
-            $requisition->checkRequisitionID($request->requisition_id, $request->productID);
             $entry->save();
             if ($product):
                 if ($produtData->prod_unmed != "bt"):
@@ -173,7 +173,7 @@ class StockController extends Controller
                 CASE
                     WHEN p.prod_unmed = 'bt' THEN sa.saldoFinal
                 ELSE
-                    ROUND(sa.saldoFinal / p.prod_contain, 2)
+                    TRUNCATE(sa.saldoFinal / p.prod_contain, 2)
                 END saldoFinal,
                 p.prod_unmed
             FROM stock_entries st
@@ -269,14 +269,14 @@ class StockController extends Controller
             SELECT
             p.prod_name,
             CASE
-                WHEN p.prod_unmed <> 'bt' THEN sa.saldoInicial / p.prod_contain
+                WHEN p.prod_unmed <> 'bt' THEN TRUNCATE(sa.saldoInicial / p.prod_contain, 2)
                 ELSE
-                sa.saldoInicial
+                TRUNCATE(sa.saldoInicial, 2)
             END saldoinicial,
             CASE
-                WHEN p.prod_unmed <> 'bt' THEN  sa.saldoFinal / p.prod_contain
+                WHEN p.prod_unmed <> 'bt' THEN  TRUNCATE(sa.saldoFinal / p.prod_contain, 2)
                 ELSE
-                sa.saldoFinal
+                TRUNCATE(sa.saldoFinal, 2)
             END saldofinal
         FROM saldos sa
         INNER JOIN products p

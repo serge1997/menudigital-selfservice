@@ -66,11 +66,11 @@ class BiController extends Controller
                     DB::raw(
                     "
                         CASE
-                            WHEN menuitems.type_id = 2 THEN 'DRINKS'
-                            WHEN menuitems.type_id = 3 THEN 'PRINCIPAL'
-                            WHEN menuitems.type_id = 4 THEN 'SOBREMESA'
-                            WHEN menuitems.type_id = 1 THEN 'ENTRADA'
-                            WHEN menuitems.type_id = 5 THEN 'VINHO'
+                            WHEN menuitems.type_id = 2 THEN 'ENTRADA'
+                            WHEN menuitems.type_id = 3 THEN 'VINHO'
+                            WHEN menuitems.type_id = 4 THEN 'PRINCIPAL'
+                            WHEN menuitems.type_id = 1 THEN 'DRINKS'
+                            WHEN menuitems.type_id = 5 THEN 'SOBREMESA'
                         ELSE '' END AS type
                     "
                     ),

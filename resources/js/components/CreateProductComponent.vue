@@ -94,7 +94,8 @@ export default{
                 this.product.prod_desc = "";
                 this.product.prod_name = "";
                 this.product.prod_unmed = "";
-                this.product.prod_supplierID = ""
+                this.product.prod_supplierID = "";
+                this.product.min_quantity = "";
                 this.$toast.success(response.data)
                 this.errMsg = null
                 this.invalid = null

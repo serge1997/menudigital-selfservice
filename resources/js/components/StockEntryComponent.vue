@@ -30,7 +30,7 @@
                 </div>
                 <div class="w-100 d-flex flex-column gap-2">
                     <label for="product-name">Product name</label>
-                    <Dropdown v-model="stockEntry.productID" :options="products" option-value="id" option-label="prod_name" placeholder="product"/>
+                    <Dropdown :class="invalid" v-model="stockEntry.productID" :options="products" option-value="id" option-label="prod_name" placeholder="product"/>
                     <small class="text-danger" v-if="errMsg" v-for="prod_name in errMsg.productID" id="product-name-err"  v-text="prod_name"></small>
                 </div>
                 <div class="w-100 d-flex gap-2 mt-3">
@@ -47,7 +47,7 @@
                 </div>
                 <div class="w-100 d-flex flex-column gap-2 mt-3">
                     <label for="supplier">Supplier</label>
-                    <Dropdown v-model="stockEntry.supplierID" :options="suppliers" option-value="id" option-label="sup_name" placeholder="supplier"/>
+                    <Dropdown :class="invalid" v-model="stockEntry.supplierID" :options="suppliers" option-value="id" option-label="sup_name" placeholder="supplier"/>
                     <small class="text-danger" v-if="errMsg" v-for="sup_name in errMsg.supplierID" id="supplier-err"  v-text="sup_name"></small>
                 </div>
             </div>
