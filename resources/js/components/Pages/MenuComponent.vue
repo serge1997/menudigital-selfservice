@@ -3,7 +3,7 @@
         <div class="w-100">
             <input type="hidden" :value="id" id="order-id">
             <transition>
-            <div v-if="newOrderItem.iteminfo || newOrderItem.orderinfo" class="w-75 m-auto border d-flex justify-content-between align-items-center">
+            <div id="post-new-item-card" v-if="newOrderItem.iteminfo || newOrderItem.orderinfo" class="w-75 m-auto border d-flex justify-content-between align-items-center">
                 <div class="item-img col-4">
                     <img class="w-50 img-thumbnail" src="./../../../../public/img/banner.jpg" alt="">
                 </div>
@@ -199,11 +199,13 @@ export default {
         },
 
         postNewOrderItem(){
+            let cartDiv = document.querySelector('#post-new-item-card');
             this.addItemToOrder.itemID = document.getElementById('item-id').value;
             this.addItemToOrder.orderID = document.getElementById('order-id').value;
             axios.post('/api/new-item', this.addItemToOrder).then((response) => {
                 console.log(this.addItemToOrder.itemID)
-                this.$toast.success(response.data)
+                this.$toast.success(response.data);
+                //cartDiv.remove();
             }).catch((errors) => {
                 console.log(errors)
                 //this.$toast.error(errors.response.data)

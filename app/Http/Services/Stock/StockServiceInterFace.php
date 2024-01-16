@@ -4,7 +4,7 @@
 
     interface StockServiceInterFace
     {
-        public function ControleItemLowStockRupured(array $item_ids);
+        public function ControleItemLowStockRuptured(array $item_ids): void;
 
         public function CheckRuptureLowStockState(string $productID);
         public function StockOutProduct(array $item_ids, array $product_quantitys);

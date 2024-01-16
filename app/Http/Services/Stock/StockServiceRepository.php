@@ -26,7 +26,7 @@ class StockServiceRepository implements StockServiceInterFace
         }
         return $sheet_values;
     }
-    public function ControleItemLowStockRupured(array $item_ids)
+    public function ControleItemLowStockRuptured(array $item_ids): void
     {
         // TODO: Implement ControleItemLowStockRupured() method.
         foreach ($item_ids as $key => $item_id) {
@@ -108,16 +108,19 @@ class StockServiceRepository implements StockServiceInterFace
             foreach ($item_fiche as $item):
                 $old_saldo = DB::table('saldos')
                     ->select(DB::raw('CAST(saldoFinal AS DECIMAL(6, 2)) AS saldoFinal'), 'emissao')
-                    ->where('productID', $item->productID)->first();
+                        ->where('productID', $item->productID)->first();
+                $itemProductInFiche = Technicalfiche::where([['itemID', $itemID], ['productID', $item->productID]])->first();
                 $date = $old_saldo->emissao ?? $hoje;
-                if ($old_saldo->saldoFinal < $product_quantitys[$key] || !$old_saldo){
+                $beforeQuantity = $old_saldo->saldoFinal - ($product_quantitys[$key] * $itemProductInFiche->quantity);
+                //var_dump($beforeQuantity); die;
+                if ($old_saldo->saldoFinal < ($product_quantitys[$key] * $itemProductInFiche->quantity) || $beforeQuantity < 0 ){
                     throw new Exception("Quantidade em estoque insuficiante ");
                 }
                 if ($date == $hoje):
                     DB::table('saldos')
                         ->where('productID', $item->productID)
                         ->update([
-                            'saldoFinal' => $old_saldo->saldoFinal - ($item->quantity * $product_quantitys[$key]),
+                            'saldoFinal' => $old_saldo->saldoFinal - ($product_quantitys[$key] * $itemProductInFiche->quantity),
                         ]);
                 else:
                     DB::table('saldos')
@@ -125,7 +128,7 @@ class StockServiceRepository implements StockServiceInterFace
                         ->update([
                             'emissao'      => $hoje,
                             'saldoInicial' => $old_saldo->saldoFinal,
-                            'saldoFinal'   => $old_saldo->saldoFinal - ($item->quantity * $product_quantitys[$key]),
+                            'saldoFinal'   => $old_saldo->saldoFinal - ($product_quantitys[$key] * $itemProductInFiche->quantity),
                         ]);
                 endif;
             endforeach;

@@ -171,7 +171,7 @@ class StockController extends Controller
                 p.min_quantity,
                 sp.sup_name,
                 CASE
-                    WHEN p.prod_unmed = 'bt' THEN sa.saldoFinal
+                    WHEN p.prod_unmed = 'bt' THEN TRUNCATE(sa.saldoFinal, 2)
                 ELSE
                     TRUNCATE(sa.saldoFinal / p.prod_contain, 2)
                 END saldoFinal,

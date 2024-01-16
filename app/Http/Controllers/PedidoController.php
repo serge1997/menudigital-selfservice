@@ -144,7 +144,7 @@ class PedidoController extends Controller
                         $this->Order_item_quantitys[] = $itemPedido->quantity;
                     }
                     $this->stockServiceRepository->StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
-                    $this->stockServiceRepository->ControleItemLowStockRupured($this->Order_item_ids);
+                    $this->stockServiceRepository->ControleItemLowStockRuptured($this->Order_item_ids);
                     DB::commit();
                     DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
                         ->delete();
@@ -239,34 +239,6 @@ class PedidoController extends Controller
     {
         $menuitem = Menuitems::where('id', $id)->first();
         $orderID = $request->orderID;
-        $tableNumber = $request->tableNumber;
-        $check_if_item_exist = ItensPedido::where([['item_pedido', $orderID], ['item_id', $id]])
-            ->first();
-
-
-        /*if ($check_if_item_exist):
-            DB::table('itens_pedido')
-                ->where([['item_pedido', $orderID], ['item_id', $id]])
-                    ->update([
-                        'item_quantidade' => $check_if_item_exist->item_quantidade,
-                        'item_total' => $menuitem->item_price * $check_if_item_exist->item_quantidade
-                    ]);
-                return response()
-                    ->json([
-                        'item' => $menuitem,
-                        'order' => ItensPedido::where([['item_pedido', $orderID], ['item_id', $id]])->first()
-                    ]);
-        endif;*/
-
-        /*$itens = new ItensPedido();
-        $itens->item_pedido = $orderID;
-        $itens->item_id = $id;
-        $itens->item_quantidade = 0;
-        $itens->item_price = $menuitem->item_price;
-        $itens->item_total = $menuitem->item_price;
-        $itens->item_emissao = $this->hoje;
-        $itens->save();*/
-
         return response()
             ->json([
                 'item' => $menuitem,
@@ -288,12 +260,12 @@ class PedidoController extends Controller
         }
         try {
             $tableNumber = null;
-            StockServiceRepository::SetItemSaldoZeroException($tableNumber, $request->itemID);
-            StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
             $orderID = $request->orderID;
             $itemID = $request->itemID;
             $quantity = $request->quantity;
-            $itemIdToArray = [];
+            StockServiceRepository::SetItemSaldoZeroException($tableNumber, $request->itemID);
+            StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
+            $this->stockServiceRepository->StockOutProduct(str_split($itemID), str_split($quantity));
             $auth = $request->session()->get('auth-vue');
 
             $menuitem = Menuitems::where('id', $itemID)->first();
@@ -317,29 +289,6 @@ class PedidoController extends Controller
                                 'item_quantidade' => $totalQuantity,
                                 'item_total' => $menuitem->item_price * $totalQuantity
                             ]);
-
-                        foreach ($getFiche as $product) {
-                            $old_saldo = Saldo::where('productID', $product->productID)->first();
-                            if ($old_saldo->emissao == $this->hoje):
-                                DB::table('saldos')
-                                    ->where('productID', $product->productID)
-                                    ->update([
-                                        'saldoFinal' => $old_saldo->saldoFinal - ($product->quantity * $request->quantity),
-                                    ]);
-                            else:
-                                DB::table('saldos')
-                                    ->where('productID', $item->productID)
-                                    ->update([
-                                        'emissao' => $this->hoje,
-                                        'saldoInicial' => $old_saldo->saldoFinal,
-                                        'saldoFinal' => $old_saldo->saldoFinal - ($product->quantity * $request->quantity)
-                                    ]);
-                            endif;
-                        }
-                        $itemID = str_split($itemID);
-                        $quantity = str_split($quantity);
-                        //$itemIdToArray = array_push($itemID);
-                        $this->stockServiceRepository->StockOutProduct($itemID, $quantity);
                         return response()
                             ->json("Item adicionado com sucesso", 200);
                     endif;
@@ -351,7 +300,7 @@ class PedidoController extends Controller
                     $itens->item_total      = $menuitem->item_price * $quantity;
                     $itens->item_emissao    = $this->hoje;
                     $itens->save();
-                    event(new StockReduced($itens));
+                    //event(new StockReduced($itens));
                     //DB::commit();
                     return response()
                         ->json("Item adicionado com sucesso ", 200);
