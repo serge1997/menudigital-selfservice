@@ -326,32 +326,30 @@ export default {
     },
 
     async created() {
-       await this.getOrder()
-       this.getTable()
+       await this.getOrder();
+       await this.getTable();
        //this.getCanceledStatus()
 
     },
 
     methods: {
        async getOrder() {
-            const response = await  axios.get('/api/dashboard/order')
-            this.order = response.data.order
-            this.status = response.data.status
+            let response = await  axios.get('/api/dashboard/order')
+            this.order = await response.data.order
+            this.status = await response.data.status
         },
 
-        getOrderItem(id) {
+        async getOrderItem(id) {
             this.billTotal = 0
             this.billTotalItem = 0
-            axios.get('/api/dashboard/item/' + id).then((response) => {
-                this.itens = response.data
+            let result = await axios.get('/api/dashboard/item/' + id);
+            this.itens = await result.data
 
-                for (let bill of response.data) {
-                    this.billTotal += Number(bill.item_total)
-                    this.billTotalItem += Number(bill.item_quantidade)
-                }
-            }).catch((errors) => {
-                console.log(errors)
-            })
+            for (let bill of this.itens) {
+                this.billTotal += Number(bill.item_total)
+                this.billTotalItem += Number(bill.item_quantidade)
+            }
+
         },
 
         UpdateOrderStatus(id, pedido) {
@@ -374,13 +372,15 @@ export default {
 
         },
 
-        getTable() {
-            axios.get('/api/dashboard/tables').then((response) => {
-                this.tables = response.data.tables
-                this.busyTables = response.data.busy_tables
-            }).catch((errors) => {
-                console.log(errors)
-            })
+        async getTable() {
+            try{
+                let result = await axios.get('/api/dashboard/tables');
+                this.tables = await result.data.tables
+                this.busyTables = await result.data.busyTables
+            }catch(errors) {
+                console.log(errors);
+            }
+
         },
 
         StorParams(OrderId, item_id){

@@ -214,7 +214,7 @@ class PedidoController extends Controller
 
         return response()->json([
             'tables' => $tables,
-            'busy_tables' =>$busyTables
+            'busyTables' =>$busyTables
         ]);
     }
 
@@ -259,13 +259,14 @@ class PedidoController extends Controller
             }
         }
         try {
+
             $tableNumber = null;
             $orderID = $request->orderID;
             $itemID = $request->itemID;
             $quantity = $request->quantity;
             StockServiceRepository::SetItemSaldoZeroException($tableNumber, $request->itemID);
             StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
-            $this->stockServiceRepository->StockOutProduct(str_split($itemID), str_split($quantity));
+            $this->stockServiceRepository->StockOutProduct(str_split($itemID, 10), str_split($quantity, 10));
             $auth = $request->session()->get('auth-vue');
 
             $menuitem = Menuitems::where('id', $itemID)->first();
@@ -289,6 +290,7 @@ class PedidoController extends Controller
                                 'item_quantidade' => $totalQuantity,
                                 'item_total' => $menuitem->item_price * $totalQuantity
                             ]);
+                        $this->stockServiceRepository->ControleItemLowStockRuptured(str_split($itemID, 10));
                         return response()
                             ->json("Item adicionado com sucesso", 200);
                     endif;
@@ -302,6 +304,7 @@ class PedidoController extends Controller
                     $itens->save();
                     //event(new StockReduced($itens));
                     //DB::commit();
+                    $this->stockServiceRepository->ControleItemLowStockRuptured(str_split($itemID, 10));
                     return response()
                         ->json("Item adicionado com sucesso ", 200);
                 endif;

@@ -28,15 +28,9 @@ class StockServiceRepository implements StockServiceInterFace
     }
     public function ControleItemLowStockRuptured(array $item_ids): void
     {
-        // TODO: Implement ControleItemLowStockRupured() method.
-        foreach ($item_ids as $key => $item_id) {
-            $fiche = DB::table('technicalfiches')
-                ->select('itemID', 'productID')
-                ->where('itemID', $item_id)
-                ->get();
-
+        foreach ($item_ids as $item_id) {
             $sheet_values = $this->MountSheetArray($item_id);
-            if (isset($sheet_values["productID"])):
+            if (count($sheet_values["productID"]) > 1):
                 for ($i = 0; $i <= count($sheet_values["productID"]); $i++):
                     $actual_product_inventory = DB::table('saldos')
                         ->select('saldoFinal', 'productID')
@@ -111,6 +105,7 @@ class StockServiceRepository implements StockServiceInterFace
                         ->where('productID', $item->productID)->first();
                 $itemProductInFiche = Technicalfiche::where([['itemID', $itemID], ['productID', $item->productID]])->first();
                 $date = $old_saldo->emissao ?? $hoje;
+                //var_dump($item_ids);die;
                 $beforeQuantity = $old_saldo->saldoFinal - ($product_quantitys[$key] * $itemProductInFiche->quantity);
                 //var_dump($beforeQuantity); die;
                 if ($old_saldo->saldoFinal < ($product_quantitys[$key] * $itemProductInFiche->quantity) || $beforeQuantity < 0 ){
@@ -259,6 +254,5 @@ class StockServiceRepository implements StockServiceInterFace
                 }
             }
         }
-        return response()->json("Caiu aqui");
     }
 }

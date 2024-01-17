@@ -7,8 +7,8 @@
             {{ username }}
         </div>
         <div class="d-flex justify-content-between p-0">
-            <div class="col-8 m-auto">
-                <h4 class="text-capitalize">Espaço Garcom</h4>
+            <div class="col-8 d-flex flex-column align-items-center m-auto">
+                <h4 class="text-capitalize">Espaço Garçom</h4>
                 <div class="w-100 d-flex justify-content-center p-2">
                     <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Menu' }">
                         <img class="w-25 m-auto" src="../../../../public/img/iconmenu.png" alt="">
@@ -19,7 +19,7 @@
                         <span class="text-center fw-medium text-capitalize">New order</span>
                     </router-link>
                 </div>
-                <div class="py-4 col-lg-10 col-md-12">
+                <div class="py-4 col-lg-10 col-md-12 d-flex flex-column justify-content-center">
                     <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
                     <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
                         <button  v-for="tab in tables" class="btn col-lg-4 col-md-5">
@@ -128,28 +128,24 @@ export default {
     methods: {
        async getOrder() {
             const response = await  axios.get('/api/dashboard/order')
-            this.order = response.data.order
-            this.status = response.data.status
+            this.order = await response.data.order
+            this.status = await response.data.status
 
             /*for(const a of this.order){
                 console.log(`valor of a is ${a.id}`)
             }*/
         },
 
-        getOrderItem(id) {
+        async getOrderItem(id) {
             this.billTotal = 0
             this.billTotalItem = 0
-            axios.get('/api/dashboard/item/' + id).then((response) => {
-                this.itens = response.data
-                this.orderID = id
-                for (let bill of response.data) {
-                    this.billTotal += Number(bill.item_total)
-                    this.billTotalItem += Number(bill.item_quantidade)
-                }
-                console.log(localStorage.getItem('orderID'))
-            }).catch((errors) => {
-                console.log(errors)
-            })
+            let response = await axios.get('/api/dashboard/item/' + id)
+            this.itens = await response.data
+            this.orderID = id
+            for (let bill of this.itens) {
+                this.billTotal += Number(bill.item_total)
+                this.billTotalItem += Number(bill.item_quantidade)
+            }
         },
 
         UpdateOrderStatus(id, pedido) {
@@ -160,14 +156,10 @@ export default {
             })
         },
 
-        getTable() {
-            axios.get('/api/dashboard/tables').then((response) => {
-                this.tables = response.data.tables
-                this.busyTables = response.data.busy_tables
-                console.log(response.data)
-            }).catch((errors) => {
-                console.log(errors)
-            })
+        async getTable() {
+            let response = await axios.get('/api/dashboard/tables')
+            this.tables = await response.data.tables
+            this.busyTables = await response.data.busyTables
         }
 
     },

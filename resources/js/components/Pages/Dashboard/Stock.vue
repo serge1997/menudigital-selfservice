@@ -252,13 +252,11 @@ export default {
         }
     },
 
-    mounted(){
-        this.get_stock_stat();
-        axios.get('/api/supplier').then((response) => {
-            this.suppliers = response.data;
-        }).catch((errors) => {
-            console.log(errors)
-        })
+    async mounted(){
+        await this.get_stock_stat();
+        let response = await axios.get('/api/supplier')
+        this.suppliers = await response.data;
+
     }
 }
 

@@ -328,7 +328,7 @@ class MenuItemController extends Controller
         return response()->json([
             'items' => $items,
             'total' => $total,
-            'options' => $this->options
+            //'options' => $this->options
         ]);
     }
 

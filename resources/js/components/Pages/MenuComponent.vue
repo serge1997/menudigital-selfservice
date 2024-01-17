@@ -205,7 +205,6 @@ export default {
             axios.post('/api/new-item', this.addItemToOrder).then((response) => {
                 console.log(this.addItemToOrder.itemID)
                 this.$toast.success(response.data);
-                //cartDiv.remove();
             }).catch((errors) => {
                 console.log(errors)
                 //this.$toast.error(errors.response.data)
@@ -213,7 +212,7 @@ export default {
                     this.visibleRight = false
                     this.$swal.fire({
                         text: !errors.response.data.message ? errors.response.data : errors.response.data.message,
-                        icon: "error"
+                        icon: "warning"
                     })
                 }
             })
