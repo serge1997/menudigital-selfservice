@@ -68,7 +68,7 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(Request $request)
     {
         $request->validate([
             'username' => ['required'],
