@@ -45,8 +45,14 @@
                         <li class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'Employe'}">
                             <span class="pi pi-user-plus"></span>
-                                New Employe
+                                Colaborador
                             </router-link>
+                        </li>
+                        <li class="list-group-item rounded-0 border-0">
+                          <router-link class="nav-link" :to="{ name: 'EmployeePlanning'}">
+                            <span class="pi pi-calendar"></span>
+                            Escala
+                          </router-link>
                         </li>
                         <li class="list-group-item rounded-0 border-0 border-top">
                             <router-link class="nav-link" :to="{ name: 'Stock'}">

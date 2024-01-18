@@ -16,6 +16,7 @@ import SettingPanel from '../components/Pages/Dashboard/SettingPanel.vue';
 import Stock from '../components/Pages/Dashboard/Stock.vue';
 import PublicMenu from '../components/Pages/PublicMenu.vue'
 import PurchaseRequisition from "../components/Pages/Dashboard/Purchase/PurchaseRequisition.vue";
+import EmployeePlanning from "../components/Pages/Dashboard/EmployeePlanning.vue";
 
 
 
@@ -185,6 +186,11 @@ const routes = [
         name: 'PurchaseRequisition',
         component: PurchaseRequisition
     },
+    {
+        path: '/dashboard/planning',
+        name: 'EmployeePlanning',
+        component: EmployeePlanning,
+    }
 ]
 
 const router = createRouter({
