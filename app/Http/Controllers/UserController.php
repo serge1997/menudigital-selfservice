@@ -15,7 +15,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\ItensPedido;
 use App\Http\Services\UserRoleAcess;
 use App\Http\Services\UserInstance;
-use App\Http\Services\Permission\PermissionRepository;
+use App\Events\CancelOrder;
 
 
 class UserController extends Controller
@@ -68,7 +68,7 @@ class UserController extends Controller
         }
     }
 
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $request->validate([
             'username' => ['required'],
@@ -142,7 +142,7 @@ class UserController extends Controller
         return response()->json("Senha invalida !");
     }
 
-    public function cancelOrder(Request $request)
+    public function cancelOrder(Request $request): JsonResponse
     {
         $password = User::where('id', self::USER_ID)
             ->first();
@@ -195,36 +195,36 @@ class UserController extends Controller
             ->json("you haven't permission!",422);
     }
 
-    public function getEmploye()
+    public function getEmployee(): JsonResponse
     {
-        $employe = DB::table("users")
+        $employee = DB::table("users")
             ->select(
                 "users.id",
                 "users.name",
                 "users.email",
                 "users.tel",
                 "positions.name AS position",
-                "positions.id"
+                "positions.id as position_id"
             )
                 ->join("positions", "users.position_id", "=", "positions.id")
                     ->where('isactive', true)
                         ->get();
 
-        return response()->json($employe);
+        return response()->json($employee);
     }
 
-    public function getToupdateEmploye($id)
+    public function getToUpdateEmployee($id): JsonResponse
     {
-        $employe = User::where('id', $id)->get();
+        $employee = User::where('id', $id)->get();
         $user_roles = UserRoleController::user_with_roles($id);
         return response()
             ->json([
-                'employe' => $employe,
+                'employee' => $employee,
                 'withroles' => $user_roles
             ]);
     }
 
-    public function ToDeleteEmploye($id, Request $request): JsonResponse
+    public function ToDeleteEmployee($id, Request $request): JsonResponse
     {
         $user_auth = $request->session()->get('auth-vue');
         $roles = UserInstance::get_user_roles($user_auth);
@@ -244,7 +244,7 @@ class UserController extends Controller
 
     }
 
-    public function updateEmployeStatus($id, $group_id, Request $request): JsonResponse
+    public function updateEmployeeStatus($id, $group_id, Request $request): JsonResponse
     {
 
         $authID = UserInstance::AuthUser($request);

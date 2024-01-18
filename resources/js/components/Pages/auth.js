@@ -4,9 +4,9 @@ let authuser;
 window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
 async function getAUth(){
    let user;
-   await axios.get('/api/user').then(response =>{
-       user = response.data
-   })
+   let response = await axios.get('/api/user');
+   user = await response.data
+
    return user;
 }
 let users = getAUth();

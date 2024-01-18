@@ -67,13 +67,13 @@
                 <Column field="prod_unmed" header="Status" style="width: 25%">
                     <template #body="{ data }">
                         <div class="d-flex">
-                            <div>
+                            <div v-if="showActionIcon">
                                 <PurchaseRequisitionEdition :id="data.id" :status_desc="data.stat_desc" />
                             </div>
                             <div>
                                 <ShowRequisition :id="data.id"/>
                             </div>
-                            <div>
+                            <div v-if="showActionIcon">
                                 <Button @click="deleteRequisition(data.id)" style="color: red" icon="pi pi-trash" text/>
                             </div>
 
@@ -99,6 +99,7 @@ import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import Tag from "primevue/tag";
 import _ from "lodash";
+import axios from "axios";
 
 export default {
     name: 'PurchaseRequisition',
@@ -138,6 +139,7 @@ export default {
             products: null,
             user: {
                 name: null,
+                department_id: 1,
                 id: null
             },
             errMsg: null,
@@ -147,7 +149,8 @@ export default {
                 waiting: "Pendente",
                 approved: "Aprovado",
                 rejected: "Recusado",
-            }
+            },
+            showActionIcon: false,
         }
     },
     methods: {
@@ -205,26 +208,30 @@ export default {
                 }
             })
         },
-        showRequisition(id){
-
-        }
+      async loadProducts(){
+        let productResponse = await axios.get('/api/products');
+        this.products = await productResponse.data
+      },
+      async loadSuppliers(){
+        let supplierResult = await axios.get('/api/supplier');
+        this.suppliers = await supplierResult.data;
+      },
+      async loadDepartments(){
+          let departmentResponse = await axios.get('/api/group');
+          this.departments = await departmentResponse.data.departments
+      }
     },
-    mounted(){
-        this.index();
-        axios.get('/api/products').then((response) => {
-            this.products = response.data.products
-            this.suppliers = response.data.suppliers
-        }).catch((errors) => {
-            console.log(errors)
-        });
+    async mounted(){
+        await this.index();
+        await this.loadProducts();
+        await this.loadDepartments();
 
-        axios.get('/api/group').then((response) => {
-            this.departments = response.data.departments;
-        }).catch((error) => {
-            console.log(error)
-        })
-
-        authuser.then(result => { this.user.name = result.name; this.purchaseData.user_id = result.id});
+        let auth = await authuser
+        this.user.name = await auth.name;
+        this.purchaseData.user_id = auth.id;
+        if (auth.department_id == this.user.department_id){
+            this.showActionIcon = true;
+        }
     }
 }
 </script>

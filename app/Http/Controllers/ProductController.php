@@ -60,28 +60,10 @@ class ProductController extends Controller
         }
     }
 
-    public function get_product()
+    public function getProducts(): JsonResponse
     {
-        $products = $this->products::where('products.is_delete', false)
-            ->select(
-                'products.id',
-                'products.prod_name',
-            )
-                ->orderBy('prod_name')
-                     ->get();
-
-        $suppliers = $this->suppliers::where('is_delete', false)
-            ->select(
-                'id',
-                'sup_name',
-            )
-                ->orderBy('sup_name')
-                    ->get();
         return response()
-            ->json([
-                'products' => $products,
-                'suppliers' => $suppliers
-            ]);
+            ->json(Product::where('is_delete', false)->get());
     }
     public function showProductToEdit($id)
     {

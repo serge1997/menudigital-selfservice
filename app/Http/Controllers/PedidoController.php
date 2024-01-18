@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Cart;
@@ -114,11 +113,11 @@ class PedidoController extends Controller
             $auth = $request->session()->get('auth-vue');
             foreach (UserInstance::get_user_roles($auth) as $confirm):
                 if (
-                    $confirm->role_id === Role::MANAGER             ||
-                    $confirm->role_id === Role::CAN_TAKE_ORDER      ||
-                    $confirm->role_id === Role::CAN_USE_CASHIER     ||
-                    $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
-                    $confirm->role_id === Role::CAN_CANCEL_ORDER
+                    $confirm->role_id == Role::MANAGER             ||
+                    $confirm->role_id == Role::CAN_TAKE_ORDER      ||
+                    $confirm->role_id == Role::CAN_USE_CASHIER     ||
+                    $confirm->role_id == Role::CAN_TRANSFERT_ORDER ||
+                    $confirm->role_id == Role::CAN_CANCEL_ORDER
                 ):
                     DB::beginTransaction();
                     $order = new Pedido();
@@ -180,8 +179,24 @@ class PedidoController extends Controller
         return response()->json($itens);
     }
 
-    public function UpdateOrderStatus($id, $pedido)
+    public function UpdateOrderStatus($id, $pedido, Request $request)
     {
+        try{
+            $auth = $request->session()->get('auth-vue');
+            foreach (UserInstance::get_user_roles($auth) as $confirm):
+                if ($confirm->role_id === Role::MANAGER || $confirm->role_id === Role::CAN_USE_CASHIER):
+                    DB::table('pedidos')
+                        ->where('id', $pedido)
+                        ->update([
+                            'status_id' => $id
+                        ]);
+                    return true;
+                endif;
+            endforeach;
+            return response()->json("Voçê não tem permissão", 400);
+        }catch(Exception $e){
+
+        }
         DB::table('pedidos')
             ->where('id', $pedido)
                 ->update([

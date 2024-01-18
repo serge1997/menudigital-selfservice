@@ -98,12 +98,12 @@ Route::controller(UserController::class)->group(function() {
     //Route::get('user-token','currentUser');
     Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
     Route::post('cancel-order', 'cancelOrder');
-    Route::post('/editorder/stat/{item_pedido}', 'EditOrderStat');
-    Route::get('get/employe', 'getEmploye');
-    Route::get('get/employe/{id}', 'getToupdateEmploye');
-    Route::post('employe/delete/{id}', 'ToDeleteEmploye');
-    Route::post('employe-status/update/{id}/{group_id}', 'updateEmployeStatus');
-    Route::post('employe/update','EmployeUpdate');
+    Route::post('/edit-order/stat/{item_pedido}', 'EditOrderStat');
+    Route::get('get/employee', 'getEmployee');
+    Route::get('get/employee/{id}', 'getToUpdateEmployee');
+    Route::delete('employee/{id}', 'ToDeleteEmployee');
+    Route::put('employee-status/{id}/{group_id}', 'updateEmployeeStatus');
+    Route::post('employee/update','EmployeeUpdate');
 });
 
 //stock
@@ -121,7 +121,7 @@ Route::controller(StockController::class)->group(function() {
 //produto
 Route::controller(ProductController::class)->group(function(){
     Route::post('product', 'StoreProduct');
-    Route::get('products', 'get_product');
+    Route::get('products', 'getProducts');
     Route::get('product/{id}', 'showProductToEdit');
     Route::put('product', 'update');
     Route::delete('product/{id}', 'delete');
@@ -146,6 +146,7 @@ Route::controller(SupplierController::class)->group(function() {
     Route::get('supplier/{id}', 'getToUpdate');
     Route::put('supplier', 'update');
     Route::delete('supplier/{id}', 'delete');
+    Route::get('product-supplier/{id}', 'getProductSupplier');
 });
 
 Route::controller(PurchaseRequisitionController::class)->group(function() {

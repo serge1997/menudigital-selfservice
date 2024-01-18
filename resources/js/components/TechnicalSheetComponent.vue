@@ -91,23 +91,26 @@ export default{
                 this.errMsg = errors.response.data.errors
                 errors.response.status === 400 ? this.$toast.error(errors.response.data): null
             })
-        }
+        },
+        async loadMenuItems(){
+          let menuResponse = await axios.get('/api/menu/items');
+          this.menuItems = await menuResponse.data.items
+        },
+
+        async loadProducts(){
+          let productResponse = await axios.get('/api/products');
+          this.products = await productResponse.data
+        },
+        async loadSuppliers(){
+          let supplierResult = await axios.get('/api/supplier');
+          this.suppliers = await supplierResult.data;
+        },
     },
 
-    mounted(){
-        axios.get('/api/menu/items').then((response) => {
-            this.menuItems = response.data.items
-            console.log(this.publicMenu)
-        }).catch((errors) => {
-            console.log(errors)
-        })
-
-        axios.get('/api/products').then((response) => {
-            this.products = response.data.products
-            this.suppliers = response.data.suppliers
-        }).catch((errors) => {
-            console.log(errors)
-        })
+    async mounted(){
+        await this.loadSuppliers();
+        await this.loadProducts();
+        await this.loadMenuItems();
     }
 }
 </script>

@@ -355,8 +355,8 @@ export default {
         UpdateOrderStatus(id, pedido) {
 
            this.$swal.fire({
-               title: "Aviso",
-               text: "Do you want really to achieve this action?",
+               icon: "question",
+               text: "Do you want really to achieve this action",
                confirmButtonColor: '#333',
                confirmButtonText: 'Confirm',
                showCancelButton: true
@@ -366,6 +366,7 @@ export default {
                        return this.getOrder()
                    }).catch((errors) => {
                        console.log(errors)
+                       errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
                    })
                }
            })

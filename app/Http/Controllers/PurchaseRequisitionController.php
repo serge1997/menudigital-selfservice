@@ -154,6 +154,8 @@ class PurchaseRequisitionController extends Controller
         $code = $request->requisition_code;
         $requisition = DB::table('itens_requisitions')
             ->select(
+                DB::raw('MAX(stock_entries.emissao) as emissao'),
+                'stock_entries.unitCost',
                 'itens_requisitions.product_id',
                 'suppliers.sup_name',
                 'itens_requisitions.requisition_id',
@@ -163,10 +165,21 @@ class PurchaseRequisitionController extends Controller
                 'products.prod_name',
             )
             ->join('products', 'itens_requisitions.product_id', '=', 'products.id')
-                ->join('requisitions_status','itens_requisitions.status_id', '=', 'requisitions_status.id' )
-                    ->join('suppliers', 'products.prod_supplierID', '=', 'suppliers.id')
-                        ->where('itens_requisitions.requisition_code', $code)
-                            ->get();
+                ->join('stock_entries', 'itens_requisitions.product_id', 'stock_entries.productID')
+                    ->join('requisitions_status','itens_requisitions.status_id', '=', 'requisitions_status.id' )
+                        ->join('suppliers', 'products.prod_supplierID', '=', 'suppliers.id')
+                            ->where('itens_requisitions.requisition_code', $code)
+                                ->groupBy(
+                                    'stock_entries.unitCost',
+                                    'itens_requisitions.product_id',
+                                    'suppliers.sup_name',
+                                    'itens_requisitions.requisition_id',
+                                    'itens_requisitions.quantity',
+                                    'itens_requisitions.confirm_quantity',
+                                    'requisitions_status.stat_desc',
+                                    'products.prod_name',
+                                )
+                                    ->get();
 
         return response()->json($requisition);
 

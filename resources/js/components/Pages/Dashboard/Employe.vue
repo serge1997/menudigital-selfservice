@@ -102,7 +102,7 @@ export default {
     },
 
     methods: {
-        getUsergroup() {
+        getUserGroup() {
             axios.get('/api/group').then((response) => {
                 this.departments = response.data.departments;
                 this.positions = response.data.positions;
@@ -135,7 +135,7 @@ export default {
 
     mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-        this.getUsergroup();
+        this.getUserGroup();
 
     }
 }

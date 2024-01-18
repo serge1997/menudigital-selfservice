@@ -23,6 +23,6 @@ class Supplier extends Model
 
     public function product(): HasMany
     {
-        return $this->hasMany(Product::class, 'prod_suplierID');
+        return $this->hasMany(Product::class, 'prod_supplierID');
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Services\Supplier\SupplierRepository;
 use App\Models\Role;
 use App\Models\Supplier;
+use App\Models\Product;
 use Exception;
 
 
@@ -44,7 +45,7 @@ class SupplierController extends Controller
         }
     }
 
-    public function getSuppliers()
+    public function getSuppliers(): JsonResponse
     {
         return response()
             ->json(Supplier::select('id', 'sup_name', 'sup_email', 'sup_tel')->where('is_delete', false)->get());
@@ -88,5 +89,15 @@ class SupplierController extends Controller
         }catch(Exception $e){
             return response()->json($e->getMessage());
         }
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     * @see Product
+     */
+    public function getProductSupplier($id): JsonResponse
+    {
+       return response()->json(Product::find($id)->supplier);
     }
 }

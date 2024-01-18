@@ -64,19 +64,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="employe in employes">
-                                        <td class="p-3">{{ employe.id }}</td>
-                                        <td class="text-uppercase p-3">{{ employe.name }}</td>
-                                        <td class="p-3">{{ employe.email }}</td>
-                                        <td class="p-3">{{ employe.tel }}</td>
-                                        <td class="text-uppercase p-3">{{ employe.position }}</td>
+                                    <tr v-for="employee in employes">
+                                        <td class="p-3">{{ employee.id }}</td>
+                                        <td class="text-uppercase p-3">{{ employee.name }}</td>
+                                        <td class="p-3">{{ employee.email }}</td>
+                                        <td class="p-3">{{ employee.tel }}</td>
+                                        <td class="text-uppercase p-3">{{ employee.position }}</td>
                                         <td class="p-3">
-                                            <button class="btn" @click="ShowEmployeEditForm(employe.id)">
+                                            <button class="btn" @click="ShowEmployeeEditForm(employee.id)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                                 </svg>
                                             </button>
-                                            <button @click="ToDeleteEmploye(employe.id)" class="btn">
+                                            <button @click="ToDeleteEmployee(employee.id)" class="btn">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc3545"
                                                     stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
                                                 </svg>
@@ -88,7 +88,7 @@
                                                     <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">Poste</h6>
                                                     <div class="w-100">
                                                         <li class="w-100">
-                                                            <button v-for="position in positions" @click="updateEmployeStatus(employe.id, position.id)" class="btn fw-medium dropdown-btn p-2 w-100 rounded-0 text-left border-bottom text-capitalize">{{ position.name }}</button>
+                                                            <button v-for="position in positions" @click="updateEmployeeStatus(employee.id, position.id)" class="btn fw-medium dropdown-btn p-2 w-100 rounded-0 text-left border-bottom text-capitalize">{{ position.name }}</button>
                                                             <button class="btn"></button>
                                                         </li>
                                                     </div>
@@ -101,7 +101,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <Button @click="updateEmploye" type="button" label="Save" />
+                        <Button @click="updateEmployee" type="button" label="Save" />
                     </div>
                 </div>
             </div>
@@ -127,7 +127,7 @@ export default {
         return {
             employes: null,
             ShowForm: false,
-            updateEmployeData: {
+            updateEmployeeData: {
                 user_id: null,
                 user_name: null,
                 user_email: null,
@@ -143,8 +143,8 @@ export default {
     },
 
     methods: {
-        getEmploye(){
-            axios.get('/api/get/employe').then((res) => {
+        getEmployee(){
+            axios.get('/api/get/employee').then((res) => {
                 this.employes = res.data
                 console.log(res.data)
             }).catch((err) => {
@@ -152,16 +152,17 @@ export default {
             })
         },
 
-        ShowEmployeEditForm(id){
+        ShowEmployeeEditForm(id){
             if (!this.ShowForm){
                 this.load = true
             }
+
             this.ShowForm = true
             return new Promise(() => {
                 setTimeout(() => {
-                    axios.get(`/api/get/employe/${id}`).then((res) => {
+                    axios.get(`/api/get/employee/${id}`).then((res) => {
                         console.log(res.data)
-                        this.userForEdit = res.data.employe
+                        this.userForEdit = res.data.employee
                         this.user_roles = res.data.withroles
                         this.load = false
                     }).catch((err) => {
@@ -171,7 +172,7 @@ export default {
             })
         },
 
-        ToDeleteEmploye(id) {
+        ToDeleteEmployee(id) {
             this.$swal.fire({
                 title: "Quer realmente apagar o usuario ?",
                 text: "Não irá ter mais acesso aos informações e serviço desse colaborador. No caso de recuperação, entre em contato con o fornecedor do aplicativo.",
@@ -181,13 +182,13 @@ export default {
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    axios.post(`/api/employe/delete/${id}`).then((res) => {
+                    axios.delete(`/api/employee/${id}`).then((res) => {
                         this.$swal.fire({
                             text: res.data,
                             confirmButtonColor: '#42b883',
 
                         })
-                        return this.getEmploye()
+                        return this.getEmployee()
                     }).catch((err) => {
                         console.log(err)
                     })
@@ -196,7 +197,7 @@ export default {
             })
         },
 
-        getUsergroup() {
+        getUserGroup() {
             axios.get('/api/group').then((response) => {
                 this.positions = response.data.positions
             }).catch((error) => {
@@ -204,7 +205,7 @@ export default {
             })
         },
 
-        updateEmployeStatus(id, group_id){
+        updateEmployeeStatus(id, group_id){
             this.$swal.fire({
                 text: "Clique em sim para confirmar a edição da hieraquia do usuario.",
                 showCancelButton: true,
@@ -213,13 +214,13 @@ export default {
                 cancelButtonText: 'Cancelar'
             }).then((res) => {
                 if (res.isConfirmed) {
-                    axios.post(`/api/employe-status/update/${id}/${group_id}`).then((response) => {
+                    axios.put(`/api/employee-status/${id}/${group_id}`).then((response) => {
                         this.$swal.fire({
                             text: response.data,
                             icon: "success",
                             confirmButtonColor: '#42b883'
                         })
-                        return this.getEmploye()
+                        return this.getEmployee()
                     }).catch((errors) => {
                         errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: "error" }): "";
                     })
@@ -227,19 +228,19 @@ export default {
             })
         },
 
-        updateEmploye() {
+        updateEmployee() {
 
             let id = document.getElementById('user-id').value;
             let name = document.getElementById('user-name').value;
             let email = document.getElementById('user-email').value;
             let tel = document.getElementById('user-tel').value;
 
-            this.updateEmployeData.user_id = id;
-            this.updateEmployeData.user_email = email;
-            this.updateEmployeData.user_name = name;
-            this.updateEmployeData.user_tel = tel;
+            this.updateEmployeeData.user_id = id;
+            this.updateEmployeeData.user_email = email;
+            this.updateEmployeeData.user_name = name;
+            this.updateEmployeeData.user_tel = tel;
 
-            axios.post('/api/employe/update', this.updateEmployeData).then((response) => {
+            axios.post('/api/employee/update', this.updateEmployeeData).then((response) => {
                 this.$toast.success(response.data);
                 this.ShowForm = !this.ShowForm;
             }).catch((errors) => {
@@ -251,7 +252,7 @@ export default {
         updateUserRoles(id, check)
         {
             let user_id = document.getElementById('user-id').value;
-            this.updateEmployeData.user_id = user_id;
+            this.updateEmployeeData.user_id = user_id;
             if (check){
                 this.$swal.fire({
                     text: "You really want to delete this user role ?",
@@ -259,7 +260,7 @@ export default {
                     showCancelButton: true
                 }).then((result) => {
                     if (result.isConfirmed){
-                        axios.post('/api/role-delete/' + id, this.updateEmployeData).then((response) => {
+                        axios.post('/api/role-delete/' + id, this.updateEmployeeData).then((response) => {
                             this.$swal.fire({
                                 text: response.data,
                                 icon: "success",
@@ -271,7 +272,7 @@ export default {
                             })
                         })
 
-                        return this.ShowEmployeEditForm(user_id);
+                        return this.ShowEmployeeEditForm(user_id);
                     }
                 })
             }else{
@@ -281,7 +282,7 @@ export default {
                     showCancelButton: true
                 }).then((result) => {
                     if (result.isConfirmed){
-                        axios.post('/api/role/' + id, this.updateEmployeData).then((response) => {
+                        axios.post('/api/role/' + id, this.updateEmployeeData).then((response) => {
                             this.$swal.fire({
                                 text: response.data,
                                 icon: "success",
@@ -292,7 +293,7 @@ export default {
                                 icon: "error",
                             })
                         })
-                        return this.ShowEmployeEditForm(user_id);
+                        return this.ShowEmployeeEditForm(user_id);
                     }
                 })
 
@@ -301,8 +302,8 @@ export default {
     },
 
     mounted(){
-        this.getEmploye()
-        this.getUsergroup()
+        this.getEmployee();
+        this.getUserGroup();
     }
 }
 </script>

@@ -15,7 +15,7 @@
                         <Column field="quantity" sortable style="width: 10%" header="Quantidade"></Column>
                         <Column field="confirm_quantity" sortable style="width: 20%" header="Quantidade confirmado"></Column>
                         <Column field="sup_name" sortable style="width: 20%" header="Fornecedor"></Column>
-                        <Column field="" sortable style="width: 20%" header="Ultimo preço de compra"></Column>
+                        <Column field="unitCost" sortable style="width: 20%" header="Ultimo preço de compra"></Column>
                         <Column header="Status" style="width: 25%">
                             <template class="w-100" #body="{ data }">
                                 <Tag style="width: 90px" v-if="data.stat_desc === requisition_status.waiting" :value="data.stat_desc" severity="warning" />
@@ -30,7 +30,7 @@
                 </div>
                 <div class="w-100 d-flex flex-column gap-2">
                     <label for="product-name">Product name</label>
-                    <Dropdown :class="invalid" v-model="stockEntry.productID" :options="products" option-value="id" option-label="prod_name" placeholder="product"/>
+                    <Dropdown @change="loadProductSupplier(stockEntry.productID)" :class="invalid" v-model="stockEntry.productID" :options="products" option-value="id" option-label="prod_name" placeholder="product"/>
                     <small class="text-danger" v-if="errMsg" v-for="prod_name in errMsg.productID" id="product-name-err"  v-text="prod_name"></small>
                 </div>
                 <div class="w-100 d-flex gap-2 mt-3">
@@ -48,6 +48,7 @@
                 <div class="w-100 d-flex flex-column gap-2 mt-3">
                     <label for="supplier">Supplier</label>
                     <Dropdown :class="invalid" v-model="stockEntry.supplierID" :options="suppliers" option-value="id" option-label="sup_name" placeholder="supplier"/>
+
                     <small class="text-danger" v-if="errMsg" v-for="sup_name in errMsg.supplierID" id="supplier-err"  v-text="sup_name"></small>
                 </div>
             </div>
@@ -105,7 +106,8 @@ export default{
                 waiting: "Pendente",
                 approved: "Aprovado",
                 rejected: "Recusado",
-            }
+            },
+            filtredSupplier: null,
         }
     },
 
@@ -148,16 +150,29 @@ export default{
                 })
             }, 500)
 
+        },
+        loadProductSupplier(productID){
+          axios.get(`/api/product-supplier/${productID}`).then((response) => {
+              this.suppliers = [response.data];
+              console.log(this.filtredSupplier)
+          });
+
+
+
+        },
+        async loadSuppliers(){
+            let supplierResult = await axios.get('/api/supplier');
+            this.suppliers = await supplierResult.data;
         }
     },
 
-    mounted(){
-        axios.get('/api/products').then((response) => {
-            this.products = response.data.products
-            this.suppliers = response.data.suppliers
-        }).catch((errors) => {
-            console.log(errors)
-        })
+    async mounted(){
+        await this.loadSuppliers();
+        let productResponse = await axios.get('/api/products');
+        this.products = await productResponse.data
+
+
+
     }
 }
 
