@@ -2,7 +2,7 @@
 
     <div class="container-fluid min-vh-100">
         <div class="row banner">
-    
+
         </div>
         <div class="row p-2 shadow brandy">
             <h5 class="text-white">Restaurant Equinox</h5>
@@ -69,8 +69,8 @@ export default {
     },
 
     async created() {
-        const response = await axios.get('/api/table')
-        this.table = response.data
+        const response = await axios.get('/api/tablenumber')
+        this.table = await response.data
     },
 
     methods: {

@@ -53,7 +53,7 @@ class ProductController extends Controller
                 endif;
             endforeach;
             return response()
-                ->json("You dont have permission", 400);
+                ->json("You dont have permission", 500);
         }catch(\Exception $e){
             return response()
                 ->json($e->getMessage(), 500);

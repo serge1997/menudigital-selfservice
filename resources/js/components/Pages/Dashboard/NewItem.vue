@@ -29,6 +29,7 @@
                         </div>
                         <div class="row p-3">
                             <Dropdown v-model="menuItem.type_id" option-value="id_type" :options="mealType" optionLabel="desc_type" placeholder="Select a food group" class="w-full md:w-14rem" />
+                            <small class="text-danger" v-if="errMsg" v-for="type_id in errMsg.type_id" id="item-price-err"  v-text="type_id"></small>
                         </div>
                         <div class="d-flex p-2 mt-2">
                             <div class="d-flex align-items-center">
@@ -126,18 +127,16 @@ export default {
            })
         },
 
-        getMealType() {
-            axios.get('/api/menu/type').then((response) => {
-                console.log(response.data)
-                this.mealType = response.data.type
-            }).catch((errors) => {
-                console.log(errors)
-            })
+
+        async loadMealType(){
+            let mealTypeResponse = await axios.get('/api/meal-type');
+            this.mealType = await mealTypeResponse.data;
+
         }
     },
 
-    mounted() {
-        this.getMealType()
+    async mounted() {
+        await this.loadMealType();
     }
 }
 

@@ -55,47 +55,6 @@ class MenuItemController extends Controller
         }
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     * @use Role $role
-     * make a migration fresh to put type desc not null
-     */
-    public function SaveType(Request $request) :JsonResponse
-    {
-        $request->validate([
-            'desc_type' => ['required']
-        ]);
-
-        $type = new MealType();
-        $type->desc_type = $request->desc_type;
-
-        if($request->hasFile('foto_type') && $request->file('foto_type')->isValid()){
-            $foto = $request->foto_type;
-            $extension = $foto->extension();
-            $fotoname = md5($foto->getClientOriginalName(). strtotime("now")). ".". $extension;
-            $foto->move(public_path('img/type'), $fotoname);
-            $type->foto_type = $fotoname;
-        }
-        try{
-            $this->menuItemRepository->beforeSaveMealType($request->desc_type);
-
-            $auth = $request->session()->get('auth-vue');
-            foreach (UserInstance::get_user_roles($auth) as $menu):
-                if ($menu->role_id === Role::MANAGER):
-                    $type->save();
-                    return response()->json("Item casdastrado com successo", 200);
-                endif;
-            endforeach;
-            return response()->json("You dont have permission", 500);
-        }catch (\Exception $e){
-            return response()->json($e->getMessage(), 400);
-        }
-
-
-
-    }
-
     public function getMenu()
     {
         $items = DB::table("menuitems")->select('*')
@@ -168,6 +127,8 @@ class MenuItemController extends Controller
         $cart->tableNumber = $request->tableNumber;
         $cart->save();
     }
+
+
     public function addToCart($id, Request $request)
     {
 
@@ -241,9 +202,9 @@ class MenuItemController extends Controller
         }
     }
 
-    public function AddQuantity($id): JsonResponse
+    public function AddQuantity($id)
     {
-        $cart = Cart::where('id', $id)->first();
+       /* $cart = Cart::where('id', $id)->first();
         if ($cart->quantity <= 8) {
             DB::table('carts')->where("id", "=", $id)
             ->update([
@@ -263,12 +224,12 @@ class MenuItemController extends Controller
         return response()->json([
             'quantity' => $qty->quantity,
             'total' => $total->total
-        ]);
+        ]);*/
     }
 
-    public function ReduceQuantity($id): JsonResponse
+    public function ReduceQuantity($id)
     {
-        $cart = Cart::where('id', $id)->first();
+        /*$cart = Cart::where('id', $id)->first();
         $oldTotal = DB::table('carts')->select('total')
             ->where("id", $id)
             ->first();
@@ -291,9 +252,9 @@ class MenuItemController extends Controller
         return response()->json([
             'quantity' => $qty->quantity,
             'total' => $total->total
-        ]);
+        ]);*/
     }
-    public function CustomerFinalCart($table)
+    /*public function CustomerFinalCart($table)
     {
         $items = DB::table('carts')->select(
                 'carts.id AS cartID',
@@ -330,9 +291,9 @@ class MenuItemController extends Controller
             'total' => $total,
             //'options' => $this->options
         ]);
-    }
+    }*/
 
-    public function DeleteFromCart($cartID, $table) :JsonResponse
+    /*public function DeleteFromCart($cartID, $table) :JsonResponse
     {
         DB::table('carts')->where('id', $cartID)
             ->delete();
@@ -343,7 +304,7 @@ class MenuItemController extends Controller
             ->get();
 
         return response()->json($items);
-    }
+    }*/
 
 
     public function getTable(): JsonResponse

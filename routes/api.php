@@ -13,6 +13,9 @@ use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\PurchaseRequisitionController;
+use App\Http\Controllers\MealTypeController;
+use App\Http\Controllers\TableController;
+use App\Http\Controllers\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,20 +42,20 @@ Route::controller(MenuItemController::class)->group(function(){
     Route::get('/cart-item/{id}/{table}', 'ShowCart');
     Route::get('menu-type', 'getMenuType');
     Route::get('item/type/{id_type?}', 'getItemOfType');
-    Route::post('add/cart/{id}', 'addToCart');
+    //Route::post('add/cart/{id}', 'addToCart');
     Route::post('table', 'setTableNumber');
     Route::get('/checkcart/{checkTable?}', 'checkCart');
     Route::post('set/option/{id?}', 'SetCartOptions');
-    Route::post('add-quantity/{id}', 'AddQuantity');
-    Route::post('reduce-quantity/{id}', 'ReduceQuantity');
+    //Route::post('add-quantity/{id}', 'AddQuantity');
+    //Route::post('reduce-quantity/{id}', 'ReduceQuantity');
     Route::get('cart/items/{table}', 'CustomerFinalCart');
-    Route::get('delete/item/{cartID}/{table}', 'DeleteFromCart');
+    //Route::get('delete/item/{cartID}/{table}', 'DeleteFromCart');
     Route::post('item-menu/update', 'updatedMenuItem');
     Route::get('edit/menu-item/{id}','getItemForEdit');
     Route::post('/set-rupture/{id}','SetRupture');
-    Route::get('table','getTable');
+    //Route::get('table','getTable');
     Route::post('/delete/menu-item/{id}','ToDelete');
-    Route::post('save/type','SaveType');
+    //Route::post('save/type','SaveType');
     Route::get('/show/{id}', 'show');
     Route::get('cart-table/{table}', 'getNewCart');
 });
@@ -160,4 +163,18 @@ Route::controller(PurchaseRequisitionController::class)->group(function() {
     Route::post('purchase-requisition/filter-item', 'getRequisitionProduct');
     Route::post('purchase-requisition/confirm', 'confirmPurchaseRequisition');
     Route::put('purchase-requisition-item/rejected/{requisition_id}/{product_id}', 'setRequisitionItemStatusToRejected');
+});
+Route::controller(MealTypeController::class)->group(function() {
+    Route::post('meal-type','createAction');
+    Route::get('meal-type', 'getAllItemType');
+});
+Route::controller(TableController::class)->group(function() {
+    Route::get('tablenumber', 'getAllTable');
+});
+Route::controller(CartController::class)->group(function() {
+    Route::post('add-to-cart/{id}', 'AddItemdToCart');
+    Route::put('cart-add/quantity/{id}', 'incrementItemQuantity');
+    Route::put('cart-reduce/quantity/{id}', 'decrementItemQuantity');
+    Route::delete('cart-item/{cartId}/{table}', 'deleteItemFromCart');
+    Route::get('cart-itens/{table}', 'getCartItens');
 });

@@ -108,7 +108,7 @@ export default {
 
     methods:{
         getCartItem(){
-            axios.get('/api/cart/items/'+ this.table).then((response) => {
+            axios.get('/api/cart-itens/'+ this.table).then((response) => {
                 this.cartItems = response.data.items
                 this.options = response.data.options
             }).catch((errors) => {
@@ -119,7 +119,7 @@ export default {
             return this.getCartItem()
         },
         AddQuantity(id) {
-            axios.post(`/api/add-quantity/${id}`).then((response) => {
+            axios.put(`/api/cart-add/quantity/${id}`).then((response) => {
                 this.quantity = response.data.quantity
                 this.total = response.data.total
                 console.log(response.data.total)
@@ -130,7 +130,7 @@ export default {
         },
 
         ReduceQuantity(id) {
-            axios.post('/api/reduce-quantity/' + id).then((response) => {
+            axios.put('/api/cart-reduce/quantity/' + id).then((response) => {
                 this.quantity = response.data.quantity
                 this.total = response.data.total
                 console.log(response.data.total)
@@ -140,8 +140,8 @@ export default {
             })
         },
         DeleteFromCart(cartID, table) {
-            table = this.tableNumber
-            axios.get(`/api/delete/item/${cartID}/${table}`).then((response) => {
+            table = this.table
+            axios.delete(`/api/cart-item/${cartID}/${table}`).then((response) => {
                 return this.getCartItem();
             }).catch((errors) => {
                 console.log(errors)

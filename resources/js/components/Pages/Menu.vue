@@ -178,9 +178,7 @@ export default {
                 }, 1000)
             })
         },
-        Test(id){
-            alert(id)
-        },
+
         getItemOfType(id_type) {
             axios.get('/api/item/type/' + id_type).then((response) => {
                 this.itemOfType = response.data.items
@@ -189,8 +187,8 @@ export default {
             })
         },
 
-        addToCart(id, rupture) {
-            axios.post('/api/add/cart/' + id, this.table).then((response) => {
+        addToCart(id) {
+            axios.post('/api/add-to-cart/' + id, this.table).then((response) => {
                 console.log(response.data)
             }).catch((errors) => {
                 console.log(errors)

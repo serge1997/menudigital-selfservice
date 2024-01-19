@@ -165,7 +165,7 @@ class PurchaseRequisitionController extends Controller
                 'products.prod_name',
             )
             ->join('products', 'itens_requisitions.product_id', '=', 'products.id')
-                ->join('stock_entries', 'itens_requisitions.product_id', 'stock_entries.productID')
+                ->leftJoin('stock_entries', 'itens_requisitions.product_id', 'stock_entries.productID')
                     ->join('requisitions_status','itens_requisitions.status_id', '=', 'requisitions_status.id' )
                         ->join('suppliers', 'products.prod_supplierID', '=', 'suppliers.id')
                             ->where('itens_requisitions.requisition_code', $code)

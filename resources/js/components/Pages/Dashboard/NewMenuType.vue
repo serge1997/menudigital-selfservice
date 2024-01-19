@@ -67,7 +67,7 @@ export default {
             let type = new FormData()
             type.append('desc_type', this.type.desc_type)
             type.append('foto_type', this.type.foto_type)
-            this.axios.post('/api/save/type', type).then((response) => {
+            this.axios.post('/api/meal-type', type).then((response) => {
                this.type.desc_type = ""
                this.$toast.success(response.data);
             }).catch((errors) => {
