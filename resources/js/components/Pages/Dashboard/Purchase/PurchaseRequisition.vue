@@ -64,7 +64,7 @@
                         <Tag style="width: 90px" v-else severity="success" :value="data.stat_desc"/>
                     </template>
                 </Column>
-                <Column field="prod_unmed" header="Status" style="width: 25%">
+                <Column field="prod_unmed" header="Ações" style="width: 25%">
                     <template #body="{ data }">
                         <div class="d-flex">
                             <div v-if="showActionIcon">
