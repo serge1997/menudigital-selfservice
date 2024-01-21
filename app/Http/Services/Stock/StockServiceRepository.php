@@ -14,7 +14,7 @@ class StockServiceRepository implements StockServiceInterFace
     public $check_is_rupture_saldo;
     public $check_lowtsock_min_quantity;
 
-    public function MountSheetArray(string $id): array
+    public static function MountSheetArray(string $id): array
     {
         $sheet_values = [];
         $sheet = Technicalfiche::where('itemID', $id)->get();
@@ -26,10 +26,10 @@ class StockServiceRepository implements StockServiceInterFace
         }
         return $sheet_values;
     }
-    public function ControleItemLowStockRuptured(array $item_ids): void
+    public static function ControleItemLowStockRuptured(array $item_ids): void
     {
         foreach ($item_ids as $item_id) {
-            $sheet_values = $this->MountSheetArray($item_id);
+            $sheet_values = self::MountSheetArray($item_id);
             if (count($sheet_values["productID"]) > 1):
                 for ($i = 0; $i <= count($sheet_values["productID"]); $i++):
                     $actual_product_inventory = DB::table('saldos')
@@ -91,7 +91,7 @@ class StockServiceRepository implements StockServiceInterFace
     /**
      * @throws Exception
      */
-    public function StockOutProduct(array $item_ids, array $product_quantitys)
+    public static function StockOutProduct(array $item_ids, array $product_quantitys)
     {
         $hoje = new \DateTime();
         $hoje = $hoje->format("Y-m-d");

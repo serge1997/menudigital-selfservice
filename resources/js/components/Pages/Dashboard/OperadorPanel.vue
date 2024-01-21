@@ -57,8 +57,8 @@
                                         <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">pagamento</h6>
                                         <div class="">
                                             <li v-for="stat in status">
-                                                <button class="btn dropdown-btn" @click="UpdateOrderStatus(stat.id, pedido.id)" v-if="pedido.status_id != 5 && pedido.status_id != 6"></button>
-                                                <button class="btn dropdown-btn fw-medium text-capitalize" @click="UpdateOrderStatus(stat.id, pedido.id)" v-else-if="stat.id != 5">{{ stat.stat_desc }}</button>
+                                                <button class="btn dropdown-btn" @click="setOrderPaymentStatus(stat.id, pedido.id)" v-if="pedido.status_id != 5 && pedido.status_id != 6"></button>
+                                                <button class="btn dropdown-btn fw-medium text-capitalize" @click="setOrderPaymentStatus(stat.id, pedido.id)" v-else-if="stat.id != 5">{{ stat.stat_desc }}</button>
                                             </li>
                                         </div>
                                     </ul>
@@ -85,7 +85,7 @@
                                     </svg>
                                 </button>
                                 <div v-if="pedido.status_id == 5 || pedido.status_id == 6">
-                                    <OrderTransfertComponent @get-TransfertItems="TransferItem(pedido.id)" :transfert-items="titems" :tables="tables"/>
+                                    <OrderTransfertComponent @get-TransfertItems="getTransferItens(pedido.id)" :transfert-items="titems" :tables="tables"/>
                                 </div>
                                 <button @click="setOrderID(pedido.id)" data-bs-toggle="modal" data-bs-target="#cancelorder" class="btn border-0">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -334,7 +334,7 @@ export default {
 
     methods: {
        async getOrder() {
-            let response = await  axios.get('/api/dashboard/order')
+            let response = await  axios.get('/api/orders-status')
             this.order = await response.data.order
             this.status = await response.data.status
         },
@@ -342,7 +342,7 @@ export default {
         async getOrderItem(id) {
             this.billTotal = 0
             this.billTotalItem = 0
-            let result = await axios.get('/api/dashboard/item/' + id);
+            let result = await axios.get('/api/order-menu-itens/' + id);
             this.itens = await result.data
 
             for (let bill of this.itens) {
@@ -352,7 +352,7 @@ export default {
 
         },
 
-        UpdateOrderStatus(id, pedido) {
+        setOrderPaymentStatus(id, pedido) {
 
            this.$swal.fire({
                icon: "question",
@@ -362,11 +362,12 @@ export default {
                showCancelButton: true
            }).then((result) => {
                if (result.isConfirmed){
-                   axios.post(`/api/update/status/${id}/${pedido}`, this.cancel).then((response) => {
+                   axios.post(`/api/order-payment/${id}/${pedido}`, this.cancel).then((response) => {
+                       this.$toast.success(response.data)
                        return this.getOrder()
                    }).catch((errors) => {
-                       console.log(errors)
-                       errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
+                       console.log(errors.response.data.message)
+                       errors.response.status === 500 ? this.$swal.fire({text: errors.response.data.message, icon: 'warning'}): null
                    })
                }
            })
@@ -375,7 +376,7 @@ export default {
 
         async getTable() {
             try{
-                let result = await axios.get('/api/dashboard/tables');
+                let result = await axios.get('/api/tablenumbers-orders');
                 this.tables = await result.data.tables
                 this.busyTables = await result.data.busyTables
             }catch(errors) {
@@ -434,8 +435,8 @@ export default {
                 })
         },
 
-        TransferItem(id) {
-            axios.get('/api/transfert/items/' + id)
+        getTransferItens(id) {
+            axios.get('/api/order-transfert-itens/' + id)
                 .then((response) => {
                     this.titems = response.data
                     console.log(response.data)

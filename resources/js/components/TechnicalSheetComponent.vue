@@ -93,8 +93,8 @@ export default{
             })
         },
         async loadMenuItems(){
-          let menuResponse = await axios.get('/api/menu/items');
-          this.menuItems = await menuResponse.data.items
+          let menuResponse = await axios.get('/api/menu-items');
+          this.menuItems = await menuResponse.data
         },
 
         async loadProducts(){

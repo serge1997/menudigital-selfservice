@@ -74,7 +74,7 @@ export default {
 
     methods: {
         getReport(){
-            axios.get('/api/dashboard/report').then((response) => {
+            axios.get('/api/order-itens-report').then((response) => {
                 this.report = response.data.report
                 this.paiment_data = response.data.paiment
                 for (let e of response.data.valcanceled){

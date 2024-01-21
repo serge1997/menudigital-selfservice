@@ -88,13 +88,13 @@
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="visibleShowItemMenuModal" maximizable modal v-for="item in show" :header="item.item_name" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog v-model:visible="visibleShowItemMenuModal" v-if="show" maximizable modal :header="show.item_name" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100 mt-3">
-                <div v-for="item in show" class="d-flex justify-content-between">
+                <div class="d-flex justify-content-between">
                     <div class="w-50">
                         <img class="w-100" src="/img/banner.jpg" alt="">
                         <div class="mt-2 d-flex justify-content-center">
-                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price mt-2">R$ {{ item.item_price }} </small>
+                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price mt-2">R$ {{ show.item_price }} </small>
                         </div>
                     </div>
                     <div class="px-2"></div>
@@ -152,17 +152,14 @@ export default {
     created() {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                axios.get('/api/menu/items').then((response) => {
-                    this.MenuItems = response.data.items
-                    console.log(response.data.items)
+                axios.get('/api/menu-items').then((response) => {
+                    this.MenuItems = response.data
                     this.load = false
                 }).catch((errors) => {
                     console.log(errors)
                 })
             }, 1000)
         })
-        //this.getMenuItems()
-       // this.checkCart()
     },
 
     methods: {
@@ -170,7 +167,7 @@ export default {
         getMenuType() {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.get('/api/menu-type').then((response) => {
+                    axios.get('/api/meal-types/menu-items').then((response) => {
                         this.MenuType = response.data
                     }).catch((errors) => {
                         console.log(errors)
@@ -180,8 +177,8 @@ export default {
         },
 
         getItemOfType(id_type) {
-            axios.get('/api/item/type/' + id_type).then((response) => {
-                this.itemOfType = response.data.items
+            axios.get('/api/meal-types/menu-items/filter/' + id_type).then((response) => {
+                this.itemOfType = response.data
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -198,17 +195,16 @@ export default {
         checkCart(checkTable = this.table.tableNumber) {
             axios.get('/api/checkcart/' + checkTable).then((response) => {
                 this.isCart = response.data
-                console.log(response.data)
             }).catch((errors) => {
                 console.log(errors)
             })
         },
 
         ShowItem(id){
-            axios.get('/api/show/'+id).then((response) => {
-                console.log(response.data);
+            axios.get('/api/menu-items/fiche/'+id).then((response) => {
                 this.show = response.data.item
                 this.fiche = response.data.fiche
+                console.log(this.show)
             }).catch((errors) => {
                 console.log(errors);
             })

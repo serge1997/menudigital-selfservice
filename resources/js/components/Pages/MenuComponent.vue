@@ -3,7 +3,7 @@
         <div class="w-100">
             <input type="hidden" :value="id" id="order-id">
             <transition>
-            <div id="post-new-item-card" v-if="newOrderItem.iteminfo || newOrderItem.orderinfo" class="w-75 m-auto border d-flex justify-content-between align-items-center">
+            <div id="post-new-item-card" v-if="newOrderItem.iteminfo" class="w-75 m-auto border d-flex justify-content-between align-items-center">
                 <div class="item-img col-4">
                     <img class="w-50 img-thumbnail" src="./../../../../public/img/banner.jpg" alt="">
                 </div>
@@ -136,8 +136,8 @@ export default {
 
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                axios.get('/api/menu/items').then((response) => {
-                    this.MenuItems = response.data.items
+                axios.get('/api/menu-items').then((response) => {
+                    this.MenuItems = response.data
                     console.log(response.data.items)
                     this.load = false
                 }).catch((errors) => {
@@ -145,8 +145,6 @@ export default {
                 })
             }, 1000)
         })
-        //this.getMenuItems()
-       // this.checkCart()
     },
 
     methods: {
@@ -154,7 +152,7 @@ export default {
         getMenuType() {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
-                    axios.get('/api/menu-type').then((response) => {
+                    axios.get('/api/meal-types/menu-items').then((response) => {
                         this.MenuType = response.data
                     }).catch((errors) => {
                         console.log(errors)
@@ -164,17 +162,17 @@ export default {
         },
 
         getItemOfType(id_type) {
-            axios.get('/api/item/type/' + id_type).then((response) => {
-                this.itemOfType = response.data.items
+            axios.get('/api/meal-types/menu-items/filter/' + id_type).then((response) => {
+                this.itemOfType = response.data
             }).catch((errors) => {
                 console.log(errors)
             })
         },
 
         addToOrder(id) {
-            axios.post('/api/add-to-order/' + id, this.addorder).then((response) => {
-                this.newOrderItem.orderinfo = response.data.order
-                this.newOrderItem.iteminfo = response.data.item
+            axios.get('/api/menu-items/' + id, this.addorder).then((response) => {
+                //this.newOrderItem.orderinfo = response.data.order
+                this.newOrderItem.iteminfo = response.data
             }).catch((errors) => {
                 console.log(errors)
             })

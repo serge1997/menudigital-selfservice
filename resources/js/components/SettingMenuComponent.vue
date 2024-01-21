@@ -32,7 +32,7 @@
                                 <template class="w-100 bg-dark" #center>
                                     <span class="w-100 p-input-icon-left">
                                         <i class="pi pi-search" />
-                                        <InputText icon="pi pi-search" type="search" style="width: 26rem" placeholder="Search item here..." v-model="search" />
+                                        <InputText icon="pi pi-search" type="search" style="width: 26rem" placeholder="Search item here..." v-model="search"/>
                                     </span>
                                 </template>
                                 <template #end>
@@ -49,21 +49,21 @@
                                 </p>
                             </div>
                             <div class="form w-100">
-                                <form class="d-flex flex-column justify-content-center w-100 p-2" v-for="item in itemToEdit">
+                                <form class="d-flex flex-column justify-content-center w-100 p-2">
                                     <div class="form-group w-100 d-flex flex-column align-items-center p-2">
-                                        <input type="hidden" :value="item.id" id="item-id">
+                                        <input type="hidden" :value="itemToEdit.id" id="item-id">
                                         <div class="w-100">
                                             <p class="text-danger w-75 m-auto" v-if="errMsg" v-for="msg in errMsg.item_name" v-text="msg"></p>
-                                            <input type="text" class="m-auto form-control w-75 rounded-0 border-secondary" :value="item.item_name" id="item-name">
+                                            <input type="text" class="m-auto form-control w-75 rounded-0 border-secondary" :value="itemToEdit.item_name" id="item-name">
                                         </div>
                                         <div class="w-100">
                                             <p class="text-danger w-75 m-auto" v-if="errMsg" v-for="msg in errMsg.item_price" v-text="msg"></p>
-                                            <input type="text" class="m-auto mt-2 form-control w-75 rounded-0 border-secondary" :value="item.item_price" id="item-price">
+                                            <input type="text" class="m-auto mt-2 form-control w-75 rounded-0 border-secondary" :value="itemToEdit.item_price" id="item-price">
                                         </div>
                                     </div>
                                     <div class="form-group w-100 d-flex flex-column justify-content-center align-items-center p-2">
                                         <p class="text-danger w-75 m-auto" v-if="errMsg" v-for="msg in errMsg.item_desc" v-text="msg"></p>
-                                       <textarea class="form-control w-75 rounded-0 m- border-secondary" id="item-desc" cols="30" rows="5" :value="item.item_desc"></textarea>
+                                       <textarea class="form-control w-75 rounded-0 m- border-secondary" id="item-desc" cols="30" rows="5" :value="itemToEdit.item_desc"></textarea>
                                     </div>
                                 </form>
                             </div>
@@ -103,8 +103,8 @@
                                                     <h6 class="text-capitalize fw-medium p-2">Item Status</h6>
                                                     <div class="">
                                                         <li>
-                                                            <button v-if="item.item_rupture" @click.prevent="SetRupture(item.id)" class="btn alert alert-success p-2 w-100 rounded-0">Desactive Rupture</button>
-                                                            <button v-else="item.item_rupture" @click.prevent="SetRupture(item.id)" class="btn alert alert-warning p-2 w-100 rounded-0">Active Rupture</button>
+                                                            <button v-if="item.item_rupture" @click.prevent="SetRupture(item.id, item.item_rupture)" class="btn alert alert-success p-2 w-100 rounded-0">Desactive Rupture</button>
+                                                            <button v-else="item.item_rupture" @click.prevent="SetRupture(item.id, item.item_rupture)" class="btn alert alert-warning p-2 w-100 rounded-0">Active Rupture</button>
                                                             <button class="btn"></button>
                                                         </li>
                                                     </div>
@@ -147,8 +147,8 @@
                                                     <h6 class="text-capitalize fw-medium p-2">Item Status</h6>
                                                     <div class="">
                                                         <li>
-                                                            <button v-if="item.item_rupture" @click.prevent="SetRupture(item.id)" class="btn alert alert-success p-2 w-100 rounded-0">Desactive Rupture</button>
-                                                            <button v-else="item.item_rupture" @click.prevent="SetRupture(item.id)" class="btn alert alert-warning p-2 w-100 rounded-0">Active Rupture</button>
+                                                            <button v-if="item.item_rupture" @click.prevent="SetRupture(item.id, item.item_rupture)" class="btn alert alert-success p-2 w-100 rounded-0">Desactive Rupture</button>
+                                                            <button v-else="item.item_rupture" @click.prevent="SetRupture(item.id, item.item_rupture)" class="btn alert alert-warning p-2 w-100 rounded-0">Active Rupture</button>
                                                             <button class="btn"></button>
                                                         </li>
                                                     </div>
@@ -225,7 +225,7 @@ export default {
 
     methods: {
         ShowEditForm(id){
-            axios.get(`/api/edit/menu-item/${id}`).then((response) => {
+            axios.get(`/api/menu-items/${id}`).then((response) => {
                 console.log(response.data);
                 this.itemToEdit = response.data
                 this.ShowForm = !this.ShowForm;
@@ -235,8 +235,8 @@ export default {
         },
 
         getItem(){
-            axios.get('/api/menu/items').then((response) => {
-                this.MenuItems = response.data.items
+            axios.get('/api/menu-items').then((response) => {
+                this.MenuItems = response.data
                 this.MenuItems.forEach(e => {
                     if (e.item_rupture){
                         this.isRuptureClass = "Myalert-warning"
@@ -250,19 +250,29 @@ export default {
             })
         },
 
-        SetRupture(id){
-            axios.post(`/api/set-rupture/${id}`).then((response) => {
-                console.log(response.data)
-                return this.getItem();
-            }).catch((errors) => {
-                console.log(errors)
+        SetRupture(id, item_rupture){
+            let same = "clique em ok para continuar";
+            let message_alter = item_rupture == true ? "Esta sendo habilitado esse item. " + same : "Está sendo desabilitado esse item. " + same ;
+            this.$swal.fire({
+                text: message_alter,
+                showCancelButton: true,
+                icon: 'warning'
+            }).then((result) => {
+                if (result.isConfirmed){
+                    axios.put(`/api/menu-items-rupture/${id}`).then((response) => {
+                        this.$swal({text: response.data})
+                        return this.getItem();
+                    }).catch((errors) => {
+                        console.log(errors)
+                     })
+                }
             })
         },
 
         ToDelete(id){
             this.$swal.fire({
-                title: 'Deseja realmente apagar o item do Menu ?',
                 text: 'O item não vai estar mais disponivel no cardapio. A recuperação desse item é possivel com o fornecedor do sistema',
+                icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#42b883',
                 cancelButtonColor: '#d33',
@@ -270,8 +280,8 @@ export default {
                 cancelButtonText: 'Cancelar'
             }).then((result) =>{
                 if (result.isConfirmed){
-                    axios.post(`/api/delete/menu-item/${id}`).then((response) => {
-                        this.$swal(response.data);
+                    axios.delete(`/api/menu-items/${id}`).then((response) => {
+                        this.$swal.fire({text: response.data, icon: 'success'});
                         this.getItem();
                     })
                 }
@@ -289,17 +299,18 @@ export default {
             this.updateItems.item_price = item_price;
             this.updateItems.item_name = item_name;
 
-            axios.post('/api/item-menu/update', this.updateItems).then((response) => {
+            axios.put('/api/menu-items', this.updateItems).then((response) => {
                 this.$toast.success(response.data)
                 this.ShowForm = !this.ShowForm;
+                return this.getItem()
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors;
             })
         },
 
-        async getSearchResult(){
-            await axios.get('/api/search/', {params: {search: this.search}}).then((response) =>{
-                this.SearchResult = response.data.items
+        getSearchResult(){
+            axios.get('/api/menu-items-search/', {params: {search: this.search}}).then((response) =>{
+                this.SearchResult = response.data
                 console.log(response.data)
                 if (this.SearchResult.length < 1){
                     this.notFound = "Não há item corespondante";
@@ -314,7 +325,7 @@ export default {
 
     mounted(){
 
-        axios.get('/api/menu-type').then((response) => {
+        axios.get('/api/meal-types/menu-items').then((response) => {
             console.log(response.data)
             this.MenuType = response.data
         }).catch((errors) => {

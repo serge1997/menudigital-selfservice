@@ -31,6 +31,29 @@ class MealTypeController extends Controller
 
     public function getAllItemType(): JsonResponse
     {
-        return response()->json($this->mealTypeRepositoryInterface->getAll());
+        try{
+            return response()->json($this->mealTypeRepositoryInterface->getAll());
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function listMealTypeByMenuItems()
+    {
+        try{
+            return response()->json($this->mealTypeRepositoryInterface->getMealtypeByMenuItem());
+
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function listMenuItemByMealType($id)
+    {
+        try{
+            return response()->json($this->mealTypeRepositoryInterface->getMenuItemsByMealType($id));
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 }

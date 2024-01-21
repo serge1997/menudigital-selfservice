@@ -5,6 +5,7 @@ use App\Http\Services\UserInstance;
 use App\Models\MealType;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Exception;
 class MealTypeRepository implements MealTypeRepositoryInterface
 {
@@ -50,5 +51,37 @@ class MealTypeRepository implements MealTypeRepositoryInterface
     public function getAll()
     {
         return MealType::all();
+    }
+
+    public function getMealtypeByMenuItem()
+    {
+        $type = DB::table("menu_mealtype")
+        ->select(
+                "menu_mealtype.id_type",
+                "menu_mealtype.desc_type",
+                "menu_mealtype.foto_type",
+                DB::raw("COUNT(menuitems.id) as item_qty")
+            )
+            ->join('menuitems', 'menu_mealtype.id_type', '=', 'menuitems.type_id')
+                ->where('menuitems.item_status', '=', true)
+                    ->groupby(
+                        "menu_mealtype.id_type",
+                        "menu_mealtype.desc_type",
+                        "menu_mealtype.foto_type"
+                    )
+                        ->get();
+
+        return $type;
+    }
+
+    public function getMenuItemsByMealType($id)
+    {
+        $itemsOfType = DB::table("menuitems")->select('*')
+            ->join("menu_mealtype", "menuitems.type_id", "=", "menu_mealtype.id_type")
+                ->where("menuitems.type_id", $id)
+                    ->get();
+
+        return $itemsOfType;
+
     }
 }

@@ -36,7 +36,6 @@ class CartController extends Controller
         try {
 
             $this->cartRepositoryInterface->addToCart($id, $request);
-
         }catch(Exception $e){
 
             return response()->json($e->getMessage(), 500);

@@ -84,7 +84,7 @@ export default {
             for(let x of this.options){
                 this.transfert.item_id.push(x.replace(/[^0-9]/g, ''))
             }
-            axios.post('/api/post/transfert', this.transfert).then((response) => {
+            axios.post('/api/order-transert-itens', this.transfert).then((response) => {
                 this.$toast.success(response.data)
                 this.transfert.item_id = []
                 this.transfert.item_quantidade = []

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\MenuItemController;
-use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderTransfertController;
 use App\Http\Controllers\BiController;
@@ -36,53 +36,44 @@ Route::get('/user-token', [UserController::class, 'currentUser']);
 
 
 Route::controller(MenuItemController::class)->group(function(){
-    Route::get('menu/type', 'getMealType');
-    Route::post('save/meal', 'storeMenuItem');
-    Route::get('menu/items', 'getMenu');
-    Route::get('/cart-item/{id}/{table}', 'ShowCart');
-    Route::get('menu-type', 'getMenuType');
-    Route::get('item/type/{id_type?}', 'getItemOfType');
-    //Route::post('add/cart/{id}', 'addToCart');
+    Route::post('menu-items', 'storeMenuItem');
+    Route::get('menu-items', 'getAllMenu');
+    Route::get('menu-items/{id}', 'findById');
+    Route::delete('menu-items/{id}', 'deleteItemOnStatus');
+    Route::put('menu-items', 'updatedMenuItem');
+    Route::get('menu-items-search', 'searchMenuItem');
+    Route::put('menu-items-rupture/{id}','setRuptureAction');
     Route::post('table', 'setTableNumber');
     Route::get('/checkcart/{checkTable?}', 'checkCart');
     Route::post('set/option/{id?}', 'SetCartOptions');
-    //Route::post('add-quantity/{id}', 'AddQuantity');
-    //Route::post('reduce-quantity/{id}', 'ReduceQuantity');
     Route::get('cart/items/{table}', 'CustomerFinalCart');
-    //Route::get('delete/item/{cartID}/{table}', 'DeleteFromCart');
-    Route::post('item-menu/update', 'updatedMenuItem');
-    Route::get('edit/menu-item/{id}','getItemForEdit');
-    Route::post('/set-rupture/{id}','SetRupture');
-    //Route::get('table','getTable');
-    Route::post('/delete/menu-item/{id}','ToDelete');
-    //Route::post('save/type','SaveType');
-    Route::get('/show/{id}', 'show');
+    Route::get('menu-items/fiche/{id}', 'showTechnicalFicheByMenuItemId');
     Route::get('cart-table/{table}', 'getNewCart');
 });
 
 //orders
-Route::controller(PedidoController::class)->group(function() {
+Route::controller(OrderController::class)->group(function() {
     Route::get('dashboard/tables', 'getTablesNumber');
     Route::post('order', 'confirmOrder');
-    Route::get('/order/list/{table}', 'getOrderList');
-    Route::get('dashboard/order', 'OperadorOrderList');
-    Route::get('/dashboard/item/{id}', 'getOrderItem');
-    Route::post('/update/status/{id}/{pedido}', 'UpdateOrderStatus');
-    Route::get('get/bill/{id}', 'getBillItems');
+    Route::get('orders-status', 'OperadorOrderList');
+    Route::get('order-menu-itens/{id}', 'listOrderItens');
+    Route::post('order-payment/{id}/{pedido}', 'orderPayment');
     Route::get('dashboard/cancel', 'getCanceledStatus');
-    Route::post('add-to-order/{id}', 'Add_To_Order');
     Route::post('new-item', 'postNewOrderItem');
-    Route::get('bill-history', 'getBillHistory');
+    Route::get('order-history', 'getOrderHistory');
+    Route::get('order-transfert-itens/{id}', 'listOrderTransfertItens');
+    Route::post('order-transert-itens', 'createOrderTransfertAction');
+    Route::get('order-itens-report', 'getOrderReportAction');
 });
 
 //Order Transfert
 Route::controller(OrderTransfertController::class)->group(function() {
-    Route::get('transfert/items/{id}', 'getTransfertOrderItems');
-    Route::post('post/transfert/', 'postTransfert');
+    //Route::get('transfert/items/{id}', 'getTransfertOrderItems');
+    //Route::post('post/transfert/', 'postTransfert');
     //search
-    Route::get('search', 'getSearchResult');
+    //Route::get('search', 'getSearchResult');
     //Report
-    Route::get('dashboard/report','getReport');
+    //Route::get('dashboard/report','getReport');
 });
 
 //BI
@@ -167,9 +158,12 @@ Route::controller(PurchaseRequisitionController::class)->group(function() {
 Route::controller(MealTypeController::class)->group(function() {
     Route::post('meal-type','createAction');
     Route::get('meal-type', 'getAllItemType');
+    Route::get('meal-types/menu-items', 'listMealTypeByMenuItems');
+    Route::get('meal-types/menu-items/filter/{id}', 'listMenuItemByMealType');
 });
 Route::controller(TableController::class)->group(function() {
-    Route::get('tablenumber', 'getAllTable');
+    Route::get('tablenumber', 'listFreeTable');
+    Route::get('tablenumbers-orders', 'listTableByOrderStatus');
 });
 Route::controller(CartController::class)->group(function() {
     Route::post('add-to-cart/{id}', 'AddItemdToCart');

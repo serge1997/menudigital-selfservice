@@ -138,15 +138,6 @@ export default {
     },
 
     methods: {
-        getBillHistory(){
-            axios.get('/api/bill-history').then((response) => {
-                console.log(response.data)
-                this.bills = response.data
-            }).catch((errors) => {
-                console.log(errors)
-            })
-        },
-
         EditOrderStatHistory(){
             axios.post(`/api/editorder/stat/${this.order_id}`, this.orderStat)
                 .then((response) => {
@@ -162,8 +153,10 @@ export default {
             localStorage.setItem('orderHistory', id);
             this.order_id = localStorage.getItem('orderHistory');
         },
+
+        //show order or bill itens
         getOrderItem(id) {
-            axios.get('/api/dashboard/item/' + id).then((response) => {
+            axios.get('/api/order-menu-itens/' + id).then((response) => {
                 this.itens = response.data
                 this.showBillItem = !this.showBillItem
             }).catch((errors) => {
@@ -172,13 +165,12 @@ export default {
         },
     },
 
-    mounted(){
+    async mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-        axios.get('/api/user').then((response) => {
-            this.gerente = response.data.group_id
-        });
-
-        this.getBillHistory();
+        let authuser = await axios.get('/api/user');
+        this.gerente = await authuser.data.position_id
+        let orderHistory = await axios.get('/api/order-history');
+        this.bills = await orderHistory.data
 
 
     }

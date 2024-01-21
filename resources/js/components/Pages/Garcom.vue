@@ -139,7 +139,7 @@ export default {
         async getOrderItem(id) {
             this.billTotal = 0
             this.billTotalItem = 0
-            let response = await axios.get('/api/dashboard/item/' + id)
+            let response = await axios.get('/api/order-menu-itens/' + id)
             this.itens = await response.data
             this.orderID = id
             for (let bill of this.itens) {
@@ -157,7 +157,7 @@ export default {
         },
 
         async getTable() {
-            let response = await axios.get('/api/dashboard/tables')
+            let response = await axios.get('/api/tablenumbers-orders')
             this.tables = await response.data.tables
             this.busyTables = await response.data.busyTables
         }

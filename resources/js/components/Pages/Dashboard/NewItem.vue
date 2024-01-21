@@ -113,7 +113,7 @@ export default {
 
     methods: {
         SaveItem() {
-           axios.post('/api/save/meal', this.menuItem).then((response) => {
+           axios.post('/api/menu-items', this.menuItem).then((response) => {
                 this.menuItem.item_desc = "";
                 this.menuItem.item_price = "";
                 this.menuItem.type_id = "";
@@ -123,7 +123,7 @@ export default {
            }).catch((errors) => {
              console.log(errors.response.data.errors)
              this.errMsg = errors.response.data.errors
-             errors.response.status === 400 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
+             errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
            })
         },
 

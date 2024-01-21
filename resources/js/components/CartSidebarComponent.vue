@@ -160,7 +160,7 @@ export default {
                     this.visibleRight = false
                     this.$swal.fire({
                         text: !errors.response.data.message ? errors.response.data : errors.response.data.message  ,
-                        icon: "error"
+                        icon: "warning"
                     })
                 }
                 this.errMsg = errors.response.data.errors.ped_customerName
