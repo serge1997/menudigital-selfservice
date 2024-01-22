@@ -17,6 +17,10 @@ use App\Main\Order\OrderRepositoryInterface;
 use App\Main\Order\OrderRepository;
 use App\Main\OrderStatus\OrderStatusRepositoryInterface;
 use App\Main\OrderStatus\OrderStatusRepository;
+use App\Main\Product\ProductRepositoryInterface;
+use App\Main\Product\ProductRepository;
+use App\Main\Stock\StockRepositoryInterface;
+use App\Main\Stock\StockRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -33,6 +37,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TechnicalFicheRepositoryInterface::class, TechnicalFicheRepository::class);
         $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
         $this->app->bind(OrderStatusRepositoryInterface::class, OrderStatusRepository::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
     }
 
     /**

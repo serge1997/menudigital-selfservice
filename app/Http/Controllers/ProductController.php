@@ -10,17 +10,20 @@ use App\Models\Supplier;
 use App\Models\Role;
 use App\Http\Services\UserInstance;
 use App\Http\Services\Product\ProductRepositoty;
+use App\Main\Product\ProductRepositoryInterface;
 use Exception;
 
 class ProductController extends Controller
 {
     protected $products;
     protected $suppliers;
+    protected ProductRepositoryInterface $productRepositoryInterface;
 
-    public function __construct()
+    public function __construct(ProductRepositoryInterface $productRepositoryInterface)
     {
         $this->products = new Product();
         $this->suppliers = new Supplier();
+        $this->productRepositoryInterface = $productRepositoryInterface;
     }
     public function StoreProduct(Request $request)
     {
@@ -60,8 +63,14 @@ class ProductController extends Controller
         }
     }
 
-    public function getProducts(): JsonResponse
+    public function listAllProducts(): JsonResponse
     {
+        try {
+            $apiProductResponse = $this->productRepositoryInterface->getAll();
+            return response()->json($apiProductResponse);
+        }catch(Exception $e) {
+            return response()->json($e->getMessage());
+        }
         return response()
             ->json(Product::where('is_delete', false)->get());
     }

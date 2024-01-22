@@ -219,7 +219,8 @@ export default {
             },
             search: null,
             SearchResult: null,
-            errMsg: null
+            errMsg: null,
+            products: null
         }
     },
 
@@ -320,18 +321,16 @@ export default {
 
                 console.log(response.data);
             })
-        }
+        },
     },
 
     mounted(){
-
         axios.get('/api/meal-types/menu-items').then((response) => {
             console.log(response.data)
             this.MenuType = response.data
         }).catch((errors) => {
             console.log(errors)
         });
-
         this.getItem();
 
 

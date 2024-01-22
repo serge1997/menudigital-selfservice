@@ -85,9 +85,6 @@
                         <h5 class="modal-title text-capitalize">Show technical fiche</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    {{ UpdateFicheData.itemID }}
-                    {{ UpdateFicheData.productID}}
-                    {{ UpdateFicheData.quantity }}
                     <div class="modal-body">
                         <div class="w-100">
                             <table class="table table-striped">
@@ -95,19 +92,10 @@
                                     <tr>
                                         <th class="text-uppercase" v-for="item in ficheItem_name">{{ item }}</th>
                                         <th class="bg-white">
-                                            <button class="btn m-auto disabled" @click="showUpdateFicheForm">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                                </svg>
-                                            </button>
+                                            <Button icon="pi pi-pencil" text class="border rounded disabled" :disabled="fichebtn.editDisable" @click="showUpdateFicheForm"/>
                                         </th>
                                         <th>
-                                            <button class="btn disabled" @click="ShowAddNewElementFieldToFiche">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-square"><rect x="3" y="3"
-                                                    width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line>
-                                                </svg>
-                                            </button>
+                                            <Button icon="pi pi-plus" class="border rounded" :disabled="fichebtn.addDisable" text @click="ShowAddNewElementFieldToFiche"/>
                                         </th>
                                     </tr>
                                 </thead>
@@ -128,34 +116,30 @@
                             </table>
                         </div>
                         <div v-if="showUpdateForm" class="w-100">
-                            <div class="input-group mt-2" v-for="item in showfiche">
-                                <input type="hidden" class="name" :value="item.productID">
-                                <input type="text" class="form-control rounded-0 border-secondary" placeholder="product" :value="item.prod_name">
+                            <div class="d-flex w-100 mb-3" v-for="item in showfiche">
+                                <input type="hidden" class="name" :value="item.productID"/>
+                                <InputText type="text" class="w-50"  placeholder="product" :value="item.prod_name"/>
                                 <span class="px-2"></span>
-                                <input type="text" class="form-control rounded-0 border-secondary quantity" placeholder="Quantity" :value="item.quantity">
+                                <InputText type="text" class="w-50" placeholder="Quantity" :value="item.quantity"/>
+                                <Button @click="deleteProductFromItemFiche(item.itemID, item.productID)" icon="pi pi-trash" class="text-danger" text />
                             </div>
                         </div>
                     </div>
                     <div v-if="showNewElementForm" class="w-100">
-                            <div v-for="(input, index) in incrementInput" class="input-group mt-2 p-2">
-                                <select class="form-select rounded-0 border-secondary" v-model="AddFicheNewData.productID[index]">
-                                    <option value="Product Name">Product Name</option>
-                                    <option v-for="product in products" :value="product.id">{{ product.prod_name }}</option>
+                        <p>{{ AddFicheNewData.productID }} {{ AddFicheNewData.quantity }}</p>
+                            <div v-for="(input, index) in incrementInput" class="w-100 d-flex justify-content-center mb-3">
+                                <select class="w-50 form-control p-2" placeholder="product" v-model="AddFicheNewData.productID[index]">
+                                    <option selected>Selecione produto</option>
+                                    <option :value="product.id" v-for="product in products">{{ product.prod_name }}</option>
                                 </select>
                                 <span class="px-2"></span>
-                                <input type="text" class="form-control rounded-0 border-secondary" placeholder="product" v-model="AddFicheNewData.quantity[index]">
-                                <button class="btn bg-dark text-white rounded-0" @click="incrementInputFieldUpdate">Add field</button>
-                                <button class="btn" @click="DeleteInputField(index)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
-                                        </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
-                                    </svg>
-                                </button>
+                                <InputText type="number" class="w-25" placeholder="quantity" v-model="AddFicheNewData.quantity[index]"/>
+                                <Button text icon="pi pi-plus" @click="incrementInputFieldUpdate"/>
+                                <Button text icon="pi pi-trash" class="text-danger" @click="DeleteInputField(index)"/>
                             </div>
                         </div>
                     <div class="modal-footer">
-                        <button @click="UpdateFiche" type="button" class="btn btn-primary">Save</button>
+                        <Button @click="addNewItemToItemFiche" type="button" label="Salvar"/>
                     </div>
                 </div>
             </div>
@@ -174,6 +158,9 @@ import SettingPersonalComponent from '../../SettingPersonalComponent.vue';
 import SettingRestaurantInfo from '../../SettingRestaurantInfo.vue';
 import Badge from "primevue/badge";
 import Button from "primevue/button";
+import InputText from 'primevue/inputtext';
+import Dropdown from 'primevue/dropdown';
+import Dialog from 'primevue/dialog';
 
 export default{
     name: 'SettingPanel',
@@ -183,7 +170,10 @@ export default{
         SettingPersonalComponent,
         SettingRestaurantInfo,
         Badge,
-        Button
+        Button,
+        InputText,
+        Dropdown,
+        Dialog
     },
 
     data(){
@@ -207,6 +197,10 @@ export default{
             },
             showUpdateForm: false,
             showNewElementForm: false,
+            fichebtn: {
+                addDisable: null,
+                editDisable: null
+            },
             products: null
         }
     },
@@ -238,9 +232,11 @@ export default{
                 this.incrementInput.push(" ")
                 this.showNewElementForm = true
             }
+            this.fichebtn.editDisable = "disabled";
         },
         showUpdateFicheForm(){
             this.showUpdateForm = !this.showUpdateForm
+            this.fichebtn.addDisable = "disabled";
         },
 
         incrementInputFieldUpdate(){
@@ -252,8 +248,33 @@ export default{
             this.AddFicheNewData.quantity.splice(index, 1);
         },
 
-        UpdateFiche(){
+        async getAllProducts(){
+            const apiProductResponse = await axios.get('/api/products');
+            this.products = await apiProductResponse.data;
+        },
+        addNewItemToItemFiche(){
+            axios.put('/api/fiche-menu-item', this.AddFicheNewData).then((response) => {
+                console.log(response)
+                this.$toast.success(response.data)
+            }).catch(errors => {
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
+            })
+        },
 
+        deleteProductFromItemFiche(itemID, productID){
+            this.$swal.fire({
+                text: "Está sendo deletando o produto da ficha técnica. clique em ok para confirmar",
+                showCancelButton: true,
+                icon: 'warning'
+            }).then(result => {
+                if (result.isConfirmed){
+                    axios.delete(`/api/fiche-menu-itens/products/${itemID}/${productID}`).then((response) => {
+                        console.log(response.data)
+                    }).catch(errors => {
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
+                    })
+                }
+            })
         }
     },
     mounted() {
@@ -265,11 +286,7 @@ export default{
             console.log(errors)
         })
 
-        axios.get('/api/products').then((response) => {
-            this.products = response.data.products
-        }).catch((errors) => {
-            console.log(errors)
-        })
+        this.getAllProducts();
     },
 }
 

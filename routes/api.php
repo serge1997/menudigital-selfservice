@@ -3,7 +3,6 @@
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\OrderTransfertController;
 use App\Http\Controllers\BiController;
 use App\Http\Controllers\StockController;
 use Illuminate\Http\Request;
@@ -16,6 +15,7 @@ use App\Http\Controllers\PurchaseRequisitionController;
 use App\Http\Controllers\MealTypeController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\TechnicalFicheController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,16 +66,6 @@ Route::controller(OrderController::class)->group(function() {
     Route::get('order-itens-report', 'getOrderReportAction');
 });
 
-//Order Transfert
-Route::controller(OrderTransfertController::class)->group(function() {
-    //Route::get('transfert/items/{id}', 'getTransfertOrderItems');
-    //Route::post('post/transfert/', 'postTransfert');
-    //search
-    //Route::get('search', 'getSearchResult');
-    //Report
-    //Route::get('dashboard/report','getReport');
-});
-
 //BI
 ROute::controller(BiController::class)->group(function (){
     Route::get('/bi/general-stat/{start}/{end}', 'getGeneralStat');
@@ -115,7 +105,7 @@ Route::controller(StockController::class)->group(function() {
 //produto
 Route::controller(ProductController::class)->group(function(){
     Route::post('product', 'StoreProduct');
-    Route::get('products', 'getProducts');
+    Route::get('products', 'listAllProducts');
     Route::get('product/{id}', 'showProductToEdit');
     Route::put('product', 'update');
     Route::delete('product/{id}', 'delete');
@@ -171,4 +161,9 @@ Route::controller(CartController::class)->group(function() {
     Route::put('cart-reduce/quantity/{id}', 'decrementItemQuantity');
     Route::delete('cart-item/{cartId}/{table}', 'deleteItemFromCart');
     Route::get('cart-itens/{table}', 'getCartItens');
+});
+
+Route::controller(TechnicalFicheController::class)->group(function() {
+    Route::put('fiche-menu-item', 'addNewItemToItemFicheAction');
+    Route::delete('fiche-menu-itens/products/{itemID}/{productID}', 'deleteProductFromItemFicheAction');
 });
