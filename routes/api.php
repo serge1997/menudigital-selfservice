@@ -166,4 +166,5 @@ Route::controller(CartController::class)->group(function() {
 Route::controller(TechnicalFicheController::class)->group(function() {
     Route::put('fiche-menu-item', 'addNewItemToItemFicheAction');
     Route::delete('fiche-menu-itens/products/{itemID}/{productID}', 'deleteProductFromItemFicheAction');
+    Route::post('fiche-menu-itens/edit-quantity', 'editProductQuantityAction');
 });

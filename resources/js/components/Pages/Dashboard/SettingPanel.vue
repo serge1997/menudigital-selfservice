@@ -82,7 +82,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content rounded-0">
                     <div class="modal-header">
-                        <h5 class="modal-title text-capitalize">Show technical fiche</h5>
+                        <h5 class="modal-title text-capitalize"></h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -92,10 +92,10 @@
                                     <tr>
                                         <th class="text-uppercase" v-for="item in ficheItem_name">{{ item }}</th>
                                         <th class="bg-white">
-                                            <Button icon="pi pi-pencil" text class="border rounded disabled" :disabled="fichebtn.editDisable" @click="showUpdateFicheForm"/>
+                                            <Button icon="pi pi-pencil" text class="border rounded" id="edit-form" :disabled="fichebtn.editDisable" @click="showUpdateFicheForm"/>
                                         </th>
                                         <th>
-                                            <Button icon="pi pi-plus" class="border rounded" :disabled="fichebtn.addDisable" text @click="ShowAddNewElementFieldToFiche"/>
+                                            <Button icon="pi pi-plus" class="border rounded" id="add-form" :disabled="fichebtn.addDisable" text @click="ShowAddNewElementFieldToFiche"/>
                                         </th>
                                     </tr>
                                 </thead>
@@ -117,16 +117,15 @@
                         </div>
                         <div v-if="showUpdateForm" class="w-100">
                             <div class="d-flex w-100 mb-3" v-for="item in showfiche">
-                                <input type="hidden" class="name" :value="item.productID"/>
+                                <input type="hidden" class="product-ids" :value="item.productID"/>
                                 <InputText type="text" class="w-50"  placeholder="product" :value="item.prod_name"/>
                                 <span class="px-2"></span>
-                                <InputText type="text" class="w-50" placeholder="Quantity" :value="item.quantity"/>
+                                <InputText type="text" class="w-50 product-quantitys" placeholder="Quantity" :value="item.quantity"/>
                                 <Button @click="deleteProductFromItemFiche(item.itemID, item.productID)" icon="pi pi-trash" class="text-danger" text />
                             </div>
                         </div>
                     </div>
                     <div v-if="showNewElementForm" class="w-100">
-                        <p>{{ AddFicheNewData.productID }} {{ AddFicheNewData.quantity }}</p>
                             <div v-for="(input, index) in incrementInput" class="w-100 d-flex justify-content-center mb-3">
                                 <select class="w-50 form-control p-2" placeholder="product" v-model="AddFicheNewData.productID[index]">
                                     <option selected>Selecione produto</option>
@@ -139,7 +138,8 @@
                             </div>
                         </div>
                     <div class="modal-footer">
-                        <Button @click="addNewItemToItemFiche" type="button" label="Salvar"/>
+                        <Button v-if="showNewElementForm" @click="addNewItemToItemFiche" type="button" label="Adicionar"/>
+                        <Button v-if="showUpdateForm" @click="EditFicheProductQuantity" type="button" label="Salvar edição"/>
                     </div>
                 </div>
             </div>
@@ -227,16 +227,18 @@ export default{
             })
         },
         ShowAddNewElementFieldToFiche(){
+            let btn_edit = document.getElementById('edit-form')
             this.showNewElementForm = !this.showNewElementForm
             if (this.incrementInput.length < 1){
                 this.incrementInput.push(" ")
                 this.showNewElementForm = true
             }
-            this.fichebtn.editDisable = "disabled";
+            this.fichebtn.editDisable = this.showNewElementForm == true ? "disabled" : btn_edit.removeAttribute("disabled");
         },
         showUpdateFicheForm(){
+            let btn_add = document.getElementById('add-form')
             this.showUpdateForm = !this.showUpdateForm
-            this.fichebtn.addDisable = "disabled";
+            this.fichebtn.addDisable = this.showUpdateForm == true ? "disabled" : btn_add.removeAttribute("disabled");
         },
 
         incrementInputFieldUpdate(){
@@ -254,11 +256,34 @@ export default{
         },
         addNewItemToItemFiche(){
             axios.put('/api/fiche-menu-item', this.AddFicheNewData).then((response) => {
-                console.log(response)
                 this.$toast.success(response.data)
+                this.showNewElementForm = false
+                this.incrementInput = []
+                return this.showTechnicalFiche(this.AddFicheNewData.itemID)
             }).catch(errors => {
                 errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
             })
+        },
+
+        EditFicheProductQuantity(){
+            let productsInput = document.querySelectorAll('.product-ids');
+            let quantitysInput = document.querySelectorAll('.product-quantitys')
+            let quantitys = [].map.call(quantitysInput, value => value.value);
+            let productIds = [].map.call(productsInput, idval => idval.value);
+            let mountData = {
+                itemId: this.AddFicheNewData.itemID,
+                products: productIds,
+                quantity: quantitys
+            };
+
+           axios.post('/api/fiche-menu-itens/edit-quantity', mountData).then((response) => {
+                console.log(response.data)
+                this.$toast.success(response.data)
+                this.showUpdateForm = false
+                return this.showTechnicalFiche(mountData.itemId);
+           }).catch(errors => {
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
+           })
         },
 
         deleteProductFromItemFiche(itemID, productID){
@@ -270,6 +295,8 @@ export default{
                 if (result.isConfirmed){
                     axios.delete(`/api/fiche-menu-itens/products/${itemID}/${productID}`).then((response) => {
                         console.log(response.data)
+                        this.$toast.success(response.data);
+                        return this.showTechnicalFiche(itemID);
                     }).catch(errors => {
                         errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
                     })

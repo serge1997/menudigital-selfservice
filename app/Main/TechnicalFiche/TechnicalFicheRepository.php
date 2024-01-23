@@ -49,20 +49,25 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         $itemId = $request->itemID;
         $productIds = $request->productID;
         $quantitys = $request->quantity;
+        $auth = $request->session()->get('auth-vue');
+        foreach (UserInstance::get_user_roles($auth) as $edit):
+            if ($edit->role_id == Role::MANAGER):
+                foreach ($productIds  as $key => $productId){
+                    $this->beforeSave($itemId, $productId);
+                    $productInfo = $this->productRepositoryInterface->findById($productId);
+                    $productCost = $this->stockRepositoryInterface->findLastProductEntry($productId);
+                    $fiche = new Technicalfiche();
+                    $fiche->itemID = $itemId;
+                    $fiche->productID = $productId;
+                    $fiche->quantity = $quantitys[$key];
+                    $fiche->cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
+                    $fiche->save();
 
-        foreach ($productIds  as $key => $productId){
-            $this->beforeSave($itemId, $productId);
-            $productInfo = $this->productRepositoryInterface->findById($productId);
-            $productCost = $this->stockRepositoryInterface->findLastProductEntry($productId);
-            //var_dump($productCost->unitCost); die;
-            $fiche = new Technicalfiche();
-            $fiche->itemID = $itemId;
-            $fiche->productID = $productId;
-            $fiche->quantity = $quantitys[$key];
-            $fiche->cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
-            $fiche->save();
-
-        }
+                }
+            endif;
+           return;
+        endforeach;
+        throw new Exception("Você não tem permissão");
     }
 
     public function deleteProductFromItemFiche($request, $item_id, $product_id): void
@@ -72,6 +77,31 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
             if ($confirm->role_id == Role::MANAGER):
                 Technicalfiche::where([['itemID', $item_id], ['productID', $product_id]])
                     ->delete();
+                return;
+            endif;
+        endforeach;
+        throw new Exception("Você não tem permissão");
+    }
+
+    public function editProductQuantity($request): void
+    {
+        $item_id = $request->itemId;
+        $quantitys = $request->quantity;
+        $products = $request->products;
+
+        $auth = $request->session()->get('auth-vue');
+        foreach (UserInstance::get_user_roles($auth) as $edit):
+            if ($edit->role_id == Role::MANAGER):
+                foreach ($products as $key => $product){
+                    $productInfo = $this->productRepositoryInterface->findById($product);
+                    $productCost = $this->stockRepositoryInterface->findLastProductEntry($product);
+                    Technicalfiche::where([['itemID', $item_id], ['productID', $product]])
+                        ->update([
+                            'quantity' => $quantitys[$key],
+                            'cost' => $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain
+                        ]);
+                }
+                return;
             endif;
         endforeach;
         throw new Exception("Você não tem permissão");
