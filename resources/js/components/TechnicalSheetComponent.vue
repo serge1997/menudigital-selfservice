@@ -89,7 +89,7 @@ export default{
                 this.incrementInput = []
             }).catch((errors) => {
                 this.errMsg = errors.response.data.errors
-                errors.response.status === 400 ? this.$toast.error(errors.response.data): null
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
             })
         },
         async loadMenuItems(){
