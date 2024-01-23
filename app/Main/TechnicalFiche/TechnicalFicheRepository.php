@@ -12,7 +12,7 @@ use App\Traits\AuthSession;
 
 class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
 {
-    use AuthSession { checkOnlyManager as private; autth as protected; }
+    use AuthSession { checkOnlyManager as private; autth as private; }
 
     protected StockRepositoryInterface $stockRepositoryInterface;
     protected ProductRepositoryInterface $productRepositoryInterface;
