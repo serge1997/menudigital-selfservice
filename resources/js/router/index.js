@@ -17,6 +17,7 @@ import Stock from '../components/Pages/Dashboard/Stock.vue';
 import PublicMenu from '../components/Pages/PublicMenu.vue'
 import PurchaseRequisition from "../components/Pages/Dashboard/Purchase/PurchaseRequisition.vue";
 import EmployeePlanning from "../components/Pages/Dashboard/EmployeePlanning.vue";
+import Reservation from '../components/Pages/Dashboard/Reservation/Reservation.vue'
 
 
 
@@ -190,6 +191,11 @@ const routes = [
         path: '/dashboard/planning',
         name: 'EmployeePlanning',
         component: EmployeePlanning,
+    },
+    {
+        path: '/dashboard/reservation',
+        name: 'Reservation',
+        component: Reservation
     }
 ]
 

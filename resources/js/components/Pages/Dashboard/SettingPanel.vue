@@ -88,7 +88,7 @@
                     <div class="modal-body">
                         <div class="w-100">
                             <table class="table table-striped">
-                                <thead class="">
+                                <thead class="" v-if="showfiche">
                                     <tr>
                                         <th class="text-uppercase" v-for="item in ficheItem_name">{{ item }}</th>
                                         <th class="bg-white">
@@ -208,7 +208,12 @@ export default{
         showTechnicalFiche(id){
             axios.get(`/api/technical-fiche/${id}`).then((response) => {
                 console.log(response.data)
-                this.showfiche = response.data
+                let result = response.data
+                if (result.length >= 1){
+                    this.showfiche = response.data
+                }else{
+                    this.showfiche = false
+                }
                 let cost = 0;
                 let contain = 0;
                 let item_name = new Set();

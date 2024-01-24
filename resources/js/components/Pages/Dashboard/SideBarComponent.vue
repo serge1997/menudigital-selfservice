@@ -31,6 +31,12 @@
                             </router-link>
                         </li>
                         <li class="list-group-item rounded-0 border-0">
+                          <router-link class="nav-link" :to="{ name: 'Reservation'}">
+                            <span class="pi pi-calendar"></span>
+                            Gestão de reservação
+                          </router-link>
+                        </li>
+                        <li class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'NewItem'}">
                                 <span class="pi pi-plus"></span>
                                 New item
