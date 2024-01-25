@@ -11,7 +11,7 @@ import CustomerBill from '../components/Pages/Dashboard/CustomerBill.vue';
 import Employe from '../components/Pages/Dashboard/Employe.vue';
 import Login from '../components/Pages/Login.vue';
 import Garcom from '../components/Pages/Garcom.vue';
-import BusinessInteligence from '../components/Pages/Dashboard/BusinessInteligence.vue'
+import BusinessInteligence from '../components/Pages/Dashboard/BusinessInteligence/BiIndex.vue';
 import SettingPanel from '../components/Pages/Dashboard/SettingPanel.vue';
 import Stock from '../components/Pages/Dashboard/Stock.vue';
 import PublicMenu from '../components/Pages/PublicMenu.vue'

@@ -1,8 +1,5 @@
 <template>
     <div class="container-fluid">
-        <div class="position-fixed z-3">
-            <SideBarComponent/>
-        </div>
         <div class="col-md-10 m-auto py-2 d-flex">
             <Toolbar class="w-100">
                 <template #start>
@@ -117,7 +114,7 @@
 <script>
 import InputText from 'primevue/inputtext';
 import bb, {area, areaSpline, bar, line, donut} from 'billboard.js'
-import SideBarComponent from './SideBarComponent.vue';
+//import SideBarComponent from './SideBarComponent.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from "primevue/button";
@@ -125,10 +122,9 @@ import Toolbar from "primevue/toolbar";
 import Calendar from "primevue/calendar";
 
 export default {
-    name: 'BusinessInteligence',
+    name: 'SellInteligence',
 
     components: {
-        SideBarComponent,
         InputText,
         DataTable,
         Column,

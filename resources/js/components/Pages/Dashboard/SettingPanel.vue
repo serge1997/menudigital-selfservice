@@ -152,6 +152,7 @@
 </template>
 
 <script>
+import { nextTick } from 'vue'
 import axios from 'axios';
 import SettingMenuComponent from '../../SettingMenuComponent.vue';
 import SettingPersonalComponent from '../../SettingPersonalComponent.vue';
@@ -206,11 +207,12 @@ export default{
     },
     methods: {
         showTechnicalFiche(id){
-            axios.get(`/api/technical-fiche/${id}`).then((response) => {
+            axios.get(`/api/technical-fiche/${id}`).then( async (response) => {
                 console.log(response.data)
-                let result = response.data
+                nextTick();
+                let result = await response.data
                 if (result.length >= 1){
-                    this.showfiche = response.data
+                    this.showfiche = await response.data
                 }else{
                     this.showfiche = false
                 }
