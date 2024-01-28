@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('reservations', function (Blueprint $table) {
             $table->increments("id");
             $table->integer("person_quantity");
-            $table->date("date_come_in");
+            $table->string("date_come_in");
             $table->time("hour");
             $table->string("customer_firstName");
             $table->string("customer_lastName");

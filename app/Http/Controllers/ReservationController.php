@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Main\Reservation\ReservationRepositoryInterface;
 use App\Http\Requests\StoreReservationRequest;
 use Exception;
+use Illuminate\Http\JsonResponse;
 
 class ReservationController extends Controller
 {
@@ -16,17 +17,60 @@ class ReservationController extends Controller
         $this->reservationRepositoryInterface = $reservationRepositoryInterface;
     }
 
+    public function index(): JsonResponse
+    {
+        try{
+            $reservationResponse = $this->reservationRepositoryInterface->getAll();
+            return response()->json($reservationResponse);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+
     public function createReservation(StoreReservationRequest $request)
     {
         try {
 
+            $request->validated();
             $message = "Reservação salva com sucesso";
-            $request->validate();
             $this->reservationRepositoryInterface->create($request);
             return response()->json($message);
 
         }catch (Exception $e){
+            return response()->json($e->getMessage(). " ".$e->getLine(). " ".$e->getFile(), 500);
+        }
+    }
+
+    public function findById($id): JsonResponse
+    {
+        try {
+
+            return response()->json($this->reservationRepositoryInterface->find($id));
+        }catch(Exception $e){
             return response()->json($e->getMessage());
+        }
+    }
+
+    public function updateAction(StoreReservationRequest $request): JsonResponse
+    {
+        try {
+            $message = "Reservação editada com sucesso";
+            $this->reservationRepositoryInterface->update($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(). " ".$e->getLine(), 500);
+        }
+    }
+
+    public function deleteAction(Request $request, $id)
+    {
+        try {
+            $message = "Reservação deletado com successo";
+            $this->reservationRepositoryInterface->delete($request, $id);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
         }
     }
 }

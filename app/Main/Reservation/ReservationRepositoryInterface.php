@@ -8,6 +8,7 @@ interface ReservationRepositoryInterface
 {
     public function create($request);
     public function getAll(): Collection;
+    public function find($id): Collection;
     public function update($request);
-    public function delete($id);
+    public function delete($request, $id);
 }

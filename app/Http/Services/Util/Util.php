@@ -35,5 +35,21 @@ class Util
         return $date;
     }
 
+    /** format date Y-m-d */
+    public static function formatDate($date): string
+    {
+        $set_date = new DateTime($date);
+        $date = $set_date->format('dd/mm/y');
+        return $date;
+    }
+
+    /** format hour H:i */
+    public static function formatHour($hour): string
+    {
+        $set_hour = new DateTime($hour);
+        $hour = $set_hour->format('H:i');
+        return $hour;
+    }
+
 
 }

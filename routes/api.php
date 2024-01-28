@@ -16,6 +16,7 @@ use App\Http\Controllers\MealTypeController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TechnicalFicheController;
+use App\Http\Controllers\ReservationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -168,4 +169,12 @@ Route::controller(TechnicalFicheController::class)->group(function() {
     Route::put('fiche-menu-item', 'addNewItemToItemFicheAction');
     Route::delete('fiche-menu-itens/products/{itemID}/{productID}', 'deleteProductFromItemFicheAction');
     Route::post('fiche-menu-itens/edit-quantity', 'editProductQuantityAction');
+});
+
+Route::controller(ReservationController::class)->group(function() {
+    Route::post('reservation', 'createReservation');
+    Route::get('reservation', 'index');
+    Route::get('reservation/{id}', 'findById');
+    Route::delete('reservation/{id}', 'deleteAction');
+    Route::put('reservation', 'updateAction');
 });

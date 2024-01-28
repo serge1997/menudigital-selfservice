@@ -18,31 +18,40 @@
             </div>
         </div>
         <div class="container">
-            <ListReservationComponent @show-model-from-list="showModal" />
+            <ListReservationComponent :reservation-canal="reservationCanal" :reservations="reservations" @delete-reservation="deleteReservation"/>
         </div>
         <div class="container">
             <Dialog v-model:visible="visibleNewReservationModal" maximizable modal header="Nova reservação" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="col-md-12 mt-3">
+                    <ProgressBar v-if="savingLoad" mode="indeterminate" style="height: 6px"></ProgressBar>
                     <div class="d-flex align-items-center gap-2 mb-3 p-2">
                         <Button text class="border" label="1" rounded />
                         <p class="text-uppercase">Informação da reservação</p>
                     </div>
                     <div class="row d-flex">
-                        <div class="col-lg-4 col-md-10 d-flex justify-content-center gap-2 align-items-center">
-                            <label class="fw-medium">N pessoa:  </label>
-                            <div class="col-md-8">
+                        <div class="col-lg-4 col-md-10 d-flex flex-column gap-2 align-items-start">
+                            <div class="col-md-12 d-flex">
+                                <label class="fw-medium">N pessoa:  </label>
                                 <Button icon="pi pi-plus" severity="success"/>
-                                <InputText type="number" class="w-25" placeholder="000"/>
+                                <InputText type="number" :class="invalid" v-model="reservationData.person_quantity" class="w-25" placeholder="000"/>
                                 <Button icon="pi pi-minus" severity="primary" />
                             </div>
+                            <small class="text-danger" v-if="formErrMessage" v-for="person in formErrMessage.person_quantity" v-text="person"></small>
                         </div>
-                        <div class="col-md-4 d-flex justify-content-center gap-2 align-items-center">
-                            <label class="fw-medium">Date: </label>
-                            <Calendar showIcon iconDisplay="input" />
+                        <div class="col-md-4 d-flex flex-column gap-2 align-items-center">
+                            <div class="col-md-12 d-flex justify-content-center gap-2">
+                                <label class="fw-medium">Date: </label>
+                                <Calendar @change="checkValidDate" dateFormat="dd/mm/yy" :class="invalid" showIcon iconDisplay="input" id="res-date" v-model="reservationData.date_come_in" />
+                            </div>
+                            <small class="text-danger" v-if="formErrMessage" v-for="date_come_in in formErrMessage.date_come_in" v-text="date_come_in"></small>
+                            <small class="text-danger" v-text="dataInvalid"></small>
                         </div>
-                        <div class="col-md-4 d-flex justify-content-center gap-2 align-items-center">
-                            <label class="fw-medium">Horario: </label>
-                            <Calendar showIcon iconDisplay="input" timeOnly />
+                        <div class="col-md-4 d-flex flex-column align-items-center">
+                            <div class="col-md-12 d-flex justify-content-center gap-2">
+                                <label class="fw-medium">Horario: </label>
+                                <Calendar type="time" :class="invalid + dateInvalidClass" showIcon iconDisplay="input" timeOnly v-model="reservationData.hour" />
+                            </div>
+                            <small class="text-danger" v-if="formErrMessage" v-for="hour in formErrMessage.hour" v-text="hour"></small>
                         </div>
                     </div>
                     <div class="w-100 border-top mt-3">
@@ -51,22 +60,36 @@
                             <p class="text-uppercase">Informação do cliente</p>
                         </div>
                         <div class="d-flex justify-content-center mt-3 gap-3">
-                            <InputText class="col-md-5" placeholder="Nome"/>
-                            <InputText class="col-md-5" placeholder="Sobrenome"/>
+                            <div class="col-md-5">
+                                <InputText class="col-md-12" :class="invalid" placeholder="Nome" v-model="reservationData.customer_firstName"/>
+                                <small class="text-danger" v-if="formErrMessage" v-for="customer_firstName in formErrMessage.customer_firstName" v-text="customer_firstName"></small>
+                            </div>
+                            <div class="col-md-5">
+                                <InputText class="col-md-12" :class="invalid" placeholder="Sobrenome" v-model="reservationData.customer_lastName" />
+                                <small class="text-danger" v-if="formErrMessage" v-for="customer_lastName in formErrMessage.customer_lastName" v-text="customer_lastName"></small>
+                            </div>
                         </div>
                         <div class="d-flex justify-content-center mt-3 gap-3">
-                            <InputText class="col-md-5" placeholder="Celular"/>
-                            <InputText class="col-md-5" placeholder="e-mail"/>
+                            <div class="col-md-5">
+                                <InputText v-model="reservationData.customer_tel" :class="invalid" class="col-md-12" placeholder="(99)99 999-9999" />
+                                <small class="text-danger" v-if="formErrMessage" v-for="customer_tel in formErrMessage.customer_tel" v-text="customer_tel"></small>
+                            </div>
+                            <div class="col-md-5">
+                                <InputText class="col-md-12" placeholder="e-mail" v-model="reservationData.customer_email"/>
+                                <small class="text-danger" v-if="formErrMessage" v-for="customer_email in formErrMessage.customer_email" v-text="customer_email"></small>
+                            </div>
                         </div>
-                        <div class="col-md-11 m-auto d-flex justify-content-center mt-3">
-                            <Textarea class="col-md-11" placeholder="Observações..."/>
+                        <div class="col-md-11 m-auto d-flex flex-column align-items-center mt-3">
+                            <Textarea class="col-md-11" :class="invalid" placeholder="Observações..." v-model="reservationData.observation"/>
+                            <small class="text-danger" v-if="formErrMessage" v-for="observation in formErrMessage.observation" v-text="observation"></small>
                         </div>
                     </div>
                     <div class="col-md-10 m-auto mt-3">
-                        <Dropdown v-model="reservationData.canal" option-value="canal" :options="reservationCanal" optionLabel="canal" placeholder="Select user function" class="w-100 md:w-14rem" />
+                        <Dropdown v-model="reservationData.reser_canal" :class="invalid" option-value="canal" :options="reservationCanal" optionLabel="canal" placeholder="Select user function" class="w-100 md:w-14rem" />
+                        <small class="text-danger" v-if="formErrMessage" v-for="reser_canal in formErrMessage.reser_canal" v-text="reser_canal"></small>
                     </div>
                     <div class="w-100 d-flex justify-content-center mt-3">
-                        <Button label="Confirmar reservação"/>
+                        <Button @click.prevent="createReservation" id="btn-save" label="Confirmar reservação"/>
                     </div>
                 </div>
             </Dialog>
@@ -77,6 +100,8 @@
 <script>
 import SideBarComponent from '../SideBarComponent.vue';
 import ListReservationComponent from './ListReservationComponent.vue';
+import InputMask from "primevue/inputmask";
+import ProgressBar from "primevue/progressbar";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -96,8 +121,21 @@ export default {
         Toolbar,
         Calendar,
         Textarea,
-        Dropdown
+        Dropdown,
+        ProgressBar,
+        InputMask
     },
+
+    watch: {
+      'reservationData.date_come_in': {
+        handler:  function(newVal, oldVal){
+            console.log("working")
+            return this.checkValidDate()
+        },
+        deep: true
+      }
+    },
+
     data(){
         return {
             visibleNewReservationModal: false,
@@ -109,19 +147,139 @@ export default {
                 {"canal": "E-mail"}
             ],
             reservationData: {
-                canal: null
-            }
+                id: null,
+                person_quantity: null,
+                date_come_in: null,
+                hour: null,
+                customer_firstName: null,
+                customer_lastName: null,
+                customer_email: null,
+                customer_tel: null,
+                reser_canal: null,
+                observation: null
+            },
+            savingLoad: false,
+            formErrMessage: null,
+            dataInvalid: null,
+            dateInvalidClass: null,
+            invalid: null,
+            reservations: null,
         }
     },
 
     methods: {
-        showModal(){
+        showModal(id){
             this.visibleNewReservationModal = true;
+            alert(id)
+        },
+        async listAllReservation(){
+            const reservationRespone = await axios.get('/api/reservation');
+            this.reservations = await reservationRespone.data;
+
+        },
+
+        createReservation(){
+            this.savingLoad = true;
+            var hour = new Date(this.reservationData.hour);
+            var date = new Date(this.reservationData.date_come_in);
+            var formatHour = hour.toLocaleDateString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+
+            var dateFormat = date.toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            });
+            const data = {
+                person_quantity: this.reservationData.person_quantity,
+                date_come_in: dateFormat.substr(0, 10),
+                hour: formatHour.substr(12, 17),
+                customer_firstName: this.reservationData.customer_firstName,
+                customer_lastName: this.reservationData.customer_lastName,
+                customer_email: this.reservationData.customer_email,
+                customer_tel: this.reservationData.customer_tel,
+                reser_canal: this.reservationData.reser_canal,
+                observation: this.reservationData.observation
+            }
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    this.axios.post('/api/reservation', data).then((response) => {
+                        this.$toast.success(response.data)
+                        this.invalid = '';
+                        this.reservationData.person_quantity = '',
+                        this.reservationData.customer_firstName = '',
+                        this.reservationData.customer_lastName = '',
+                        this.reservationData.customer_email = '',
+                        this.reservationData.customer_tel = '',
+                        this.reservationData.reser_canal = '',
+                        this.reservationData.observation = '';
+                        this.reservationData.date_come_in = '';
+                        this.reservationData.hour = '';
+                        resolve(true);
+                        return this.listAllReservation();
+                    })
+                    .catch((errors) => {
+                        console.log(errors)
+                        this.formErrMessage = errors.response.data.errors;
+                        this.invalid = "border border-danger";
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null;
+                    })
+                    .finally(() => this.savingLoad = false);
+                }, 1000)
+            })
+        },
+
+        checkValidDate(){
+            let calendar = document.getElementById('res-date');
+            let save_btn = document.getElementById('btn-save')
+            var today = new Date();
+            var date = new Date(this.reservationData.date_come_in);
+            var todayFormat = today.toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            })
+
+            var dateFormat = date.toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            })
+
+            if (dateFormat < todayFormat){
+                save_btn.setAttribute('disabled', 'disabled')
+                this.dataInvalid = "data invalida";
+                this.dateInvalidClass = 'border border-danger'
+            }else {
+                save_btn.removeAttribute('disabled')
+                this.dataInvalid = null;
+                this.dateInvalidClass = null
+            };
+        },
+
+        deleteReservation(id){
+            this.$swal.fire({
+                text: 'Está sendo deletando uma reservação. clique em ok para continuar',
+                icon: 'warning',
+                showCancelButton: true
+            }).then(result => {
+                if (result.isConfirmed){
+                    this.axios.delete('/api/reservation/' + id).then((response) => {
+                        this.$toast.success(response.data)
+                        return this.listAllReservation()
+                    }).catch(errors => {
+                        errors.response.status = 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null;
+                    })
+                }
+            })
+
         }
     },
 
     mounted(){
-
+        this.listAllReservation();
     }
 }
 </script>
