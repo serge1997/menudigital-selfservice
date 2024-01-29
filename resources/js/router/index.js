@@ -185,17 +185,20 @@ const routes = [
     {
         path: '/dashboard/purchase/',
         name: 'PurchaseRequisition',
-        component: PurchaseRequisition
+        component: PurchaseRequisition,
+        meta: {requiresAuth: true}
     },
     {
         path: '/dashboard/planning',
         name: 'EmployeePlanning',
         component: EmployeePlanning,
+        meta: {requiresAuth: true}
     },
     {
         path: '/dashboard/reservation',
         name: 'Reservation',
-        component: Reservation
+        component: Reservation,
+        meta: {requiresAuth: true}
     }
 ]
 

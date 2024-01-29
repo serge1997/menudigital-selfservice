@@ -8,9 +8,16 @@ use App\Models\Restaurant;
 use App\Http\Requests\RestaurantFormRequest;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use App\Main\Restaurant\RestaurantRepositoryInterface;
 
 class RestaurantController extends Controller
 {
+    protected RestaurantRepositoryInterface $restaurantRepositoryInterface;
+
+    public function __construct(RestaurantRepositoryInterface $restaurantRepositoryInterface)
+    {
+        $this->restaurantRepositoryInterface = $restaurantRepositoryInterface;
+    }
 
     public function index(): JsonResponse
     {
@@ -18,18 +25,13 @@ class RestaurantController extends Controller
     }
     public function create(RestaurantFormRequest $request)
     {
-        if ($request->isMethod("post")){
-            try {
-                $request->validated();
-                $values = $request->all();
-                $restaurant = new Restaurant($values);
-                $restaurant->res_logo = "waiting logo update";
-                $restaurant->save();
-                return response()->json("Informação salvou com successo");
-            }catch (Exception $e){
-                return response()->json($e->getMessage(), 422);
-            }
-        }
+       try{
+            $message = "Informação salvou com sucesso";
+            $this->restaurantRepositoryInterface->create($request);
+            return response()->json($message);
+       }catch(Exception $e){
+        return response()->json($e->getMessage(), 500);
+       }
     }
 
     public function createLogo(Request $request)

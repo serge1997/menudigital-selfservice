@@ -23,6 +23,10 @@ use App\Main\Stock\StockRepositoryInterface;
 use App\Main\Stock\StockRepository;
 use App\Main\Reservation\ReservationRepositoryInterface;
 use App\Main\Reservation\ReservationRepository;
+use App\Main\User\UserRepositoryInterface;
+use App\Main\User\UserRepository;
+use App\Main\Restaurant\RestaurantRepositoryInterface;
+use App\Main\Restaurant\RestaurantRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -42,6 +46,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(StockRepositoryInterface::class, StockRepository::class);
         $this->app->bind(ReservationRepositoryInterface::class, ReservationRepository::class);
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
+        $this->app->bind(RestaurantRepositoryInterface::class, RestaurantRepository::class);
     }
 
     /**

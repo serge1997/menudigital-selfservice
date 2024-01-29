@@ -34,9 +34,9 @@
         </div>
         <div class="row d-flex justify-content-center">
             <div class="row d-flex justify-content-center p-3">
-                <div class="col-lg-2 col-md-4 menu-type-card p-2" id="typebt" v-for="mtype in MenuType" :key="mtype.id_type">
+                <div class="col-lg-2 col-md-4 d-flex justify-content-center menu-type-card p-2" id="typebt" v-for="mtype in MenuType" :key="mtype.id_type">
                     <button class="btn w-75 border-0 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">
-                        <img class="w-50 type-btn" :src="'/img/type/'+ mtype.foto_type" alt="">
+                        <img class="w-50 col-md-6 type-btn" :src="'/img/type/'+ mtype.foto_type" alt="">
                         {{ mtype.desc_type }}
                     </button>
                 </div>

@@ -9,7 +9,7 @@ export default {
     name: 'App',
 
     mounted(){
-        //localStorage.removeItem('token')
+    //localStorage.removeItem('token')
     },
 
 }

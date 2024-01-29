@@ -39,7 +39,7 @@ class TechnicalFicheController extends Controller
 
         }catch(Exception $e){
             DB::rollBack();
-            return response()->json($e->getMessage(), 500);
+            return response()->json($e->getMessage()." ".$e->getLine()." ".$e->getFile(), 500);
         }
     }
     public function addNewItemToItemFicheAction(Request $request)

@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <SideBarComponent />
         <TabView :scrollable="true">
-            <TabPanel [headerStyleClass]="tab-header" header="VENDA">
+            <TabPanel header="VENDA">
                 <SellInteligence />
             </TabPanel>
             <TabPanel header="PRODUTO">
@@ -27,3 +27,9 @@ export default {
     },
 }
 </script>
+<style scoped>
+.p-tabview{
+    text-decoration: none #ff0000;
+    color: #ff0000;
+}
+</style>

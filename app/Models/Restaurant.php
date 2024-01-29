@@ -26,6 +26,9 @@ class Restaurant extends Model
         'rest_StreetNumber',
         'res_logo',
         'res_open',
-        'res_close'
+        'res_close',
+        'loss_margin',
+        'fix_margin',
+        'variable_margin'
     ];
 }

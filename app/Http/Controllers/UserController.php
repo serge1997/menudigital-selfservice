@@ -15,6 +15,7 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\ItensPedido;
 use App\Http\Services\UserRoleAcess;
 use App\Http\Services\UserInstance;
+use App\Main\User\UserRepositoryInterface;
 use App\Events\CancelOrder;
 
 
@@ -24,10 +25,11 @@ class UserController extends Controller
     protected $auth_user;
     CONST USER_ID = 1;
     CONST IS_CANCEL = true;
+    protected UserRepositoryInterface $userRepositoryInterface;
 
-    public function __construct()
+    public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {
-
+        $this->userRepositoryInterface = $userRepositoryInterface;
     }
 
     public function getGroup()
@@ -47,24 +49,16 @@ class UserController extends Controller
 
     public function create(StoreUserRequest $request)
     {
-        $request->validated();
-        $values = $request->all();
-        $create = new User($values);
-        $create->password = Hash::make($request->password);
+
 
         try {
-            $auth_userid = $request->session()->get('auth-vue');
-            $roles = UserInstance::get_user_roles($auth_userid);
-            foreach ($roles as $manager) {
-                if ($manager->role_id == Role::MANAGER) {
-                    $create->save();
-                    return response()->json("Usuario criado com sucesso !");
-                }
-            };
-            return response()->json("Voçê não tem permissão", 500);
-        }catch(Exception $e){
-            echo "Usuario não pode ser cadastrado";
 
+            $message = "Usuario criado com sucesso";
+            $this->userRepositoryInterface->create($request);
+            return response()->json($message);
+
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -253,7 +247,7 @@ class UserController extends Controller
                 DB::table("users")
                     ->where("id", $id)
                     ->update([
-                        "group_id" => $group_id
+                        "position_id" => $group_id
                     ]);
 
                 return response()

@@ -80,6 +80,23 @@
                                 <small class="text-danger" v-if="errMsg" v-for="errclose in errMsg.res_close" v-text="errclose"></small>
                             </div>
                         </div>
+                        <div class="d-flex gap-2 mt-2">
+                            <div class="w-75 d-flex flex-column">
+                                <label for="">Margem variavel : </label>
+                                <InputText :class="invalidInput" type="number" v-model="restaurant.variable_margin"/>
+                                <small class="text-danger" v-if="errMsg" v-for="erropen in errMsg.res_open" v-text="erropen"></small>
+                            </div>
+                            <div class="w-75 d-flex flex-column">
+                                <label class="px-2"  for="">Margem fixo : </label>
+                                <InputText :class="invalidInput" type="number" v-model="restaurant.fix_margin"/>
+                                <small class="text-danger" v-if="errMsg" v-for="errclose in errMsg.res_close" v-text="errclose"></small>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column mt-2">
+                            <label class="" for="rest-streetname">Margem perda: </label>
+                            <InputText id="rest-streetname" type="number" :class="invalidInput" v-model="restaurant.loss_margin"/>
+                            <small class="text-danger" v-if="errMsg" v-for="errstreetName in errMsg.rest_streetName" v-text="errstreetName"></small>
+                        </div>
                     <div class="modal-footer">
                         <Button @click="postRestInfo" type="button">Salvar</Button>
                     </div>
@@ -113,7 +130,10 @@ export default {
                 rest_StreetNumber: null,
                 res_logo: null,
                 res_open: null,
-                res_close: null
+                res_close: null,
+                loss_margin: null,
+                fix_margin: null,
+                variable_margin: null
             },
             errMsg: null,
             errMsgLogo: null,
@@ -139,7 +159,10 @@ export default {
                     this.restaurant.rest_cnpj = result.rest_cnpj;
                     this.restaurant.rest_streetName = result.rest_streetName;
                     this.restaurant.res_neighborhood = result.res_neighborhood;
-                    this.restaurant.res_logo = result.res_logo
+                    this.restaurant.res_logo = result.res_logo;
+                    this.restaurant.fix_margin = result.fix_margin;
+                    this.restaurant.loss_margin = result.loss_margin;
+                    this.restaurant.variable_margin = result.variable_margin
                 }
             }).catch((errors) => {
                 console.log(errors);

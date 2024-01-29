@@ -5,6 +5,7 @@ use App\Models\Technicalfiche;
 use Illuminate\Database\Eloquent\Collection;
 use App\Main\Stock\StockRepositoryInterface;
 use App\Main\Product\ProductRepositoryInterface;
+use App\Main\Restaurant\RestaurantRepositoryInterface;
 use Exception;
 use App\Models\Role;
 use App\Http\Services\UserInstance;
@@ -16,14 +17,17 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
 
     protected StockRepositoryInterface $stockRepositoryInterface;
     protected ProductRepositoryInterface $productRepositoryInterface;
+    protected RestaurantRepositoryInterface $restaurantRepositoryInterface;
 
     public function __construct(
         StockRepositoryInterface $stockRepositoryInterface,
-        ProductRepositoryInterface $productRepositoryInterface
+        ProductRepositoryInterface $productRepositoryInterface,
+        RestaurantRepositoryInterface $restaurantRepositoryInterface
         )
     {
         $this->stockRepositoryInterface = $stockRepositoryInterface;
         $this->productRepositoryInterface = $productRepositoryInterface;
+        $this->restaurantRepositoryInterface = $restaurantRepositoryInterface;
     }
 
     public function create($request)
@@ -38,14 +42,20 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
 
             $stock = $this->stockRepositoryInterface->findLastProductEntry($productID);
             $product = $this->productRepositoryInterface->findById($productID);
+            $rest_cost_info = $this->restaurantRepositoryInterface->find();
+           //var_dump($rest_cost_info['loss_margin']); die;
 
                 if ($product->prod_unmed != "bt"):
                     $qty = $quantity[$key];
+                    $cost = ($qty * $stock->unitCost) / $product->prod_contain;
                     $fiche = new Technicalfiche();
                     $fiche->itemID = $itemID;
                     $fiche->productID = $productID;
                     $fiche->quantity = $qty;
-                    $fiche->cost = ($qty * $stock->unitCost) / $product->prod_contain;
+                    $fiche->cost = $cost;
+                    $fiche->loss_margin = $cost * $rest_cost_info['loss_margin'] / 100;
+                    $fiche->fix_margin = $cost * $rest_cost_info['fix_margin'] / 100;
+                    $fiche->variable_margin = $cost * $rest_cost_info['variable_margin'] / 100;
                     $fiche->save();
                 else:
                     $qty = $quantity[$key];
@@ -54,6 +64,9 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
                     $fiche->productID = $productID;
                     $fiche->quantity = $qty;
                     $fiche->cost = $stock->unitCost;
+                    $fiche->loss_margin = $stock->unitCost * $rest_cost_info['loss_margin'] / 100;
+                    $fiche->fix_margin = $stock->unitCost * $rest_cost_info['fix_margin'] / 100;
+                    $fiche->variable_margin = $stock->unitCost * $rest_cost_info['variable_margin'] / 100;
                     $fiche->save();
                 endif;
         endforeach;

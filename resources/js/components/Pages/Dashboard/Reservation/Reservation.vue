@@ -71,7 +71,7 @@
                         </div>
                         <div class="d-flex justify-content-center mt-3 gap-3">
                             <div class="col-md-5">
-                                <InputText v-model="reservationData.customer_tel" :class="invalid" class="col-md-12" placeholder="(99)99 999-9999" />
+                                <InputMask v-model="reservationData.customer_tel" mask="(99)99 999-9999" :class="invalid" class="col-md-12" placeholder="(99)99 999-9999" />
                                 <small class="text-danger" v-if="formErrMessage" v-for="customer_tel in formErrMessage.customer_tel" v-text="customer_tel"></small>
                             </div>
                             <div class="col-md-5">

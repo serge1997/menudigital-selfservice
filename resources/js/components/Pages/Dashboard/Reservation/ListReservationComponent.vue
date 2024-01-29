@@ -20,10 +20,10 @@
                 <div>
                     <Button @click="showReservation(reservation.id)" text icon="pi pi-eye"/>
                 </div>
-                <div>
+                <div v-if="auth.showActions">
                     <Button @click="getReservation(reservation.id)" text icon="pi pi-pencil"/>
                 </div>
-                        <div>
+                <div v-if="auth.showActions">
                     <Button @click="$emit('deleteReservation', reservation.id)" icon="pi pi-trash" text class="text-danger"/>
                 </div>
             </div>
@@ -152,6 +152,7 @@ import Chip from "primevue/chip";
 import Badge from "primevue/badge";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
+import authuser from "./../../auth.js";
 import Textarea from "primevue/textarea";
 import Calendar from "primevue/calendar";
 import Tag from "primevue/tag";
@@ -177,7 +178,12 @@ export default {
             visibleShowReservationModal: false,
             visibleEditionReservationModal: false,
             id: 2,
-
+            auth: {
+                id: null,
+                department: null,
+                adm: 1,
+                showActions: false,
+            },
             reservation: null,
             reservationData: {
                 id: null,
@@ -261,9 +267,14 @@ export default {
             })
         }
     },
-    mounted(){
+    async mounted(){
         let dt = '000';
-        console.log(new Date(dt));
+        authuser.then((result) => {
+            if (result.department_id == this.auth.adm){
+                this.auth.showActions = true
+            }
+        })
+        console.log(authuser)
     }
 }
 </script>
