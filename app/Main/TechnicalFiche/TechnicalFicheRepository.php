@@ -10,10 +10,12 @@ use Exception;
 use App\Models\Role;
 use App\Http\Services\UserInstance;
 use App\Traits\AuthSession;
+use App\Traits\Permission;
+use Illuminate\Support\Facades\DB;
 
 class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
 {
-    use AuthSession { checkOnlyManager as private; autth as private; }
+    use AuthSession, Permission;
 
     protected StockRepositoryInterface $stockRepositoryInterface;
     protected ProductRepositoryInterface $productRepositoryInterface;
@@ -72,6 +74,45 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         endforeach;
     }
 
+    public function show(string $id): Collection
+    {
+        $fiche = Technicalfiche::select(
+                'technicalfiches.itemID',
+                'technicalfiches.productID',
+                'menuitems.item_name',
+                'products.prod_name',
+                'technicalfiches.quantity',
+                'technicalfiches.cost',
+                'technicalfiches.fix_margin',
+                'technicalfiches.loss_margin',
+                'technicalfiches.variable_margin',
+                DB::raw(
+                    'SUM(technicalfiches.cost) + SUM(technicalfiches.fix_margin) + SUM(technicalfiches.variable_margin) + SUM(technicalfiches.loss_margin) as total'
+                ),
+                'products.prod_unmed'
+            )
+                ->where('technicalfiches.itemID', $id)
+                    ->join('menuitems', 'technicalfiches.itemID', '=', 'menuitems.id')
+                        ->join('products', 'technicalfiches.productID', '=', 'products.id')
+                            ->groupBy(
+                                'technicalfiches.itemID',
+                                'technicalfiches.productID',
+                                'menuitems.item_name',
+                                'products.prod_name',
+                                'technicalfiches.quantity',
+                                'technicalfiches.cost',
+                                'technicalfiches.fix_margin',
+                                'technicalfiches.loss_margin',
+                                'technicalfiches.variable_margin',
+                                'products.prod_unmed'
+                            )
+                                ->get();
+
+        return new Collection (
+            $fiche
+        );
+    }
+
     public function findByItemId($id): Collection
     {
         return new Collection(
@@ -106,24 +147,26 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         $itemId = $request->itemID;
         $productIds = $request->productID;
         $quantitys = $request->quantity;
-        $auth = $request->session()->get('auth-vue');
-        foreach (UserInstance::get_user_roles($auth) as $edit):
-            if ($edit->role_id == Role::MANAGER):
-                foreach ($productIds  as $key => $productId){
-                    $this->beforeSave($itemId, $productId);
-                    $productInfo = $this->productRepositoryInterface->findById($productId);
-                    $productCost = $this->stockRepositoryInterface->findLastProductEntry($productId);
-                    $fiche = new Technicalfiche();
-                    $fiche->itemID = $itemId;
-                    $fiche->productID = $productId;
-                    $fiche->quantity = $quantitys[$key];
-                    $fiche->cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
-                    $fiche->save();
+        $restaurant_data = $this->restaurantRepositoryInterface->find();
+        if ($this->can_manage($request)):
+            foreach ($productIds  as $key => $productId){
+                $this->beforeSave($itemId, $productId);
+                $productInfo = $this->productRepositoryInterface->findById($productId);
+                $productCost = $this->stockRepositoryInterface->findLastProductEntry($productId);
+                $cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
+                $fiche = new Technicalfiche();
+                $fiche->itemID = $itemId;
+                $fiche->productID = $productId;
+                $fiche->quantity = $quantitys[$key];
+                $fiche->cost =  $cost;
+                $fiche->fix_margin = $cost * $restaurant_data['fix_margin'] / 100;
+                $fiche->loss_margin = $cost * $restaurant_data['loss_margin'] / 100;
+                $fiche->variable_margin = $cost * $restaurant_data['variable_margin'] / 100;
+                $fiche->save();
 
-                }
-            endif;
-           return;
-        endforeach;
+            }
+            return;
+        endif;
         throw new Exception("Você não tem permissão");
     }
 
@@ -145,22 +188,23 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         $item_id = $request->itemId;
         $quantitys = $request->quantity;
         $products = $request->products;
-
-        $auth = $request->session()->get('auth-vue');
-        foreach (UserInstance::get_user_roles($auth) as $edit):
-            if ($edit->role_id == Role::MANAGER):
-                foreach ($products as $key => $product){
-                    $productInfo = $this->productRepositoryInterface->findById($product);
-                    $productCost = $this->stockRepositoryInterface->findLastProductEntry($product);
-                    Technicalfiche::where([['itemID', $item_id], ['productID', $product]])
-                        ->update([
-                            'quantity' => $quantitys[$key],
-                            'cost' => $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain
-                        ]);
-                }
-                return;
-            endif;
-        endforeach;
+        $restaurant_data = $this->restaurantRepositoryInterface->find();
+        if ($this->can_manage($request)):
+            foreach ($products as $key => $product){
+                $productInfo = $this->productRepositoryInterface->findById($product);
+                $productCost = $this->stockRepositoryInterface->findLastProductEntry($product);
+                $cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
+                Technicalfiche::where([['itemID', $item_id], ['productID', $product]])
+                    ->update([
+                        'quantity' => $quantitys[$key],
+                        'cost' => $cost,
+                        'loss_margin' => $cost * $restaurant_data['loss_margin'] / 100,
+                        'fix_margin' => $cost * $restaurant_data['fix_margin'] / 100,
+                        'variable_margin' => $cost * $restaurant_data['variable_margin'] / 100
+                    ]);
+            }
+            return;
+        endif;
         throw new Exception("Você não tem permissão");
     }
 }

@@ -96,7 +96,7 @@ Route::controller(StockController::class)->group(function() {
     Route::post('stock-entry', 'storeStockEntry');
     //Route::post('technical-fiche', 'store_technical_fiche');
     Route::get('products-stat', 'get_stock_stat');
-    Route::get('technical-fiche/{id}', 'show_technical_fiche');
+    //Route::get('technical-fiche/{id}', 'show_technical_fiche');
     Route::post('update/technical-fiche', 'Update_technical_fiche');
     Route::get('inventory', 'get_inventory');
     Route::put('reset-saldo', 'resetSaldo');
@@ -166,6 +166,7 @@ Route::controller(CartController::class)->group(function() {
 
 Route::controller(TechnicalFicheController::class)->group(function() {
     Route::post('technical-fiche', 'createAction');
+    Route::get('technical-fiche/{id}', 'showAction');
     Route::put('fiche-menu-item', 'addNewItemToItemFicheAction');
     Route::delete('fiche-menu-itens/products/{itemID}/{productID}', 'deleteProductFromItemFicheAction');
     Route::post('fiche-menu-itens/edit-quantity', 'editProductQuantityAction');

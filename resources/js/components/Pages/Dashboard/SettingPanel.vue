@@ -87,30 +87,42 @@
                     </div>
                     <div class="modal-body">
                         <div class="w-100">
-                            <table class="table table-striped">
+                            <div class="w-100 d-flex justify-content-center gap-4 mb-4">
+                                <Button icon="pi pi-pencil" text class="border rounded" id="edit-form" :disabled="fichebtn.editDisable" @click="showUpdateFicheForm"/>
+                                <Button icon="pi pi-plus" class="border rounded" id="add-form" :disabled="fichebtn.addDisable" text @click="ShowAddNewElementFieldToFiche"/>
+                            </div>
+                            <table class="table table-bordered table-hover">
                                 <thead class="" v-if="showfiche">
                                     <tr>
-                                        <th class="text-uppercase" v-for="item in ficheItem_name">{{ item }}</th>
-                                        <th class="bg-white">
-                                            <Button icon="pi pi-pencil" text class="border rounded" id="edit-form" :disabled="fichebtn.editDisable" @click="showUpdateFicheForm"/>
-                                        </th>
-                                        <th>
-                                            <Button icon="pi pi-plus" class="border rounded" id="add-form" :disabled="fichebtn.addDisable" text @click="ShowAddNewElementFieldToFiche"/>
-                                        </th>
+                                        <th class="text-capitalize fw-medium" v-for="item in ficheItem_name">{{ item }}</th>
+                                        <th class="text-secondary fw-medium bg-fiche">Quantidade</th>
+                                        <th class="text-secondary fw-medium bg-fiche">Custo</th>
+                                        <th class="text-secondary fw-medium bg-fiche">Margem perda</th>
+                                        <th class="text-secondary fw-medium bg-fiche">Margem fixo</th>
+                                        <th class="text-secondary fw-medium bg-fiche">Margem variavel</th>
+                                        <th class="text-secondary fw-medium bg-fiche">Subtotal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="fiche in showfiche" class="text-capitalize">
-                                        <td><span class="fw-medium">{{ fiche.prod_name }}</span></td>
-                                        <td><Badge :value="fiche.quantity + '  ' + fiche.prod_unmed"></Badge></td>
-                                        <td><Badge severity="warning" :value="fiche.cost + ' ' + 'R$'"></Badge></td>
+                                    <tr v-for="fiche in showfiche">
+                                        <td>{{ fiche.prod_name }}</td>
+                                        <td>{{ fiche.quantity + '  ' + fiche.prod_unmed}}</td>
+                                        <td>{{fiche.cost + ' ' + 'R$' }}</td>
+                                        <td>{{ fiche.loss_margin }} <small>R$</small></td>
+                                        <td>{{ fiche.fix_margin }} </td>
+                                        <td>{{ fiche.variable_margin }} </td>
+                                        <th class="fw-medium"><Badge :value="fiche.total + ' R$'" /></th>
                                     </tr>
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th colspan="1">Total</th>
-                                        <th colspan="1">{{ totalContain }} Cl</th>
-                                        <th colspan="1">{{ totalCost }} R$</th>
+                                        <th colspan="1" class="fw-medium">Total</th>
+                                        <th colspan="1" class="fw-medium">{{ totalContain }} Cl</th>
+                                        <th colspan="1" class="fw-medium">{{ costData.productTotalcost }} R$</th>
+                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} R$</th>
+                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} R$</th>
+                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} R$</th>
+                                        <th colspan="1" class="fw-medium"><Badge severity="success" :value="totalCost + ' R$'" /></th>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -185,6 +197,12 @@ export default{
             ficheItemID: null,
             totalContain: null,
             totalCost: 0,
+            costData: {
+                loss_margin: null,
+                fix_margin: null,
+                variable_margin: null,
+                productTotalcost: null
+            },
             incrementInput: [""],
             AddFicheNewData: {
                 itemID: null,
@@ -216,19 +234,31 @@ export default{
                 }else{
                     this.showfiche = false
                 }
+                let total = 0;
                 let cost = 0;
                 let contain = 0;
+                let fix_margin = 0;
+                let variable_margin = 0;
+                let loss_margin = 0;
                 let item_name = new Set();
                 for (let fiche of this.showfiche){
-                    cost += Number(fiche.cost)
+                    total += Number(fiche.total)
                     contain += Number(fiche.quantity);
+                    fix_margin += Number(fiche.fix_margin);
+                    loss_margin += Number(fiche.loss_margin);
+                    variable_margin += Number(fiche.variable_margin);
+                    cost += Number(fiche.cost);
                     item_name.add(fiche.item_name)
-                    this.totalCost = cost.toFixed(2)
+                    this.totalCost = total.toFixed(2)
                     this.ficheItem_name = item_name
                     this.totalContain = contain;
                     this.AddFicheNewData.itemID = fiche.itemID;
                     this.UpdateFicheData = fiche.itemID;
                 }
+                this.costData.fix_margin = fix_margin.toFixed(2);
+                this.costData.variable_margin = variable_margin.toFixed(2)
+                this.costData.loss_margin = loss_margin.toFixed(2)
+                this.costData.productTotalcost = cost.toFixed(2);
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -323,5 +353,9 @@ export default{
         this.getAllProducts();
     },
 }
-
 </script>
+<style scoped>
+    .bg-fiche{
+        background-color: #f2f2f2;
+    }
+</style>

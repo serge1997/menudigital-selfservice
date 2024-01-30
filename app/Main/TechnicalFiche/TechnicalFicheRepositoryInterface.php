@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 interface TechnicalFicheRepositoryInterface
 {
     public function create($request);
+    public function show(string $id): Collection;
     public function findByItemId($id): Collection;
     public function addNewItemToItemFiche($request): void;
     public function beforeSaveItem($item_id);

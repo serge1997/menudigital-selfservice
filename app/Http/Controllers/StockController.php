@@ -99,66 +99,6 @@ class StockController extends Controller
         }
 
     }
-    public function store_technical_fiche(Request $request) :JsonResponse
-    {
-        $request->validate([
-            "itemID" => ["required"],
-            "productID"=> ["required"],
-            "quantity"=> ["required"]
-        ],
-        [
-            "itemID.required"   => "menu item is required",
-            "productID.required"  => "product is required",
-            "quantity.required" => "quantity field is required"
-        ]);
-
-        $itemID = $request->itemID;
-        $productID = $request->productID;
-        $quantity = $request->quantity;
-        try{
-            DB::beginTransaction();
-                $item_exist = Technicalfiche::where('itemID', $itemID)
-                    ->first();
-
-                if (isset($item_exist)){
-                    return response()->json("Technical fiche already exist", 400);
-                }
-
-                foreach ($productID as $key => $value):
-                    $stock = StockEntry::where('productID', $value)->first();
-
-                    if (!$stock) {
-                        return response()->json("Product dont have cost saved", 400);
-                    }
-                    $product = Product::where('id', $value)->first();
-
-                        if ($product->prod_unmed != "bt"):
-                            $qty = $quantity[$key];
-                            $fiche = new Technicalfiche();
-                            $fiche->itemID = $itemID;
-                            $fiche->productID = $value;
-                            $fiche->quantity = $qty;
-                            $fiche->cost = ($qty * $stock->unitCost) / $product->prod_contain;
-                            $fiche->save();
-                        else:
-                            $qty = $quantity[$key];
-                            $fiche = new Technicalfiche();
-                            $fiche->itemID = $itemID;
-                            $fiche->productID = $value;
-                            $fiche->quantity = $qty;
-                            $fiche->cost = $stock->unitCost;
-                            $fiche->save();
-                        endif;
-                endforeach;
-            DB::commit();
-                return response()
-                    ->json("Technical fiche created successfully", 200);
-
-        }catch(Exception $e){
-            DB::rollBack();
-            return response()->json("Action can't be completed", 422);
-        }
-    }
 
     public function get_stock_stat(): JsonResponse
     {
@@ -221,47 +161,6 @@ class StockController extends Controller
             ->json($fiche);
     }
 
-    public function Update_technical_fiche(Request $request)
-    {
-        /*
-        $request->validate([
-            'productID' => ['required'],
-            'itemID' => ['required'],
-            'quantity' => ['required']
-        ]);
-        $productID = $request->productID;
-        $quantity = $request->quantity;
-        $itemID = $request->itemID;
-
-        foreach ($productID as $key => $value):
-            $product = Product::where('id', $value)
-                ->first();
-
-            $cost = StockEntry::where('productID', $value)
-                ->first();
-
-            if ($product->prod_unmed != "bt"):
-                DB::table('technicalfiches')
-                    ->where([['itemID', $itemID],['productID', $value]])
-                        ->update([
-                            'quantity' => $quantity[$key],
-                            'cost' => ($quantity[$key] * $cost->unitCost) / $product->prod_contain
-                        ]);
-                return response()
-                    ->json("Action commited successffuly");
-            endif;
-            DB::table('technicalfiches')
-                ->where([['itemID', $itemID],['productID', $value]])
-                    ->update([
-                        'quantity' => $quantity[$key],
-                        'cost' => $cost->unitCost
-                    ]);
-        endforeach;
-
-        return response()
-            ->json("Action commited successffuly");
-        //DB::table('technicalfiches')*/
-    }
 
     public function get_inventory(): JsonResponse
     {

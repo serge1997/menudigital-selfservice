@@ -42,6 +42,15 @@ class TechnicalFicheController extends Controller
             return response()->json($e->getMessage()." ".$e->getLine()." ".$e->getFile(), 500);
         }
     }
+
+    public function showAction($id): JsonResponse
+    {
+        try{
+            return response()->json($this->technicalFicheRepositoryInterface->show($id));
+        }catch(Exception $e){
+            return response()->json($e->getMessage());
+        }
+    }
     public function addNewItemToItemFicheAction(Request $request)
     {
         try {
