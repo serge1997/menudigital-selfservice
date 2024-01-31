@@ -3,6 +3,7 @@ namespace App\Main\Order;
 
 use App\Models\Pedido;
 use App\Models\ItensPedido;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use App\Models\PaiementType;
@@ -10,14 +11,30 @@ use App\Http\Services\UserInstance;
 use App\Models\Menuitems;
 use App\Models\Role;
 use App\Http\Services\Stock\StockServiceRepository;
+use App\Main\User\UserRepositoryInterface;
+use App\Main\TechnicalFiche\TechnicalFicheRepositoryInterface;
 use App\Http\Services\Util\Util;
 use App\Models\Cart;
+use App\Models\OrderStatus;
+use App\Events\CancelOrder;
+use App\Models\Saldo;
 use Exception;
+use Illuminate\Support\Facades\Hash;
 
 class OrderRepository implements OrderRepositoryInterface
 {
     public array $Order_item_ids = [];
     public array $Order_item_quantitys = [];
+    protected UserRepositoryInterface $userRepositoryInterface;
+    protected TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface;
+
+    public function __construct(
+        UserRepositoryInterface $userRepositoryInterface,
+        TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface
+    ){
+        $this->userRepositoryInterface = $userRepositoryInterface;
+        $this->technicalFicheRepositoryInterface = $technicalFicheRepositoryInterface;
+    }
 
     public function getOrders(): Collection
     {
@@ -142,7 +159,7 @@ class OrderRepository implements OrderRepositoryInterface
                 if (isset($item)):
                     $totalQuantity = $item->item_quantidade + $quantity;
                     DB::table('itens_pedido')
-                        ->where([['item_pedido', $orderID], ['item_id', $itemID]])
+                        ->where([['item_pedido', $orderID], ['item_id', $itemID], ['item_quantidade', '>=', 1]])
                         ->update([
                             'item_quantidade' => $totalQuantity,
                             'item_total' => $menuitem->item_price * $totalQuantity
@@ -343,4 +360,71 @@ class OrderRepository implements OrderRepositoryInterface
             'valcanceled' => $itemCanceled
         ];
     }
+
+    public function returnItem($item_id, $quantidade): void
+    {
+        $fiches = $this->technicalFicheRepositoryInterface->findByItemId($item_id);
+        foreach ($fiches as $fiche) {
+            $saldo = Saldo::where('productID', $fiche['productID'])->first();
+            //var_dump($saldo->saldoFinal + ($fiche['quantity'] * $quantidade)); die;
+
+            Saldo::where('productID', $fiche['productID'])
+                ->update([
+                    'saldoFinal' => $saldo->saldoFinal + ($fiche['quantity'] * $quantidade)
+                ]);
+        }
+
+    }
+
+
+    public function cancelOrderItem($request)
+    {
+        $item_pedido = $request->item_pedido;
+        $item_id = $request->item_id;
+        $password = $request->password;
+        $item_quantidade = $request->quantidade;
+        $to_return = $request->to_return;
+
+        $password = User::where('position_id', User::GERENTE)->first();
+        $item = ItensPedido::where([['item_pedido', $item_pedido], ['item_id', $item_id], ['item_quantidade', '>=', 1]])
+                ->first();
+
+        if (Hash::check($request->password, $password->password)):
+            if ($item_quantidade == $item->item_quantidade):
+                DB::table('itens_pedido')
+                    ->where('item_pedido', $item_pedido)
+                        ->where('item_id', $item_id)
+                            ->update([
+                                'item_delete'=> true,
+                                'item_quantidade' => $item->item_quantidade * (-1),
+                                'item_total' => $item->item_total * 0
+                            ]);
+            else:
+                DB::table('itens_pedido')
+                    ->where([['item_pedido', $item_pedido], ['item_id', $item_id], ['item_quantidade', '>=', 1]])
+                        ->update([
+                            'item_quantidade' => $item->item_quantidade - $item_quantidade,
+                            'item_total' => $item->item_total - ($item_quantidade * $item->item_price)
+                        ]);
+
+                $AddCanceledItem = new ItensPedido();
+                $AddCanceledItem->item_pedido = $item_pedido;
+                $AddCanceledItem->item_id = $item_id;
+                $AddCanceledItem->item_quantidade = $item_quantidade * (-1);
+                $AddCanceledItem->item_total = $item->item_total * 0;
+                $AddCanceledItem->item_delete = true;
+                $AddCanceledItem->item_price = $item->item_price;
+                $AddCanceledItem->item_emissao = $item->item_emissao;
+                $AddCanceledItem->item_option = $item->item_option;
+                $AddCanceledItem->save();
+            endif;
+            event(new CancelOrder($item));
+            if ($to_return){
+                $this->returnItem($item_id, $item_quantidade);
+            }
+            return;
+        endif;
+        throw new Exception("Senha invalida");
+    }
+
 }

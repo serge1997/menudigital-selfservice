@@ -123,6 +123,13 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         );
     }
 
+    public function findFicheByItemId($id): Collection
+    {
+        return new Collection(
+            Technicalfiche::where('itemID', $id)->get()
+        );
+    }
+
     public function beforeSaveItem($item_id)
     {
         if (Technicalfiche::where('itemID', $item_id)->exists()){

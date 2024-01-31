@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <div class="w-100">
+        <div class="w-100" id="add-card-container">
             <input type="hidden" :value="id" id="order-id">
             <transition>
             <div id="post-new-item-card" v-if="newOrderItem.iteminfo" class="w-75 m-auto border d-flex justify-content-between align-items-center">
@@ -27,7 +27,7 @@
                     <button @click="postNewOrderItem" class="btn text-uppercase">ok</button>
                 </div>
             </div>
-        </transition>
+            </transition>
        </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
@@ -170,6 +170,8 @@ export default {
         },
 
         addToOrder(id) {
+            let cartDiv = document.getElementById('add-card-container');
+            cartDiv.style.display = 'block'; //('show-new-item-card')
             axios.get('/api/menu-items/' + id, this.addorder).then((response) => {
                 //this.newOrderItem.orderinfo = response.data.order
                 this.newOrderItem.iteminfo = response.data
@@ -197,11 +199,11 @@ export default {
         },
 
         postNewOrderItem(){
-            let cartDiv = document.querySelector('#post-new-item-card');
+            let cartDiv = document.getElementById('add-card-container');
             this.addItemToOrder.itemID = document.getElementById('item-id').value;
             this.addItemToOrder.orderID = document.getElementById('order-id').value;
+            cartDiv.style.display = 'none'
             axios.post('/api/new-item', this.addItemToOrder).then((response) => {
-                console.log(this.addItemToOrder.itemID)
                 this.$toast.success(response.data);
             }).catch((errors) => {
                 console.log(errors)
@@ -276,5 +278,12 @@ export default {
 .v-enter-from,
 .v-leave-to {
     opacity: 0;
+}
+.hide-new-item-card {
+    display: none;
+    width: 0px;
+}
+.show-new-item-card {
+    display: block;
 }
 </style>

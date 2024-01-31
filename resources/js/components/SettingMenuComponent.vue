@@ -322,6 +322,11 @@ export default {
                 console.log(response.data);
             })
         },
+        stockCureentlyCheck(){
+            axios.put("/api/current/stock-rest").then((response) => {
+                console.log(response);
+            })
+        }
     },
 
     mounted(){
@@ -332,6 +337,7 @@ export default {
             console.log(errors)
         });
         this.getItem();
+        this.stockCureentlyCheck();
 
 
     }

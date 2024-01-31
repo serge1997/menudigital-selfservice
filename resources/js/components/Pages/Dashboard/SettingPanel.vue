@@ -107,10 +107,10 @@
                                     <tr v-for="fiche in showfiche">
                                         <td>{{ fiche.prod_name }}</td>
                                         <td>{{ fiche.quantity + '  ' + fiche.prod_unmed}}</td>
-                                        <td>{{fiche.cost + ' ' + 'R$' }}</td>
-                                        <td>{{ fiche.loss_margin }} <small>R$</small></td>
-                                        <td>{{ fiche.fix_margin }} </td>
-                                        <td>{{ fiche.variable_margin }} </td>
+                                        <td>{{fiche.cost }} <span class="real-symbol">R$</span></td>
+                                        <td>{{ fiche.loss_margin }} <span class="real-symbol">R$</span></td>
+                                        <td>{{ fiche.fix_margin }} <span class="real-symbol">R$</span></td>
+                                        <td>{{ fiche.variable_margin }} <span class="real-symbol">R$</span></td>
                                         <th class="fw-medium"><Badge :value="fiche.total + ' R$'" /></th>
                                     </tr>
                                 </tbody>
@@ -118,10 +118,10 @@
                                     <tr>
                                         <th colspan="1" class="fw-medium">Total</th>
                                         <th colspan="1" class="fw-medium">{{ totalContain }} Cl</th>
-                                        <th colspan="1" class="fw-medium">{{ costData.productTotalcost }} R$</th>
-                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} R$</th>
-                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} R$</th>
-                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} R$</th>
+                                        <th colspan="1" class="fw-medium">{{ costData.productTotalcost }} <span class="real-symbol">R$</span></th>
+                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} <span class="real-symbol">R$</span></th>
+                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} <span class="real-symbol">R$</span></th>
+                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} <span class="real-symbol">R$</span></th>
                                         <th colspan="1" class="fw-medium"><Badge severity="success" :value="totalCost + ' R$'" /></th>
                                     </tr>
                                 </tfoot>
@@ -357,5 +357,8 @@ export default{
 <style scoped>
     .bg-fiche{
         background-color: #f2f2f2;
+    }
+    .real-symbol{
+        font-size: 13px;
     }
 </style>

@@ -13,6 +13,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    CONST GERENTE = 1;
+    CONST CHEF_COZINHA = 2;
+    CONST CHEF_BAR = 3;
+    CONST COMI_COZINHA = 4;
+    CONST BARMAN = 5;
+    CONST GARCOM = 6;
+    CONST RESPONSAVEL_SALA = 7;
+
     /**
      * The attributes that are mass assignable.
      *

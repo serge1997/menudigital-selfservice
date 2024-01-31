@@ -5,10 +5,12 @@ use App\Models\User;
 use App\Traits\Permission;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Collection;
 
 class UserRepository implements UserRepositoryInterface
 {
     use Permission { autth as protected; }
+
     public function create($request)
     {
 
@@ -21,5 +23,12 @@ class UserRepository implements UserRepositoryInterface
             return;
         }
         throw new Exception("Você não tem permissão");
+    }
+
+    public function findGerente(): Collection
+    {
+        return new Collection (
+            User::where('position_id', User::GERENTE)->first()
+        );
     }
 }

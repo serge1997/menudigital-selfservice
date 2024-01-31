@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Main\Order\OrderRepositoryInterface;
 use App\Main\OrderStatus\OrderStatusRepositoryInterface;
-use Mockery\Exception;
+use Exception;
 
 
 class OrderController extends Controller
@@ -23,7 +23,6 @@ class OrderController extends Controller
 
     public function OperadorOrderList(OrderStatusRepositoryInterface $orderStatusRepositoryInterface): JsonResponse
     {
-
         try {
 
             $orderListResponse = $this->orderRepositotyInterface->getOrders();
@@ -50,7 +49,7 @@ class OrderController extends Controller
             return response()->json($message);
 
         }catch (Exception $e){
-            return \response()->json($e->getMessage());
+            return \response()->json($e->getMessage(), 500);
         }
     }
 
@@ -138,8 +137,8 @@ class OrderController extends Controller
      public function getOrderReportAction(): JsonResponse
      {
         try {
-            $apiReportResponse = $this->orderRepositotyInterface->getOrdersReport();
 
+            $apiReportResponse = $this->orderRepositotyInterface->getOrdersReport();
             return response()->json([
                 'report' => $apiReportResponse["report"],
                 'paiment' => $apiReportResponse["paiment"],
@@ -147,6 +146,18 @@ class OrderController extends Controller
             ]);
         }catch(Exception $e){
             return response()->json($e->getMessage());
+        }
+     }
+
+     public function cancelOrderItemAction(Request $request): JsonResponse
+     {
+        try{
+
+            $message = "Item cancelado com sucesso";
+            $this->orderRepositotyInterface->cancelOrderItem($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
         }
      }
 }

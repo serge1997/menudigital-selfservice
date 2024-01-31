@@ -65,6 +65,7 @@ Route::controller(OrderController::class)->group(function() {
     Route::get('order-transfert-itens/{id}', 'listOrderTransfertItens');
     Route::post('order-transert-itens', 'createOrderTransfertAction');
     Route::get('order-itens-report', 'getOrderReportAction');
+    Route::post('cancel/order-item', 'cancelOrderItemAction');
 });
 
 //BI
@@ -81,7 +82,7 @@ Route::controller(UserController::class)->group(function() {
     Route::post('login', 'login');
     Route::post('logout', 'logout')->middleware('auth:sanctum');
     //Route::get('user-token','currentUser');
-    Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
+    //Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
     Route::post('cancel-order', 'cancelOrder');
     Route::post('/edit-order/stat/{item_pedido}', 'EditOrderStat');
     Route::get('get/employee', 'getEmployee');

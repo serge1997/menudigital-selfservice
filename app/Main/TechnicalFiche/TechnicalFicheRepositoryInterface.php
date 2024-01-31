@@ -15,4 +15,5 @@ interface TechnicalFicheRepositoryInterface
     public function beforeSave($item_id, $product_id);
     public function deleteProductFromItemFiche($request, $item_id, $product_id): void;
     public function editProductQuantity($request): void;
+    public function findFicheByItemId($id): Collection;
 }

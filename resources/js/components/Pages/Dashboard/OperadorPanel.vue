@@ -171,9 +171,13 @@
                         <div class="modal-body">
                             <p class="fs-5">Manager Password needed</p>
                             <div>
-                                <form @submit.prevent="CancelBill">
+                                <form @submit.prevent="cancelOrderItem">
                                     <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
                                     <input class="form-control rounded-0 border-secondary mt-2" type="text" v-model="cancel.quantidade" placeholder="Quantidade">
+                                    <div class="form-check form-switch mt-3">
+                                        <input class="form-check-input border border-secondary" type="checkbox" id="flexSwitchCheckDefault" v-model="cancel.to_return">
+                                        <label class="form-check-label fw-medium" for="flexSwitchCheckDefault">Com retorno em estoque ?</label>
+                                    </div>
                                     <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
                                 </form>
                             </div>
@@ -303,7 +307,8 @@ export default {
             cancel: {
                 password: null,
                 quantidade: null,
-                orderID: null
+                orderID: null,
+                to_return: false,
             },
             cancelOrderID: null,
             item_id: null,
@@ -397,14 +402,22 @@ export default {
            this.cancel.orderID = id;
         },
 
-        CancelBill(){
-            axios.post(`/api/cancel/order-item/${this.item_pedido}/${this.item_id}`, this.cancel).then((response) => {
+        cancelOrderItem(){
+            const cancelData = {
+                item_pedido: this.item_pedido,
+                item_id: this.item_id,
+                password: this.cancel.password,
+                quantidade: this.cancel.quantidade,
+                to_return: this.cancel.to_return,
+            }
+            axios.post(`/api/cancel/order-item`, cancelData).then((response) => {
                 this.$toast.success(response.data)
                 console.log(response.data)
                 this.cancel.password = "";
                 this.cancel.quantidade = "";
+                this.cancel.to_return = false;
             }).catch((errors) => {
-                console.log(errors)
+                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
             })
         },
 
