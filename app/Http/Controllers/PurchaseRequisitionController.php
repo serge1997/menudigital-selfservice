@@ -155,7 +155,7 @@ class PurchaseRequisitionController extends Controller
         $requisition = DB::table('itens_requisitions')
             ->select(
                 DB::raw('MAX(stock_entries.emissao) as emissao'),
-                'stock_entries.unitCost',
+                DB::raw('MAX(stock_entries.unitCost) as unitCost'),
                 'itens_requisitions.product_id',
                 'suppliers.sup_name',
                 'itens_requisitions.requisition_id',
@@ -170,7 +170,7 @@ class PurchaseRequisitionController extends Controller
                         ->join('suppliers', 'products.prod_supplierID', '=', 'suppliers.id')
                             ->where('itens_requisitions.requisition_code', $code)
                                 ->groupBy(
-                                    'stock_entries.unitCost',
+                                    //'stock_entries.unitCost',
                                     'itens_requisitions.product_id',
                                     'suppliers.sup_name',
                                     'itens_requisitions.requisition_id',

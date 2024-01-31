@@ -11,6 +11,7 @@ use App\Models\StockEntry;
 use App\Models\Product;
 use App\Models\Saldo;
 use App\Models\Technicalfiche;
+use App\Main\Stock\StockRepositoryInterface;
 use DateTime;
 use Exception;
 use App\Http\Services\Stock\StockServiceRepository;
@@ -23,12 +24,25 @@ class StockController extends Controller
     protected $supplier;
     protected $stockEntry;
     protected $product;
+    protected StockRepositoryInterface $stockRepositoryInterface;
 
-    public function __construct()
+    public function __construct(StockRepositoryInterface $stockRepositoryInterface)
     {
         $this->supplier = new Supplier();
         $this->product = new Product();
+        $this->stockRepositoryInterface = $stockRepositoryInterface;
     }
+
+    public function filterDataTableAction(Request $request): JsonResponse
+    {
+        try{
+            $stockDataTableFilter = $this->stockRepositoryInterface->filterDataTable($request);
+            return response()->json($stockDataTableFilter);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
     public function storeStockEntry(StockEntryRequest $request, StockServiceRepository $service, RequisitionRepository $requisition) :JsonResponse
     {
 

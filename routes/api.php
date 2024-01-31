@@ -103,6 +103,7 @@ Route::controller(StockController::class)->group(function() {
     Route::get('inventory', 'get_inventory');
     Route::put('reset-saldo', 'resetSaldo');
     Route::put("current/stock-rest", "cureentSaldoCheck");
+    Route::get('stock-search', 'filterDataTableAction');
 });
 
 //produto

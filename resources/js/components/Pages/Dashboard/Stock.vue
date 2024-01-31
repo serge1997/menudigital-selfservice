@@ -17,11 +17,19 @@
             <StockEntryComponent />
             <SupplierComponent />
         </div>
-        <DataTable ref="dt" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row">
+        <DataTable ref="dt" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row" :globalFilterFields="['prod_name',]">
             <div class="position-absolute" :class="{ 'place': placeh}"></div>
             <template #header>
-                <div style="text-align: left">
-                    <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                <div class="d-flex justify-content-between">
+                    <div style="text-align: left">
+                        <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search" />
+                            <InputText v-model="search_param" placeholder="produto, fornecedor" @input="filterDataTable" />
+                        </span>
+                    </div>
                 </div>
             </template>
             <Column field="productID" sortable style="width: 10%" exportHeader="Product Code" header="Code"></Column>
@@ -125,6 +133,7 @@ export default {
             placeh: true,
             product_edit: null,
             suppliers: null,
+            search_param: null,
             product:{
                 id: null,
                 prod_desc: null,
@@ -145,6 +154,7 @@ export default {
 
     methods: {
         get_stock_stat(){
+           if (this.search_param == null){
             return new Promise((resolve, reject) => {
                 setTimeout(() =>{
                     axios.get('/api/products-stat').then((response) => {
@@ -156,6 +166,7 @@ export default {
                     })
                 }, 3000)
             })
+           }
         },
 
         convertToCSV(objArray) {
@@ -249,14 +260,20 @@ export default {
                     })
                 }
             })
-        }
+        },
+
+        filterDataTable(){
+            this.axios.get('/api/stock-search/', {params: {search_param: this.search_param}}).then((response) => {
+                this.products = response.data
+            })
+        },
     },
 
     async mounted(){
         await this.get_stock_stat();
         let response = await axios.get('/api/supplier')
         this.suppliers = await response.data;
-
+        this.setSeverity(id);
     }
 }
 
