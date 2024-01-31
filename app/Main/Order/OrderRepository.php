@@ -427,4 +427,21 @@ class OrderRepository implements OrderRepositoryInterface
         throw new Exception("Senha invalida");
     }
 
+    public function cancelOrder($request)
+    {
+        $password = User::where('id', User::GERENTE)
+            ->first();
+
+        if (Hash::check($request->password, $password->password)):
+            DB::table('pedidos')
+                ->where('id', $request->orderID)
+                    ->update([
+                        'ped_delete' => 1,
+                        'status_id' => 5
+                    ]);
+            return;
+        endif;
+        throw new Exception("Senha invalida ");
+    }
+
 }

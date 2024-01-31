@@ -160,4 +160,15 @@ class OrderController extends Controller
             return response()->json($e->getMessage(), 500);
         }
      }
+
+     public function cancelOrderAction(Request $request): JsonResponse
+     {
+        try{
+            $message = "Pedido cancelado com sucesso";
+            $this->orderRepositotyInterface->cancelOrder($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+     }
 }

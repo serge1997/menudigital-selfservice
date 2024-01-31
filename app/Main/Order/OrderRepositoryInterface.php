@@ -15,5 +15,6 @@ interface OrderRepositoryInterface
     public function createTransertItensAction($request);
     public function getOrdersReport();
     public function cancelOrderItem($request);
+    public function cancelOrder($request);
     public function returnItem($item_id, $quantidade): void;
 }

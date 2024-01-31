@@ -16,7 +16,11 @@
                     </router-link>
                     <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Home' }">
                         <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
-                        <span class="text-center fw-medium text-capitalize">New order</span>
+                        <span class="text-center fw-medium text-capitalize">Novo pedido</span>
+                    </router-link>
+                    <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Reservation' }">
+                        <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
+                        <span class="text-center fw-medium text-capitalize">Reservação</span>
                     </router-link>
                 </div>
                 <div class="py-4 col-lg-10 col-md-12 d-flex flex-column justify-content-center">

@@ -422,11 +422,11 @@ export default {
         },
 
         CancelOrder(){
-           axios.post('/api/cancel-order', this.cancel).then((response) => {
-               console.log(response.data)
+           axios.put('/api/cancel-order', this.cancel).then((response) => {
                this.$toast.success(response.data)
+               return this.getOrder();
            }).catch((errors) => {
-               console.log(errors)
+               errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null;
            })
         },
 
