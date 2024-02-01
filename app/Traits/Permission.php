@@ -30,4 +30,19 @@ trait Permission
     {
         return UserRole::where([['user_id', $this->autth($request)], ['role_id', Role::CAN_CANCEL_ORDER]])->exists();
     }
+
+    public function can_take_order($request): bool
+    {
+        return UserRole::where([['user_id', $this->autth($request)], ['role_id', Role::CAN_TAKE_ORDER]])->exists();
+    }
+
+    public function can_delete_user($request): bool
+    {
+        return UserRole::where([['user_id', $this->autth($request)], ['role_id', Role::CAN_DELETE_USER]])->exists();
+    }
+
+    public function can_cange_paiement_method($request): bool
+    {
+        return UserRole::where([['user_id', $this->autth($request)], ['role_id', Role::CAN_CHANGE_PAIEMENT_METHOD]])->exists();
+    }
 }

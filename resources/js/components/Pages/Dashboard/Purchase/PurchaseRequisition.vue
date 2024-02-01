@@ -88,7 +88,7 @@
 import SideBarComponent from "../SideBarComponent.vue";
 import PurchaseRequisitionEdition from "./PurchaseRequisitionEdition.vue";
 import ShowRequisition from "./ShowRequisition.vue";
-import authuser from "./../../auth.js";
+import {getAuth} from "./../../auth.js";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
 import Dialog from "primevue/dialog";
@@ -221,17 +221,16 @@ export default {
           this.departments = await departmentResponse.data.departments
       }
     },
-    async mounted(){
-        await this.index();
-        await this.loadProducts();
-        await this.loadDepartments();
+    mounted(){
+        this.index();
+        this.loadProducts();
+        this.loadDepartments();
 
-        let auth = await authuser
-        this.user.name = await auth.name;
-        this.purchaseData.user_id = auth.id;
-        if (auth.department_id == this.user.department_id){
-            this.showActionIcon = true;
-        }
+        getAuth().then(result => {
+            if (result.department_id == this.user.department_id){
+                this.showActionIcon = true;
+            }
+        });
     }
 }
 </script>

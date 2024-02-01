@@ -82,7 +82,7 @@
 <script>
 import _ from 'lodash'
 import MenuComponent from './MenuComponent.vue';
-import authuser from "./auth.js";
+import { getAuth } from "./auth.js";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
@@ -170,7 +170,9 @@ export default {
 
     mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-        authuser.then(result => {this.username = result.name})
+        getAuth().then(result => {
+            this.username = result.name
+        });
     }
 }
 

@@ -72,7 +72,7 @@ import Chip from "primevue/chip";
 import axios from "axios";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
-import authuser from "@/components/Pages/auth.js";
+import { getAuth } from "@/components/Pages/auth.js";
 import RadioButton from "primevue/radiobutton";
 export default {
     name: 'CartSideBarComponent',
@@ -169,7 +169,9 @@ export default {
     },
     async mounted() {
         this.getCartItem()
-        await authuser.then(user => this.cart.user_id = user.id)
+        getAuth().then(result => {
+            this.cart.user_id = result.id
+        });
 
     }
 }

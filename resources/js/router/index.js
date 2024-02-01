@@ -20,7 +20,8 @@ import EmployeePlanning from "../components/Pages/Dashboard/EmployeePlanning.vue
 import Reservation from '../components/Pages/Dashboard/Reservation/Reservation.vue'
 
 
-
+const stock_permission = [1, 2, 3, 5, 7, 8, 4];
+const bi_permission = [1];
 
 const routes = [
 
@@ -91,7 +92,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
 
-                if (response.data.department_id !== 1){
+                if (!bi_permission.includes(response.data.position_id)){
                     next('/home')
                 }else{
                     next()
@@ -167,7 +168,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
 
-                if (response.data.department_id !== 1 && response.data.position_id !== 4 && response.data.position_id !== 5){
+                if (!stock_permission.includes(response.data.position_id)){
                     next('/home')
                 }else{
                     next()

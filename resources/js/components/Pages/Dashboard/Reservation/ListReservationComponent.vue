@@ -152,7 +152,7 @@ import Chip from "primevue/chip";
 import Badge from "primevue/badge";
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
-import authuser from "./../../auth.js";
+import {getAuth} from "./../../auth.js";
 import Textarea from "primevue/textarea";
 import Calendar from "primevue/calendar";
 import Tag from "primevue/tag";
@@ -267,14 +267,14 @@ export default {
             })
         }
     },
-    async mounted(){
-        let dt = '000';
-        authuser.then((result) => {
+    mounted(){
+        getAuth().then(result => {
+            // this.username = result.name
+            // this.position.includes(result.position_id) ? this.is_toShow = true : null
             if (result.department_id == this.auth.adm){
                 this.auth.showActions = true
             }
-        })
-        console.log(authuser)
+        });
     }
 }
 </script>

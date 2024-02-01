@@ -9,8 +9,8 @@
             <small class="text-white"><i>Mais que um sabor</i></small>
         </div>
         <div class="w-100 mt-5">
-            <div class="d-flex justify-content-center m-auto mb-4">
-                <button type="button" class="nav-link fs-5 text-uppercase px-4 py-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            <div class="col-md-4 d-flex justify-content-center m-auto mb-4">
+                <button type="button" class="col-md-4 nav-link px-4 py-1" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                     Menu
                 </button>
                 <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -38,13 +38,13 @@
                 </div>
             </div>
             </div>
-            <div class="d-flex justify-content-center m-auto">
-                <router-link class="nav-link fs-5 text-uppercase px-4 py-1" to="">
-                    segue
-                </router-link>
+            <div class="col-md-4 d-flex justify-content-center m-auto">
+                <button class="col-md-4 nav-link rounded-0 px-4 py-1" @click.prevent="$router.push({name: 'Garcom'})">
+                    Dashboard
+                </button>
             </div>
-            <div class="d-flex justify-content-center m-auto mt-3">
-                <button class="nav-link px-4 py-1" @click.prevent="logout">
+            <div class="col-md-4 d-flex justify-content-center m-auto mt-3">
+                <button class="col-md-4 px-4 py-1" @click.prevent="logout">
                     Logout
                 </button>
             </div>

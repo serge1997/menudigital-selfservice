@@ -12,7 +12,7 @@
                 </div>
                 <div class="w-100 d-flex flex-column justify-content-between">
                     <ul class="list-group w-100 mt-4">
-                        <li class="list-group-item rounded-0 border-0">
+                        <li v-if="is_toShow" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{name: 'OperadorPanel'}">
                             <span class="pi pi-dollar"></span>
                                 Caixa
@@ -24,7 +24,7 @@
                                 Waiter
                             </router-link>
                         </li>
-                        <li class="list-group-item border-0 rounded-0">
+                        <li v-if="is_toShow" class="list-group-item border-0 rounded-0">
                             <router-link class="nav-link" :to="{name: 'BusinessInteligence'}">
                             <span class="pi pi-chart-bar"></span>
                                 Business Inteligence
@@ -36,19 +36,19 @@
                             Gestão de reservação
                           </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0">
+                        <li v-if="is_toShow" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'NewItem'}">
                                 <span class="pi pi-plus"></span>
                                 New item
                             </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0">
+                        <li v-if="is_toShow" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'NewMenuType'}">
                             <span class="pi pi-plus"></span>
                                 New Menu type
                             </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0">
+                        <li v-if="is_toShow" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'Employe'}">
                             <span class="pi pi-user-plus"></span>
                                 Colaborador
@@ -60,19 +60,19 @@
                             Escala
                           </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0 border-top">
+                        <li v-if="stock_permission.includes(user.position_id)" class="list-group-item rounded-0 border-0 border-top">
                             <router-link class="nav-link" :to="{ name: 'Stock'}">
                             <span class="pi pi-database"></span>
                                 Stock
                             </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0 border-top">
+                        <li v-if="is_toShow" class="list-group-item rounded-0 border-0 border-top">
                             <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
                                 <span class="pi pi-cart-plus"></span>
                                 Compras
                             </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0">
+                        <li v-if="is_toShow" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'SettingPanel'}">
                             <span class="pi pi-cog"></span>
                                 Setting
@@ -91,7 +91,7 @@
 </template>
 
 <script>
-import authuser from "../auth.js";
+import { getAuth } from "../auth.js";
 import Button from 'primevue/button';
 import Sidebar from "primevue/sidebar";
 import Avatar from "primevue/avatar";
@@ -108,9 +108,16 @@ export default {
     data() {
         return {
             sidebar: true,
+            user: {
+                position_id: null
+            },
             username: null,
             visibleSidebar: false,
-            restaurant: null
+            restaurant: null,
+            position: [1, 7, 2, 8],
+            stock_permission: [1, 2, 3, 5, 7, 8, 4],
+            is_toShow: null,
+
         }
     },
 
@@ -132,9 +139,15 @@ export default {
             })
         },
     },
-    async mounted(){
+    mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-        authuser.then(result => {this.username = result.name})
+
+        getAuth().then(result => {
+            this.username = result.name;
+            this.user.position_id = result.position_id;
+            this.position.includes(result.position_id) ? this.is_toShow = true : null;
+        });
+
         axios.get('/api/rest-info').then((response) => {
             console.log(response.data)
             this.restaurant = response.data

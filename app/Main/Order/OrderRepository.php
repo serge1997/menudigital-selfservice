@@ -20,9 +20,13 @@ use App\Events\CancelOrder;
 use App\Models\Saldo;
 use Exception;
 use Illuminate\Support\Facades\Hash;
+use App\Traits\Permission;
+use App\Traits\AuthSession;
 
 class OrderRepository implements OrderRepositoryInterface
 {
+    use Permission, AuthSession;
+
     public array $Order_item_ids = [];
     public array $Order_item_quantitys = [];
     protected UserRepositoryInterface $userRepositoryInterface;
@@ -188,19 +192,15 @@ class OrderRepository implements OrderRepositoryInterface
         StockServiceRepository::SetItemSaldoZeroException($request->ped_tableNumber, $menuitem);
         $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
             ->get();
-        $auth = $request->session()->get('auth-vue');
-        foreach (UserInstance::get_user_roles($auth) as $confirm):
             if (
-                $confirm->role_id == Role::MANAGER             ||
-                $confirm->role_id == Role::CAN_TAKE_ORDER      ||
-                $confirm->role_id == Role::CAN_USE_CASHIER     ||
-                $confirm->role_id == Role::CAN_TRANSFERT_ORDER ||
-                $confirm->role_id == Role::CAN_CANCEL_ORDER
+                $this->can_manage($request) ||
+                $this->can_take_order($request) ||
+                $this->can_cashier($request)
             ):
                 $order = new Pedido();
                 $order->ped_tableNumber  = $request->ped_tableNumber;
                 $order->ped_customerName = $request->ped_customerName;
-                $order->user_id          = $auth;
+                $order->user_id          = $this->autth($request);
                 $order->ped_emissao      = Util::Today();
                 $order->status_id        = 6;
                 $order->save();
@@ -225,7 +225,6 @@ class OrderRepository implements OrderRepositoryInterface
                     ->delete();
                 return response()->json("Pedido confirmado", 200);
             endif;
-        endforeach;
         Cart::where('tableNumber', $request->ped_tableNumber)
             ->delete();
         throw new Exception("Você não tem permissão");
