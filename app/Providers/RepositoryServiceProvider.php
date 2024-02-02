@@ -27,6 +27,12 @@ use App\Main\User\UserRepositoryInterface;
 use App\Main\User\UserRepository;
 use App\Main\Restaurant\RestaurantRepositoryInterface;
 use App\Main\Restaurant\RestaurantRepository;
+use App\Main\Role\RoleRepositoryInterface;
+use App\Main\Role\RoleRepository;
+use App\Main\UserRole\UserRoleRepositoryInterface;
+use App\Main\UserRole\UserRoleRepository;
+use App\Main\Department\DepartmentRepositoryInterface;
+use App\Main\Department\DepartmentRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -48,6 +54,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReservationRepositoryInterface::class, ReservationRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
         $this->app->bind(RestaurantRepositoryInterface::class, RestaurantRepository::class);
+        $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
+        $this->app->bind(UserRoleRepositoryInterface::class, UserRoleRepository::class);
+        $this->app->bind(DepartmentRepositoryInterface::class, DepartmentRepository::class);
     }
 
     /**

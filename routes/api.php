@@ -17,6 +17,9 @@ use App\Http\Controllers\TableController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\TechnicalFicheController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\PositionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -86,9 +89,9 @@ Route::controller(UserController::class)->group(function() {
     //Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
     // Route::post('cancel-order', 'cancelOrder');
     Route::post('/edit-order/stat/{item_pedido}', 'EditOrderStat');
-    Route::get('get/employee', 'getEmployee');
-    Route::get('get/employee/{id}', 'getToUpdateEmployee');
-    Route::delete('employee/{id}', 'ToDeleteEmployee');
+    Route::get('users', 'listAllAction');
+    //Route::get('get/employee/{id}', 'getToUpdateEmployee');
+    Route::delete('employee/{id}', 'deleteAction');
     Route::put('employee-status/{id}/{group_id}', 'updateEmployeeStatus');
     Route::post('employee/update','EmployeeUpdate');
 });
@@ -117,6 +120,7 @@ Route::controller(ProductController::class)->group(function(){
 
 Route::controller(UserRoleController::class)->group(function() {
     Route::get('rules', 'get_all_rules');
+    Route::get('user-roles/{id}', 'listUserRoles');
     Route::post('role-delete/{id}', 'delete_user_role');
     Route::post('role/{id}', 'store_user_role');
 });
@@ -181,4 +185,16 @@ Route::controller(ReservationController::class)->group(function() {
     Route::get('reservation/{id}', 'findById');
     Route::delete('reservation/{id}', 'deleteAction');
     Route::put('reservation', 'updateAction');
+});
+
+Route::controller(RoleController::class)->group(function() {
+    Route::get('roles', 'listAll');
+});
+
+Route::controller(DepartmentController::class)->group(function() {
+
+});
+
+Route::controller(PositionController::class)->group(function() {
+
 });

@@ -144,7 +144,7 @@ export default {
 
     methods: {
         getEmployee(){
-            axios.get('/api/get/employee').then((res) => {
+            axios.get('/api/users').then((res) => {
                 this.employes = res.data
                 console.log(res.data)
             }).catch((err) => {
@@ -160,7 +160,7 @@ export default {
             this.ShowForm = true
             return new Promise(() => {
                 setTimeout(() => {
-                    axios.get(`/api/get/employee/${id}`).then((res) => {
+                    axios.get(`/api/user-roles/${id}`).then((res) => {
                         console.log(res.data)
                         this.userForEdit = res.data.employee
                         this.user_roles = res.data.withroles
@@ -174,11 +174,9 @@ export default {
 
         ToDeleteEmployee(id) {
             this.$swal.fire({
-                title: "Quer realmente apagar o usuario ?",
-                text: "Não irá ter mais acesso aos informações e serviço desse colaborador. No caso de recuperação, entre em contato con o fornecedor do aplicativo.",
+                icon: "question",
+                text: "está sendo deletando um colaborador. clique em ok para continuar",
                 showCancelButton: true,
-                confirmButtonColor: '#e63958',
-                confirmButtonText: 'Deletar colaborador',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -189,8 +187,9 @@ export default {
 
                         })
                         return this.getEmployee()
-                    }).catch((err) => {
-                        console.log(err)
+                    }).catch((errors) => {
+                        console.log(errors)
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
                     })
 
                 }

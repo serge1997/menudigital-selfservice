@@ -7,11 +7,26 @@ use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Services\UserRoleInstance;
-use App\Http\Services\UserInstance;
+use App\Main\UserRole\UserRoleRepositoryInterface;
+use App\Main\User\UserRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
-class UserRoleController extends UserRoleInstance
+
+
+class UserRoleController extends Controller
 {
+    protected UserRoleRepositoryInterface $userRoleRepositoryInterface;
+    protected UserRepositoryInterface $userRepositoryInterface;
+
+    public function __construct(
+        UserRoleRepositoryInterface $userRoleRepositoryInterface,
+        UserRepositoryInterface $userRepositoryInterface
+    )
+    {
+        $this->userRoleRepositoryInterface = $userRoleRepositoryInterface;
+        $this->userRepositoryInterface = $userRepositoryInterface;
+    }
 
     public function get_all_rules(): JsonResponse
     {
@@ -20,43 +35,57 @@ class UserRoleController extends UserRoleInstance
 
     public function delete_user_role($id, Request $request): JsonResponse
     {
-        $auth_user = $request->session()->get('auth-vue');
-        foreach (UserInstance::get_user_roles($auth_user) as $role):
-            if ($role->role_id === Role::MANAGER):
-                DB::table('user_roles')
-                    ->where([['user_id', $request->user_id], ['role_id', $id]])
-                        ->delete();
-                return response()->json("permission deleted !", 200);
-            endif;
-        endforeach;
-        return response()->json("You don't have permission", 422);
+        try{
+            $message = "Permissão deletada com successo";
+            $this->userRoleRepositoryInterface->deleteUserRole($id, $request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
     public function store_user_role($id, Request $request): JsonResponse
     {
-       $auth_user = $request->session()->get('auth-vue');
-       foreach (UserInstance::get_user_roles($auth_user) as $role):
-           if ($role->role_id === Role::MANAGER):
-               $user_role = new UserRole();
-               $user_role->user_id = $request->user_id;
-               $user_role->role_id = $id;
-               $user_role->save();
-               return response()->json("Permission added successfully", 200);
-           endif;
-        endforeach;
-        return response()->json("You dont have permission", 422);
+        try{
+            $message = "Permissão adicionada com sucesso";
+            $this->userRoleRepositoryInterface->createUserRole($id, $request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
 
     }
 
     public static function user_with_roles($id)
     {
         $result = "
-            SELECT * FROM roles
-                LEFT JOIN user_roles
-                    ON roles.id = user_roles.role_id
-                AND user_roles.user_id = {$id}
-        ";
+             SELECT * FROM roles
+                 LEFT JOIN user_roles
+                     ON roles.id = user_roles.role_id
+                 AND user_roles.user_id = {$id}
+         ";
 
-        return DB::select($result);
+         return DB::select($result);
+    }
+
+    public function listUserRoles($id): JsonResponse
+    {
+        try{
+
+            /** @var $employee UserRepositoryInterface  */
+            $employee = $this->userRepositoryInterface->find($id);
+
+            /** @var $roles UserRoleRepositoryInterface  */
+            $roles = $this->userRoleRepositoryInterface->findRolesByUser($id);
+
+            return response()
+                ->json([
+                    'employee' => $employee,
+                    'withroles' => $roles
+                ]);
+
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 }

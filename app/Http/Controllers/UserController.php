@@ -50,7 +50,6 @@ class UserController extends Controller
     public function create(StoreUserRequest $request)
     {
 
-
         try {
 
             $message = "Usuario criado com sucesso";
@@ -122,52 +121,26 @@ class UserController extends Controller
             ->json("you haven't permission!",422);
     }
 
-    public function getEmployee(): JsonResponse
+    public function listAllAction(): JsonResponse
     {
-        $employee = DB::table("users")
-            ->select(
-                "users.id",
-                "users.name",
-                "users.email",
-                "users.tel",
-                "positions.name AS position",
-                "positions.id as position_id"
-            )
-                ->join("positions", "users.position_id", "=", "positions.id")
-                    ->where('isactive', true)
-                        ->get();
-
-        return response()->json($employee);
-    }
-
-    public function getToUpdateEmployee($id): JsonResponse
-    {
-        $employee = User::where('id', $id)->get();
-        $user_roles = UserRoleController::user_with_roles($id);
-        return response()
-            ->json([
-                'employee' => $employee,
-                'withroles' => $user_roles
-            ]);
-    }
-
-    public function ToDeleteEmployee($id, Request $request): JsonResponse
-    {
-        $user_auth = $request->session()->get('auth-vue');
-        $roles = UserInstance::get_user_roles($user_auth);
-        foreach ($roles as $delete){
-            if ($delete->role_id === Role::MANAGER):
-                DB::table('users')
-                    ->where('id', $id)
-                    ->update([
-                        'isactive' => false
-                    ]);
-                return response()
-                    ->json("Usuario deletado com sucesso");
-            endif;
+        try{
+            return response()->json($this->userRepositoryInterface->getAll());
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
         }
-        return response()
-            ->json("You don't have permission");
+    }
+
+    public function deleteAction($id, Request $request): JsonResponse
+    {
+        try{
+
+            $message = "Colaborador deletado com sucesso";
+            $this->userRepositoryInterface->delete($id, $request);
+            return response()->json($message);
+
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
 
     }
 

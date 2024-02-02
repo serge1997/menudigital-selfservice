@@ -51,5 +51,10 @@ class Util
         return $hour;
     }
 
+    public static function PermisionExceptionMessage(): string
+    {
+        return 'Vocês não tem permissão';
+    }
+
 
 }
