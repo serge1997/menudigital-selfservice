@@ -29,7 +29,7 @@ class LoginController extends Controller
             $tokenResponse = $this->loginRepositoryInterface->login($request);
             return response()->json($tokenResponse);
         }catch(Exception $e){
-            return response()->json($e->getMessage());
+            return response()->json($e->getMessage(), 500);
         }
     }
 

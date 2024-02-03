@@ -11,7 +11,7 @@ class LoginRepository implements LoginRepositoryInterface
     {
         $user = User::where([['username', $request->username], ['isactive', true]])->first();
 
-        if (!$user->username || !Hash::check($request->password, $user->password)) {
+        if (is_null($user) || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'msgerr' => ['senha ou usuario incoreto']
             ]);
