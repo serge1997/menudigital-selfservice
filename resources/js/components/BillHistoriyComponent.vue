@@ -139,12 +139,12 @@ export default {
 
     methods: {
         EditOrderStatHistory(){
-            axios.post(`/api/editorder/stat/${this.order_id}`, this.orderStat)
+            axios.put(`/api/order-history/${this.order_id}`, this.orderStat)
                 .then((response) => {
                     this.$toast.success(response.data)
                     this.orderStat.password = "";
                 }).catch((errors) => {
-                    this.$toast.error(errors.response.data)
+                    errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null;
                     console.log(errors.response.data.errors.password)
             })
         },

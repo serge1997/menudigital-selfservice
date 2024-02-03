@@ -20,6 +20,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PositionController;
+use App\Http\Controllers\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,7 +62,7 @@ Route::controller(OrderController::class)->group(function() {
     Route::post('order', 'confirmOrder');
     Route::get('orders-status', 'OperadorOrderList');
     Route::get('order-menu-itens/{id}', 'listOrderItens');
-    Route::post('order-payment/{id}/{pedido}', 'orderPayment');
+    Route::put('order-payment/{id}/{pedido}', 'orderPayment');
     Route::get('dashboard/cancel', 'getCanceledStatus');
     Route::post('new-item', 'postNewOrderItem');
     Route::get('order-history', 'getOrderHistory');
@@ -70,6 +71,7 @@ Route::controller(OrderController::class)->group(function() {
     Route::get('order-itens-report', 'getOrderReportAction');
     Route::post('cancel/order-item', 'cancelOrderItemAction');
     Route::put('cancel-order', 'cancelOrderAction');
+    Route::put('order-history/{order_id}', 'updateHistoryOrderStatusAction');
 });
 
 //BI
@@ -81,19 +83,20 @@ Route::get('waiter/stats', [BiController::class, 'waiterStat']);
 
 //User
 Route::controller(UserController::class)->group(function() {
-    Route::get('group', 'getGroup');
+    //Route::get('group', 'getGroup');
     Route::post('/create/user', 'create');
-    Route::post('login', 'login');
-    Route::post('logout', 'logout')->middleware('auth:sanctum');
+    // Route::post('login', 'login');
+    // Route::post('logout', 'logout')->middleware('auth:sanctum');
     //Route::get('user-token','currentUser');
     //Route::post('/cancel/order-item/{item_pedido}/{item_id}', 'CancelPermission');
     // Route::post('cancel-order', 'cancelOrder');
     Route::post('/edit-order/stat/{item_pedido}', 'EditOrderStat');
     Route::get('users', 'listAllAction');
+    Route::put('user', 'updateAction');
     //Route::get('get/employee/{id}', 'getToUpdateEmployee');
     Route::delete('employee/{id}', 'deleteAction');
-    Route::put('employee-status/{id}/{group_id}', 'updateEmployeeStatus');
-    Route::post('employee/update','EmployeeUpdate');
+    //Route::put('employee-status/{id}/{group_id}', 'updateEmployeeStatus');
+    //Route::post('employee/update','EmployeeUpdate');
 });
 
 //stock
@@ -192,9 +195,15 @@ Route::controller(RoleController::class)->group(function() {
 });
 
 Route::controller(DepartmentController::class)->group(function() {
-
+    Route::get('departments', 'listAllAction');
 });
 
 Route::controller(PositionController::class)->group(function() {
+    Route::get('positions', 'listAllAction');
+    Route::put('user-position/{user_id}/{position_id}', 'updateByUserAction');
+});
 
+Route::controller(LoginController::class)->group(function() {
+    Route::post('login', 'loginAction');
+    Route::post('logout', 'logoutAction')->middleware('auth:sanctum');
 });

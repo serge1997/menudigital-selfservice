@@ -11,15 +11,13 @@
                             <h6>Personal management</h6>
                             <p>personal hr</p>
                         </div>
-                        <div class="w-100 d-flex justify-content-center mt-4">
+                        <div class="w-100 d-flex justify-content-center mt-4 p-3">
                             <Button @click="$router.push({ name: 'Employe'})" label="New" icon="pi pi-plus" data-bs-dismiss="modal" />
                         </div>
+                        <div class="col-md-8 m-auto">
+                            <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
+                        </div>
                         <div v-if="ShowForm" class="w-100 edit-form mt-4">
-                            <div class="col-md-4 m-auto d-flex justify-content-lg-center">
-                                <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
-                                    <span class="visually-hidden"></span>
-                                </div>
-                            </div>
                             <div class="form w-100">
                                 <form class="d-flex flex-column justify-content-center w-100 p-2" v-for="user in userForEdit">
                                     <div class="w-75 d-flex m-auto">
@@ -37,6 +35,18 @@
                                     <div class="form-group w-100 d-flex align-items-center flex-column mt-2">
                                         <InputText type="text" class="w-75 m-auto" :value="user.email" id="user-email"/>
                                         <small class="w-75 m-auto text-danger" v-if="errMsg" v-for="msg in errMsg.user_email" v-text="msg"></small>
+                                    </div>
+                                    <div class="w-75 d-flex m-auto mt-3">
+                                        <input type="hidden" :value="user.id" id="user-id">
+                                        <div class="w-50 d-flex flex-column">
+                                            <InputText type="text" class="w-100" :value="user.username" id="user-username"/>
+                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></small>
+                                        </div>
+                                        <div class="px-2"></div>
+                                        <div class="w-50 d-flex flex-column">
+                                            <InputText type="password" class="w-100" v-model="updateEmployeeData.password" id="user-password" placeholder="nova senha"/>
+                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></small>
+                                        </div>
                                     </div>
                                     <div class="w-75 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
                                         <div v-for="roles in user_roles" class="form-check p-2 mt-1">
@@ -85,11 +95,12 @@
                                                 <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                                 </button>
                                                 <ul class="dropdown-menu p-0 rounded-0 shadow">
-                                                    <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">Poste</h6>
+                                                    <h6 class="text-capitalize fw-medium p-2">Ocupação</h6>
                                                     <div class="w-100">
                                                         <li class="w-100">
-                                                            <button v-for="position in positions" @click="updateEmployeeStatus(employee.id, position.id)" class="btn fw-medium dropdown-btn p-2 w-100 rounded-0 text-left border-bottom text-capitalize">{{ position.name }}</button>
-                                                            <button class="btn"></button>
+                                                            <button v-for="position in positions" @click="updateEmployeeStatus(employee.id, position.id)" class="btn btn-position p-2 w-100 d-flex justify-content-start rounded-0 text-capitalize">
+                                                                <span>{{ position.name }}</span>
+                                                            </button>
                                                         </li>
                                                     </div>
                                                 </ul>
@@ -110,9 +121,11 @@
 </template>
 <script>
 import axios from 'axios';
+import { randTime } from '../rand.js'
 import SearchComponent from './SearchComponent.vue';
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
+import ProgressBar from 'primevue/progressbar';
 export default {
 
     name: 'SettingPersonalComponent',
@@ -120,7 +133,8 @@ export default {
     components: {
         SearchComponent,
         Button,
-        InputText
+        InputText,
+        ProgressBar
     },
 
     data(){
@@ -129,9 +143,11 @@ export default {
             ShowForm: false,
             updateEmployeeData: {
                 user_id: null,
-                user_name: null,
-                user_email: null,
-                user_tel: null
+                name: null,
+                email: null,
+                tel: null,
+                password: null,
+                username: null
             },
             userForEdit: null,
             positions: null,
@@ -153,22 +169,19 @@ export default {
         },
 
         ShowEmployeeEditForm(id){
-            if (!this.ShowForm){
-                this.load = true
-            }
-
-            this.ShowForm = true
+            this.load = true
             return new Promise(() => {
                 setTimeout(() => {
                     axios.get(`/api/user-roles/${id}`).then((res) => {
                         console.log(res.data)
                         this.userForEdit = res.data.employee
                         this.user_roles = res.data.withroles
+                        this.ShowForm = true
                         this.load = false
                     }).catch((err) => {
                         console.log(err);
                     })
-                }, 1000)
+                }, randTime())
             })
         },
 
@@ -196,24 +209,28 @@ export default {
             })
         },
 
-        getUserGroup() {
-            axios.get('/api/group').then((response) => {
-                this.positions = response.data.positions
-            }).catch((error) => {
-                console.log(error)
-            })
+        // getUserGroup() {
+        //     axios.get('/api/group').then((response) => {
+        //         this.positions = response.data.positions
+        //     }).catch((error) => {
+        //         console.log(error)
+        //     })
+        // },
+
+        async getPositions(){
+            const position = await axios.get('/api/positions');
+            this.positions = await position.data
         },
 
-        updateEmployeeStatus(id, group_id){
+        updateEmployeeStatus(user_id, position_id){
             this.$swal.fire({
-                text: "Clique em sim para confirmar a edição da hieraquia do usuario.",
+                text: "Está sendo editando a hieraquia de um colaborador. clique em ok para continuar.",
+                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#333',
-                confirmButtonText: 'Sim',
                 cancelButtonText: 'Cancelar'
             }).then((res) => {
                 if (res.isConfirmed) {
-                    axios.put(`/api/employee-status/${id}/${group_id}`).then((response) => {
+                    axios.put(`/api/user-position/${user_id}/${position_id}`).then((response) => {
                         this.$swal.fire({
                             text: response.data,
                             icon: "success",
@@ -221,7 +238,7 @@ export default {
                         })
                         return this.getEmployee()
                     }).catch((errors) => {
-                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: "error" }): "";
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: "warning" }): "";
                     })
                 }
             })
@@ -233,18 +250,29 @@ export default {
             let name = document.getElementById('user-name').value;
             let email = document.getElementById('user-email').value;
             let tel = document.getElementById('user-tel').value;
+            let password = document.getElementById('user-password').value;
+            let username = document.getElementById('user-username').value;
 
             this.updateEmployeeData.user_id = id;
-            this.updateEmployeeData.user_email = email;
-            this.updateEmployeeData.user_name = name;
-            this.updateEmployeeData.user_tel = tel;
-
-            axios.post('/api/employee/update', this.updateEmployeeData).then((response) => {
-                this.$toast.success(response.data);
-                this.ShowForm = !this.ShowForm;
-            }).catch((errors) => {
-                this.errMsg = errors.response.data.errors;
-                this.$toast.error(errors.response.data);
+            this.updateEmployeeData.email = email;
+            this.updateEmployeeData.name = name;
+            this.updateEmployeeData.tel = tel;
+            this.updateEmployeeData.password = password ?? null;
+            this.updateEmployeeData.username = username;
+            this.load = true;
+            return new Promise (resolve => {
+                setTimeout(() => {
+                    axios.put('/api/user', this.updateEmployeeData).then((response) => {
+                        this.$toast.success(response.data);
+                        this.load = false
+                        this.updateEmployeeData = {};
+                        this.ShowForm = !this.ShowForm;
+                        resolve(true)
+                    }).catch((errors) => {
+                        this.errMsg = errors.response.data.errors;
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning' }): null;
+                    })
+                }, randTime())
             })
         },
 
@@ -302,7 +330,9 @@ export default {
 
     mounted(){
         this.getEmployee();
-        this.getUserGroup();
+        //this.getUserGroup();
+        this.getPositions();
+        console.log(randTime());
     }
 }
 </script>
@@ -311,6 +341,12 @@ export default {
 .check {
     border: 1px solid rgba(34, 34, 34, 0.18);
     border-left: 6px solid #e63958;
+}
+
+.btn-position:hover {
+    background-color: #e63958;
+    color: #f2f2f2;
+    transition: .3s ease;
 }
 
 .btn-roles{

@@ -33,6 +33,10 @@ use App\Main\UserRole\UserRoleRepositoryInterface;
 use App\Main\UserRole\UserRoleRepository;
 use App\Main\Department\DepartmentRepositoryInterface;
 use App\Main\Department\DepartmentRepository;
+use App\Main\Position\PositionRepositoryInterface;
+use App\Main\Position\PositionRepository;
+use App\Main\Login\LoginRepositoryInterface;
+use App\Main\Login\LoginRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -57,6 +61,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(UserRoleRepositoryInterface::class, UserRoleRepository::class);
         $this->app->bind(DepartmentRepositoryInterface::class, DepartmentRepository::class);
+        $this->app->bind(PositionRepositoryInterface::class, PositionRepository::class);
+        $this->app->bind(LoginRepositoryInterface::class, LoginRepository::class);
     }
 
     /**

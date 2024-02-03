@@ -217,8 +217,8 @@ export default {
         this.suppliers = await supplierResult.data;
       },
       async loadDepartments(){
-          let departmentResponse = await axios.get('/api/group');
-          this.departments = await departmentResponse.data.departments
+          let departmentResponse = await axios.get('/api/departments');
+          this.departments = await departmentResponse.data
       }
     },
     mounted(){

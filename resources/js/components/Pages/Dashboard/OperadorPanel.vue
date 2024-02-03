@@ -367,7 +367,7 @@ export default {
                showCancelButton: true
            }).then((result) => {
                if (result.isConfirmed){
-                   axios.post(`/api/order-payment/${id}/${pedido}`, this.cancel).then((response) => {
+                   axios.put(`/api/order-payment/${id}/${pedido}`, this.cancel).then((response) => {
                        this.$toast.success(response.data)
                        return this.getOrder()
                    }).catch((errors) => {

@@ -59,6 +59,33 @@ class UserRepository implements UserRepositoryInterface
         );
     }
 
+    public function update($request): void
+    {
+
+        if ($this->can_manage($request)):
+            if (!is_null($request->password)):
+                User::where('id', $request->user_id)
+                    ->update([
+                        "name" => $request->name,
+                        "email" => $request->email,
+                        "tel" => $request->tel,
+                        "username" => $request->username,
+                        "password" => Hash::make($request->password)
+                        ]);
+            else:
+                User::where('id', $request->user_id)
+                    ->update([
+                        "name" => $request->name,
+                        "email" => $request->email,
+                        "tel" => $request->tel,
+                        "username" => $request->username,
+                    ]);
+            endif;
+        else:
+            throw new Exception(Util::PermisionExceptionMessage());
+        endif;
+    }
+
     public function delete($id, $request): void
     {
         if ($this->can_manage($request)):

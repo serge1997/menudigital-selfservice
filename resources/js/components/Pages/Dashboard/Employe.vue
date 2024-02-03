@@ -8,9 +8,12 @@
                 <div class="col-8 m-auto">
                     <form @submit.prevent="createUser" class="w-100 p-4">
                         <div class="row">
-                            <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
+                            <div class="form-header p-2 text-capitalize rounded-3 text-white w-100">
                                 <h6>new collaborator</h6>
                                 <p>Save new collaborator</p>
+                            </div>
+                            <div class="col-md-8 m-auto mt-3 p-2">
+                                <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
@@ -70,9 +73,11 @@
 
 <script>
 import SideBarComponent from './SideBarComponent.vue'
+import { randTime } from '../../../rand';
 import InputText from "primevue/inputtext";
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
+import ProgressBar from 'primevue/progressbar';
 export default {
     name: 'Employe',
 
@@ -80,7 +85,8 @@ export default {
         SideBarComponent,
         InputText,
         Dropdown,
-        Button
+        Button,
+        ProgressBar
     },
 
     data(){
@@ -97,45 +103,76 @@ export default {
                 email: null
             },
             errMsg: null,
-            invalid: null
+            invalid: null,
+            load: false
         }
     },
 
     methods: {
-        getUserGroup() {
-            axios.get('/api/group').then((response) => {
-                this.departments = response.data.departments;
-                this.positions = response.data.positions;
-            }).catch((error) => {
-                console.log(error)
+        getDepartment(){
+            return new Promise(async (resole, reject) => {
+                let department = await axios.get('/api/departments');
+                resole(department.data);
+                if (department.status != 200){
+                    reject(department.errors);
+                }
+            })
+        },
+
+        getPosition(){
+            return new Promise( async (resolve, reject) => {
+                const position = await this.axios.get('/api/positions');
+                resolve(position.data);
+                if (position.status != 200){
+                    reject(position.errors)
+                }
             })
         },
 
         createUser() {
-            axios.post('/api/create/user', this.user).then((response) => {
-                this.user.email = "";
-                this.user.name = "";
-                this.user.tel = "";
-                this.user.group_id = "";
-                this.user.password = "";
-                this.invalid = '';
-                this.errMsg = null;
-                this.$swal.fire({
-                    text: response.data,
-                    icon: 'success'
-                });
-            }).catch((errors) => {
-                console.log(errors.response.data.errors);
-                this.errMsg = errors.response.data.errors;
-                errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : null;
-                this.invalid = 'p-invalid'
+            this.load = true;
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/create/user', this.user).then((response) => {
+                        this.user.email = "";
+                        this.user.name = "";
+                        this.user.tel = "";
+                        this.user.group_id = "";
+                        this.user.password = "";
+                        this.invalid = '';
+                        this.errMsg = null;
+                        this.$swal.fire({
+                            text: response.data,
+                            icon: 'success'
+                        });
+                        resolve(true);
+                    })
+                    .catch((errors) => {
+                        console.log(errors.response.data.errors);
+                        this.errMsg = errors.response.data.errors;
+                        errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : null;
+                        this.invalid = 'p-invalid'
+                    })
+                    .finally(this.load = false)
+                }, randTime())
             })
         }
     },
 
     mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-        this.getUserGroup();
+
+        Promise.all([
+            this.getDepartment().then(response => {
+                this.departments = response;
+            })
+            .catch(errors => console.log(errors)),
+
+            this.getPosition().then(response => {
+                this.positions = response;
+            })
+            .catch(errors => console.log(errors))
+        ])
 
     }
 }

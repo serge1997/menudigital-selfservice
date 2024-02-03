@@ -25,7 +25,7 @@ use App\Traits\AuthSession;
 
 class OrderRepository implements OrderRepositoryInterface
 {
-    use Permission, AuthSession;
+    use Permission, AuthSession { AuthSession::autth insteadof Permission; }
 
     public array $Order_item_ids = [];
     public array $Order_item_quantitys = [];
@@ -441,6 +441,30 @@ class OrderRepository implements OrderRepositoryInterface
             return;
         endif;
         throw new Exception("Senha invalida ");
+    }
+
+    /**
+     * @Method PUT
+     * @param $order_id
+     * @param $request
+     * update order status in order history page
+     */
+    public function updateHistoryOrderStatus($order_id, $request): void
+    {
+        $password = User::where('id', User::GERENTE)
+            ->first();
+        if ($request->status_id != PaiementType::CANCELED && $request->status_id != PaiementType::PROGRESS):
+            if (Hash::check($request->password, $password->password) && $this->can_manage($request)):
+                Pedido::where('id', $order_id)
+                    ->update([
+                        'status_id' => $request->status_id
+                    ]);
+                return;
+            endif;
+        else:
+            throw new Exception("Esta modalidade não está permitida");
+        endif;
+        throw new Exception(Util::PermisionExceptionMessage());
     }
 
 }

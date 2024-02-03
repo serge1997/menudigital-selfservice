@@ -100,11 +100,22 @@ class OrderController extends Controller
         }
     }
 
+    public function updateHistoryOrderStatusAction($order_id, Request $request): JsonResponse
+    {
+        try{
+            $message = "Pedido editado com sucesso";
+            $this->orderRepositotyInterface->updateHistoryOrderStatus($order_id, $request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
     /**
      * HTTP METHOD GET
      * listar os itens a transferir
+     * @param $id
      */
-
      public function listOrderTransfertItens($id): JsonResponse
      {
         try {
