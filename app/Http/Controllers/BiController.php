@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\StockEntry;
 use App\Models\ItensPedido;
 use DateTime;
 use DateInterval;
+use App\Http\Services\Util\Util;
 
 class BiController extends Controller
 {
@@ -16,23 +18,24 @@ class BiController extends Controller
      */
     public function waiterStat($start, $end){
 
+        $todayForLastMonth = new DateTime();
+        $todayThisMonth = new DateTime();
         $startDate = new DateTime($start);
         $endDate = new DateTime($end);
         $endDate = $endDate->format('Y-m-d');
         $startDate = $startDate->format('Y-m-d');
 
         //last month sell
-        $lastMonth = new DateTime($start);
-        $lastMonth = $lastMonth->sub(new DateInterval('P1M'));
+        $lastMonth = $todayForLastMonth->sub(new DateInterval('P1M'));
         $lastMonth = $lastMonth->format('Y-m');
+
         $sellLastMonthQuery = "SELECT SUM(itens.item_total) AS total FROM itens_pedido AS itens ";
         $sellLastMonthQuery.= "INNER JOIN pedidos AS pd ON pd.id = itens.item_pedido ";
         $sellLastMonthQuery .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$lastMonth."%'";
         $sellLastMontValue = DB::select($sellLastMonthQuery);
 
         //this month sell
-        $thisMonth = new DateTime($start);
-        $thisMonth = $thisMonth->format('Y-m');
+        $thisMonth = $todayThisMonth->format('Y-m');
         $sellThisMonthQuery = "SELECT SUM(itens.item_total) AS total FROM itens_pedido AS itens ";
         $sellThisMonthQuery.= "INNER JOIN pedidos AS pd ON pd.id = itens.item_pedido ";
         $sellThisMonthQuery .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%'";
@@ -141,5 +144,48 @@ class BiController extends Controller
                                         ->get();
 
         return response()->json($query);
+    }
+
+    public function costQuery(): JsonResponse
+    {
+        //analyse custo produto / fornecedor
+        $cost = StockEntry::select(
+            'stock_entries.productID AS product_id',
+            'products.prod_name',
+            'suppliers.sup_name',
+            DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
+            DB::raw('SUM(stock_entries.quantity) AS quantity'),
+            DB::raw('TRUNCATE(AVG(unitCost), 2) AS cost'),
+            DB::raw("CONCAT(MONTHNAME(MAX(stock_entries.emissao)), '/' ,YEAR(MAX(stock_entries.emissao))) AS period")
+        )
+        ->join('products', 'stock_entries.productID', '=', 'products.id')
+            ->join('suppliers', 'stock_entries.supplierID', 'suppliers.id')
+                ->groupBy(
+                    'stock_entries.productID',
+                    'products.prod_name',
+                    'suppliers.sup_name'
+                    //'stock_entries.emissao'
+                )
+                ->orderBy('suppliers.sup_name')
+                    ->get();
+
+        //query gastos em fornecedor.
+
+        $supplier = StockEntry::select(
+            'suppliers.sup_name',
+            DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
+            DB::raw('TRUNCATE(SUM(stock_entries.totalCost) * 100 / (SELECT SUM(st.totalCost) from stock_entries AS st), 2)  AS percent'),
+            DB::raw('SUM(stock_entries.quantity) AS quantity'),
+        )
+        ->join('suppliers', 'stock_entries.supplierID', '=', 'suppliers.id')
+            ->groupBy(
+                'suppliers.sup_name'
+            )
+                ->get();
+
+        return response()->json([
+            'cost' => $cost,
+            'supCost' => $supplier
+        ]);
     }
 }

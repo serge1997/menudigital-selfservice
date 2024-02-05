@@ -2,11 +2,11 @@
     <div class="container-fluid">
         <SideBarComponent />
         <TabView :scrollable="true">
-            <TabPanel header="VENDA">
+            <TabPanel header="ANALISE DE VENDA">
                 <SellInteligence />
             </TabPanel>
-            <TabPanel header="PRODUTO">
-                <p class="m-0">Hello</p>
+            <TabPanel header="ANALISE DE CUSTO">
+                <CostIntelligence />
             </TabPanel>
         </TabView>
     </div>
@@ -14,6 +14,7 @@
 <script>
 import SellInteligence from './SellInteligence.vue';
 import SideBarComponent from "../SideBarComponent.vue";
+import CostIntelligence from './CostIntelligence.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 export default {
@@ -21,6 +22,7 @@ export default {
 
     components: {
         SellInteligence,
+        CostIntelligence,
         TabPanel,
         TabView,
         SideBarComponent

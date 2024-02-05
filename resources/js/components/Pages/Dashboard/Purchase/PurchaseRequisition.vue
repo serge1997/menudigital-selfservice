@@ -88,7 +88,7 @@
 import SideBarComponent from "../SideBarComponent.vue";
 import PurchaseRequisitionEdition from "./PurchaseRequisitionEdition.vue";
 import ShowRequisition from "./ShowRequisition.vue";
-import {getAuth} from "./../../auth.js";
+import { getAuth } from "./../../auth.js";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
 import Dialog from "primevue/dialog";
@@ -230,6 +230,9 @@ export default {
             if (result.department_id == this.user.department_id){
                 this.showActionIcon = true;
             }
+            this.user.name = result.name
+            this.user.id = result.id
+            this.purchaseData.user_id = result.id
         });
     }
 }
