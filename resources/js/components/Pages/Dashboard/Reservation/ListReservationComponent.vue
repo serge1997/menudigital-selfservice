@@ -134,7 +134,7 @@
                         </div>
                     </div>
                     <div class="col-md-10 m-auto mt-3">
-                        <Dropdown v-model="reservationData.reser_canal" :class="invalid" option-value="canal" :options="reservationCanal" optionLabel="canal" placeholder="Select user function" class="w-100 md:w-14rem" />
+                        <Dropdown v-model="reservationData.reser_canal" :class="invalid" option-value="canal" :options="reservationCanal" id="reser-canal" optionLabel="canal" placeholder="Select user function" class="w-100 md:w-14rem" />
                         <small class="text-danger" v-if="formErrMessage" v-for="reser_canal in formErrMessage.reser_canal" v-text="reser_canal"></small>
                     </div>
                     <div class="w-100 d-flex justify-content-center mt-3">
@@ -202,11 +202,6 @@ export default {
     },
 
     methods: {
-        /*async listAllReservation(){
-            const reservationRespone = await axios.get('/api/reservation');
-            this.reservations = await reservationRespone.data;
-
-        },*/
         async getReservation(id){
             const resp = await axios.get('/api/reservation/' + id);
             this.reservation = await resp.data;
@@ -222,24 +217,29 @@ export default {
 
         updateReservation(){
             this.savingLoad = true;
+            var hour = "";
+            var date = "";
+            var formatHour = "";
+            var dateFormat = "";
+            if (this.reservationCanal.date_come_in && this.reservationData.hour){
+                hour = new Date(this.reservationData.hour);
+                date = new Date(this.reservationData.date_come_in);
+                formatHour = hour.toLocaleDateString('pt-BR', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
 
-            var hour = new Date(this.reservationData.hour);
-            var date = new Date(this.reservationData.date_come_in);
-            formatHour = hour.toLocaleDateString('pt-BR', {
-                hour: '2-digit',
-                minute: '2-digit',
-            });
-
-            dateFormat = date.toLocaleDateString('pt-BR', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-            });
+                dateFormat = date.toLocaleDateString('pt-BR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                });
+            }
 
             const data = {
                 person_quantity: document.getElementById('res-person').value,
-                date_come_in: dateFormat,
-                hour: formatHour,
+                date_come_in: dateFormat || this.reservationData.date_come_in,
+                hour: formatHour || this.reservationData.hour,
                 id: document.getElementById('res-id').value,
                 customer_firstName: document.getElementById('res-fname').value,
                 customer_lastName: document.getElementById('res-lname').value,
@@ -265,7 +265,7 @@ export default {
                     .finally(() => this.savingLoad = false);
                 }, 1000)
             })
-        }
+        },
     },
     mounted(){
         getAuth().then(result => {

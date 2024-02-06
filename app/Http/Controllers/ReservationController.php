@@ -52,7 +52,7 @@ class ReservationController extends Controller
         }
     }
 
-    public function updateAction(StoreReservationRequest $request): JsonResponse
+    public function updateAction(Request $request): JsonResponse
     {
         try {
             $message = "Reservação editada com sucesso";

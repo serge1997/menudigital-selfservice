@@ -70,8 +70,9 @@ class ReservationRepository implements ReservationRepositoryInterface
                     'customer_lastName' => $request->customer_lastName,
                     'customer_email' => $request->customer_email,
                     'customer_tel' => $request->customer_tel,
-                    'reser_canal' => $request->reser_canal,
+                    'reser_canal' => $request->reser_canal ?? $reservation['reser_canal'],
                     'date_come_in'=> $request->date_come_in ?? $reservation['date_come_in'],
+                    'hour' => $request->hour ?? $reservation['hour'],
                     'observation' => $request->observation
                 ]);
 
