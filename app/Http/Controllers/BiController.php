@@ -10,6 +10,7 @@ use App\Models\ItensPedido;
 use DateTime;
 use DateInterval;
 use App\Http\Services\Util\Util;
+use Exception;
 
 class BiController extends Controller
 {
@@ -156,15 +157,15 @@ class BiController extends Controller
             DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
             DB::raw('SUM(stock_entries.quantity) AS quantity'),
             DB::raw('TRUNCATE(AVG(unitCost), 2) AS cost'),
-            DB::raw("CONCAT(MONTHNAME(MAX(stock_entries.emissao)), '/' ,YEAR(MAX(stock_entries.emissao))) AS period")
+            DB::raw("CONCAT(SUBSTRING(MONTHNAME(stock_entries.emissao),1, 3), '/' ,YEAR(stock_entries.emissao)) AS period")
         )
         ->join('products', 'stock_entries.productID', '=', 'products.id')
             ->join('suppliers', 'stock_entries.supplierID', 'suppliers.id')
                 ->groupBy(
                     'stock_entries.productID',
                     'products.prod_name',
-                    'suppliers.sup_name'
-                    //'stock_entries.emissao'
+                    'suppliers.sup_name',
+                    DB::raw("CONCAT(SUBSTRING(MONTHNAME(stock_entries.emissao),1, 3), '/',YEAR(stock_entries.emissao))")
                 )
                 ->orderBy('suppliers.sup_name')
                     ->get();
@@ -187,5 +188,66 @@ class BiController extends Controller
             'cost' => $cost,
             'supCost' => $supplier
         ]);
+    }
+
+    public function filterCostIntelligence(Request $params): JsonResponse
+    {
+        try{
+
+            $condition_like = "";
+            if ($params->prodName) {
+                $condition_like .= "pr.prod_name LIKE '%".$params->prodName."%' AND ";
+            }
+            if ($params->year) {
+                $condition_like .= "SUBSTRING(st.emissao, 1, 4) LIKE '%".$params->year."%' AND ";
+            }
+            if ($params->month){
+                $condition_like .= "SUBSTRING(MONTHNAME(st.emissao), 1, 4) LIKE '%".$params->month."%' AND ";
+            }
+
+            $condition_like .= "supp.is_delete <> 1 AND st.is_delete <> 1";
+            //var_dump($condition_like); die;
+            $query = "SELECT
+                st.productID AS product_id,
+                pr.prod_name,
+                supp.sup_name,
+                SUM(st.totalCost) AS totalCost,
+                SUM(st.quantity) AS quantity,
+                TRUNCATE(AVG(st.unitCost), 2) AS cost,
+                CONCAT(SUBSTRING(MONTHNAME(st.emissao),1, 3), '/',YEAR(st.emissao)) AS period
+            FROM stock_entries AS st
+            INNER JOIN products AS pr
+                ON st.productID = pr.id
+            INNER JOIN suppliers AS supp
+                ON st.supplierID = supp.id
+            WHERE {$condition_like}
+            GROUP BY
+                    st.productID,
+                    pr.prod_name,
+                    supp.sup_name,
+                    CONCAT(SUBSTRING(MONTHNAME(st.emissao),1, 3), '/',YEAR(st.emissao))
+            ORDER BY supp.sup_name";
+
+            $supplier = StockEntry::select(
+                'suppliers.sup_name',
+                DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
+                DB::raw('TRUNCATE(SUM(stock_entries.totalCost) * 100 / (SELECT SUM(st.totalCost) from stock_entries AS st), 2)  AS percent'),
+                DB::raw('SUM(stock_entries.quantity) AS quantity'),
+            )
+            ->join('suppliers', 'stock_entries.supplierID', '=', 'suppliers.id')
+                ->whereRaw("MONTHNAME(stock_entries.emissao) LIKE '%{$params->month}%' AND SUBSTRING(stock_entries.emissao, 1, 4) LIKE '%{$params->year}%'")
+                    ->groupBy(
+                        'suppliers.sup_name'
+                    )
+                    ->get();
+
+            return response()->json([
+                'cost' => DB::select($query),
+                'supCost' => $supplier
+            ]);
+
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 }

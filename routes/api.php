@@ -79,6 +79,7 @@ ROute::controller(BiController::class)->group(function (){
     Route::get('/bi/general-stat/{start}/{end}', 'getGeneralStat');
     Route::get('/bi/dash-type-waiter/{start}/{end}', 'waiterStat');
     Route::get('cost-analyse', 'costQuery');
+    Route::post('cost-analyse-filter', 'filterCostIntelligence');
 });
 Route::get('waiter/stats', [BiController::class, 'waiterStat']);
 
