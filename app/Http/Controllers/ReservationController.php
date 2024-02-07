@@ -38,7 +38,7 @@ class ReservationController extends Controller
             return response()->json($message);
 
         }catch (Exception $e){
-            return response()->json($e->getMessage(). " ".$e->getLine(). " ".$e->getFile(), 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 

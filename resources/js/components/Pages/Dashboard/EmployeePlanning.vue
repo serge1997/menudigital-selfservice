@@ -2,10 +2,13 @@
   <div class="container-fluid">
     <SideBarComponent />
     <div class="container">
-        <div class="col-md-8 d-flex flex-column m-auto">
-            <small v-if="load" class="text-center">Carregando...</small>
-            <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
-        </div>
+      <div class="row">
+        <h4 class="fw-normal d-flex gap-2 align-items-center"><i class="pi pi-calendar"></i>Escala do colaborador</h4>
+      </div>
+      <div class="col-md-8 d-flex flex-column m-auto">
+          <small v-if="load" class="text-center">Carregando...</small>
+          <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
+      </div>
       <div class="row text-center d-flex">
         <div class="alert alert-secondary day-box d-flex">
             <div v-for="(day, index) in week" class="col p-0">
@@ -15,7 +18,7 @@
             </div>
         </div>
         <div v-for="(day, index) in week" class="col">
-          <button v-for="(tal, index) in users" :id="`btn-${index}-${day.day}`" class="btn bg-white border mt-4 p-3 form-control" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="createID(index, day.day)"></button>
+          <button :class="planningClass" v-for="(tal, index) in users" :id="`btn-${index}-${day.day}`" class="btn border mt-4 p-3 form-control" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="createID(index, day.day)"></button>
         </div>
       </div>
       <div class="row p-3 mt-3 d-flex gap-2">
@@ -26,16 +29,16 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Escolhe usuario</h1>
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Escolhe Colaborador</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <select v-model="selectedUser" class="p-2 form-control">
+              <select v-model="selectedUser" class="p-2 border border-secondary form-select p-2">
                 <option v-for="user in users" :value="user.name">{{ user.name }}</option>
               </select>
             </div>
             <div class="modal-footer">
-              <button @click="save" class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal">Ok</button>
+              <Button @click="save" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" label="Ok"/>
             </div>
           </div>
         </div>
@@ -80,7 +83,8 @@ export default {
       id_collection: [],
       users_name: [],
       planningData: null,
-      load: false
+      load: false,
+      planningClass: null
     }
   },
   methods: {
@@ -115,7 +119,7 @@ export default {
                 this.axios.post('/api/planning', data).then((response) => {
                     this.$swal.fire({text: response.data, icon: 'success'});
                 })
-                .catch(errors => console.log(errors))
+                .catch(errors => errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'warning'}))
                 .finally(this.load = false);
             }, randTime())
         })
@@ -130,6 +134,13 @@ export default {
                     for (let dt of this.planningData){
                         let dynamic_id = document.getElementById(`${dt.html_id}`);
                         dynamic_id.textContent = dt.user_name
+                        dt.html_id.includes('seg') && dynamic_id.classList.add('bg-primary', 'text-white');
+                        dt.html_id.includes('ter') && dynamic_id.classList.add('bg-warning')
+                        dt.html_id.includes('sex') && dynamic_id.classList.add('alert','alert-secondary')
+                        dt.html_id.includes('qui') && dynamic_id.classList.add('alert','alert-secondary')
+                        dt.html_id.includes('sab') && dynamic_id.classList.add('alert','alert-secondary')
+                        dt.html_id.includes('qua') && dynamic_id.classList.add('bg-danger', 'text-white')
+                        dt.html_id.includes('dom') && dynamic_id.classList.add('bg-success', 'text-white')
                         console.log(dt.html_id)
                     }
                     resolve(true);
@@ -155,11 +166,8 @@ export default {
                             this.$swal.fire({text: response.data, icon: 'success'});
                             resolve(true)
                         })
-                        .catch(errors => console.log(errors))
-                        .finally(() => {
-                            this.load = false;
-                            return this.loadPlanning()
-                        })
+                        .catch(errors => errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'warning'}))
+                        .finally(this.load = false)
                     }, randTime())
                 })
             }

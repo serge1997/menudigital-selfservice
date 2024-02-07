@@ -37,11 +37,11 @@ class PlanningController extends Controller
         }
     }
 
-    public function clearAction(): JsonResponse
+    public function clearAction(Request $request): JsonResponse
     {
         try{
             $message = "Escala resetado com sucesso";
-            $this->planningRepositoryInterface->clearTable();
+            $this->planningRepositoryInterface->clearTable($request);
             return response()->json($message);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);

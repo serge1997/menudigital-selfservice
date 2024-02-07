@@ -4,23 +4,31 @@ namespace App\Main\Planning;
 use App\Models\Planning;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use App\Traits\Permission;
+use App\Http\Services\Util\Util;
+use Exception;
 
 class PlanningRepository implements PlanningRepositoryInterface
 {
+    use Permission;
 
     public function create($request): void
     {
         $users_name = $request->users_name;
         $html_id = $request->html_id;
-        foreach ($users_name as $key => $user)
-        {
-            if (!$this->beforeSave($user, $html_id[$key])){
-                $planning = new Planning();
-                $planning->user_name = $user;
-                $planning->html_id = $html_id[$key];
-                $planning->save();
+        if ($this->can_manage($request)):
+            foreach ($users_name as $key => $user)
+            {
+                if (!$this->beforeSave($user, $html_id[$key])){
+                    $planning = new Planning();
+                    $planning->user_name = $user;
+                    $planning->html_id = $html_id[$key];
+                    $planning->save();
+                }
             }
-        }
+            return;
+        endif;
+        throw new Exception(Util::PermisionExceptionMessage());
     }
 
     public function getAll(): Collection
@@ -38,8 +46,13 @@ class PlanningRepository implements PlanningRepositoryInterface
         return false;
     }
 
-    public function clearTable(): void
+    public function clearTable($request): void
     {
-        DB::table('planning')->delete();
+        if($this->can_manage($request)){
+            DB::table('planning')->delete();
+            return;
+        }
+        throw new Exception(Util::PermisionExceptionMessage());
+
     }
 }
