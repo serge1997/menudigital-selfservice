@@ -21,6 +21,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PlanningController;
 
 /*
 |--------------------------------------------------------------------------
@@ -208,4 +209,10 @@ Route::controller(PositionController::class)->group(function() {
 Route::controller(LoginController::class)->group(function() {
     Route::post('login', 'loginAction');
     Route::post('logout', 'logoutAction')->middleware('auth:sanctum');
+});
+
+Route::controller(PlanningController::class)->group(function() {
+    Route::post('planning', 'createAction');
+    Route::get('planning', 'listAllAction');
+    Route::delete('planning', 'clearAction');
 });

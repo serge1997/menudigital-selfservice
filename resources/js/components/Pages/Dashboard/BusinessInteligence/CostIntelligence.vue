@@ -129,7 +129,7 @@ export default {
                 this.costData = await apiResponse.data.cost;
                 this.supplierCostData = await apiResponse.data.supCost
                 this.is_skeleton = false
-                resolve(tue)
+                resolve(true)
                }, randTime())
             })
         },

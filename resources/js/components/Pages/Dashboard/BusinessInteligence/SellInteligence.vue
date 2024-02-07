@@ -164,7 +164,7 @@ export default {
                 lastMonth: null,
                 totalDay: null
             },
-            monthlyComparaison: 0,
+            monthlyComparaison: null,
             cardClass: {
                 cardClassThis: null,
                 cardClassLast: null
@@ -199,8 +199,7 @@ export default {
                     this.barchart.sell.push(sell)
                 }
 
-                this.SetDoubleBarChart()
-                console.log(this.typesCollection)
+                this.SetDoubleBarChart();
                 this.get_type_waiter_dash(params[0].start, params[1].end)
             })
         },
@@ -218,7 +217,6 @@ export default {
                 this.monthlySell.currentMonth = response.data.thisMonth;
                 this.monthlySell.lastMonth = response.data.lastMonth;
                 this.monthlySell.totalDay = response.data.totalDay
-                console.log("day" + this.monthlySell.totalDay)
                 this.dataTable = response.data.itemsCollection
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
@@ -247,7 +245,7 @@ export default {
                     }
                 }
                 this.donut()
-                this.monthCompare(response.data.thisMonth, response.data.lastMonth)
+                this.monthCompare(response.data)
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -303,27 +301,28 @@ export default {
                 bindto: "#charDonut"
             })
         },
-       monthCompare(actualy, lasmonth){
-            let result;
-           Object.keys(actualy).forEach(function(key){
-               let lastMonth = lasmonth[key].total == null ? 0 : lasmonth[key].total;
-               let thisMonth = actualy[key].total == null ? 0 : actualy[key].total
-               if (thisMonth > lastMonth){
-                   result = true;
-               }else {
-                   result = false
-               }
-           })
+       monthCompare(data){
+            for (let i = 0; i <= data.lastMonth.length; i++){
+                console.log(data.lastMonth[i].total)
+                console.log(data.thisMonth[i].total)
 
-           if (result){
-               this.cardClass.cardClassThis = 'alert alert-success';
-               this.cardClass.cardClassLast = 'alert alert-danger'
-           }else{
-               this.cardClass.cardClassThis = 'alert alert-danger';
-               this.cardClass.cardClassLast = 'alert alert-success'
-           }
-           //result === false ? this.cardClass = 'alert alert-danger' : this.cardClass = 'alert alert-success'
-           this.monthlyComparaison = result;
+                if (data.lastMonth[i].total > data.thisMonth[i].total){
+                    this.monthlyComparaison = true
+                }else{
+                    this.monthlyComparaison = false;
+                }
+                return this.monthlyComparaison = result
+            }
+        //    console.log(thisMonth + ' - ' + lastMonth);
+        //    if (result){
+        //        this.cardClass.cardClassThis = 'alert alert-success';
+        //        this.cardClass.cardClassLast = 'alert alert-danger'
+        //    }else{
+        //        this.cardClass.cardClassThis = 'alert alert-danger';
+        //        this.cardClass.cardClassLast = 'alert alert-success'
+        //    }
+        //    //result === false ? this.cardClass = 'alert alert-danger' : this.cardClass = 'alert alert-success'
+        //    this.monthlyComparaison = result;
        }
     },
 

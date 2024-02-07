@@ -37,6 +37,8 @@ use App\Main\Position\PositionRepositoryInterface;
 use App\Main\Position\PositionRepository;
 use App\Main\Login\LoginRepositoryInterface;
 use App\Main\Login\LoginRepository;
+use App\Main\Planning\PlanningRepositoryInterface;
+use App\Main\Planning\PlanningRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -63,6 +65,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DepartmentRepositoryInterface::class, DepartmentRepository::class);
         $this->app->bind(PositionRepositoryInterface::class, PositionRepository::class);
         $this->app->bind(LoginRepositoryInterface::class, LoginRepository::class);
+        $this->app->bind(PlanningRepositoryInterface::class, PlanningRepository::class);
     }
 
     /**
