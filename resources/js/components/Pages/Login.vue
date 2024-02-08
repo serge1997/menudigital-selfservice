@@ -1,6 +1,12 @@
 <template>
     <div class="container-fluid min-vh-100 d-flex justify-content-between align-items-center">
         <div class="container">
+            <Dialog v-model:visible="visibleLoginModal" maximizable modal header="" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                <div class="col-md-8 d-flex flex-column m-auto">
+                    <p v-if="load" class="text-center">Aguarde, carregando suas permissões...</p>
+                    <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
+                </div>
+            </Dialog>
             <div class="row p-0">
                 <div class="col-lg-7 col-md-10 p-0 d-flex flex-column align-items-center justify-content-center">
                     <h3 class="text-capitalize fw-light">restaurant gestion integration service.</h3>
@@ -33,7 +39,9 @@
 <script>
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
-import Button from "primevue/button"
+import Button from "primevue/button";
+import Dialog from "primevue/dialog";
+import ProgressBar from "primevue/progressbar";
 
 export default {
     name: 'Login',
@@ -41,7 +49,9 @@ export default {
     components: {
         InputText,
         Password,
-        Button
+        Button,
+        Dialog,
+        ProgressBar
     },
 
     data(){
@@ -55,21 +65,36 @@ export default {
             msgerrors: null,
             loginerrresponse: null,
             logAnim: false,
-            invalid: null
+            invalid: null,
+            visibleLoginModal: false,
+            load: false
         }
     },
 
     methods: {
         login() {
-            axios.post('/api/login', this.credentials).then((response) => {
-                this.$router.push({path: '/dashboard/operador'})
-                localStorage.setItem('token', response.data)
-                this.$toast.success("Seja Bem vindo!");
-            }).catch((errors) => {
-                errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
-                this.msgerrors = errors.response.data.errors
-                this.invalid = 'p-invalid'
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/login', this.credentials).then((response) => {
+                        this.visibleLoginModal = true;
+                        this.load = true;
+                        localStorage.setItem('token', response.data.token);
+                        localStorage.setItem('stockAccess', response.data.stockAccess);
+                        localStorage.setItem('managerAccess', response.data.managerAcess);
+                        this.$toast.success("Seja Bem vindo!");
+                        resolve(true);
+                        setTimeout(() => {this.$router.push({path: '/dashboard/operador'})}, this.randTime())
+                    }).catch((errors) => {
+                        errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
+                        this.msgerrors = errors.response.data.errors
+                        this.invalid = 'p-invalid'
+                    })
+                }, 0)
             })
+        },
+
+        randTime(){
+            return Math.floor(Math.random() * (2500 - 1500) + 1500);
         }
 
     },

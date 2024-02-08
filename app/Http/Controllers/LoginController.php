@@ -26,8 +26,12 @@ class LoginController extends Controller
                 'username' => ['required'],
                 'password' => ['required']
             ]);
-            $tokenResponse = $this->loginRepositoryInterface->login($request);
-            return response()->json($tokenResponse);
+            $data = $this->loginRepositoryInterface->login($request);
+            return response()->json([
+                'token'        => $data['token'],
+                'stockAccess'  => $data['stockAccess'],
+                'managerAcess' => $data['managerAcess']
+            ]);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);
         }

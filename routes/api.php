@@ -129,6 +129,7 @@ Route::controller(UserRoleController::class)->group(function() {
     Route::get('user-roles/{id}', 'listUserRoles');
     Route::post('role-delete/{id}', 'delete_user_role');
     Route::post('role/{id}', 'store_user_role');
+    ROute::get('permission', 'teste');
 });
 
 Route::controller(RestaurantController::class)->group(function() {
