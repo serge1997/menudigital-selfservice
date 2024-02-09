@@ -231,7 +231,9 @@ class BiController extends Controller
             $supplier = StockEntry::select(
                 'suppliers.sup_name',
                 DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
-                DB::raw('TRUNCATE(SUM(stock_entries.totalCost) * 100 / (SELECT SUM(st.totalCost) from stock_entries AS st), 2)  AS percent'),
+                DB::raw("TRUNCATE(SUM(stock_entries.totalCost) * 100 / (SELECT SUM(st.totalCost)
+                    from stock_entries AS st WHERE MONTHNAME(st.emissao) LIKE '%{$params->month}%'
+                    AND SUBSTRING(st.emissao, 1, 4) LIKE '%{$params->year}%'), 2)  AS percent"),
                 DB::raw('SUM(stock_entries.quantity) AS quantity'),
             )
             ->join('suppliers', 'stock_entries.supplierID', '=', 'suppliers.id')

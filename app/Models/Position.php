@@ -27,7 +27,8 @@ class Position extends Model
             self::MANGER,
             self::CHEF_BAR,
             self::CHEF_BAR,
-            self::SALE_MANAGER
+            self::SALE_MANAGER,
+            self::CASH_REGISTER
         ]);
     }
 

@@ -45,4 +45,9 @@ trait Permission
     {
         return UserRole::where([['user_id', $this->autth($request)], ['role_id', Role::CAN_CHANGE_PAIEMENT_METHOD]])->exists();
     }
+
+    public function can_create_product($request): bool
+    {
+        return UserRole::where([['user_id', $this->autth($request)], ['role_id', Role::CAN_CREATE_PRODUCT]])->exists();
+    }
 }
