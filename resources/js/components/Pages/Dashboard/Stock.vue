@@ -44,7 +44,7 @@
                     <Tag style="width: 90px" v-else value="In Stock" severity="success" />
                 </template>
             </Column>
-            <Column field="prod_unmed" header="Ação" style="width: 25%">
+            <Column v-if="managerAccess.includes(`${auth.position_id}`)" field="prod_unmed" header="Ação" style="width: 25%">
                 <template #body="{ data }">
                     <div class="d-flex">
                         <Button @click="showProductToEdit(data.productID)" icon="pi pi-pencil" text/>
@@ -106,6 +106,7 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Tag from "primevue/tag";
 import InputText from "primevue/inputtext";
+import { getAuth } from '../auth';
 import _ from "lodash";
 
 export default {
@@ -142,7 +143,12 @@ export default {
                 prod_supplierID: null,
                 min_quantity: null
             },
-            errMsg: null
+            auth: {
+                id: null,
+                position_id: null,
+            },
+            errMsg: null,
+            managerAccess: localStorage.getItem('managerAccess').split(','),
         }
     },
 
@@ -267,13 +273,18 @@ export default {
                 this.products = response.data
             })
         },
+        async loadSupplier(){
+            let response = await axios.get('/api/supplier')
+            this.suppliers = await response.data;
+        }
     },
 
-    async mounted(){
-        await this.get_stock_stat();
-        let response = await axios.get('/api/supplier')
-        this.suppliers = await response.data;
-        this.setSeverity(id);
+    mounted(){
+        this.get_stock_stat();
+        this.loadSupplier();
+        getAuth().then(result => {
+            this.auth.position_id = result.position_id
+        })
     }
 }
 

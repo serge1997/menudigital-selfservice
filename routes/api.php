@@ -129,7 +129,6 @@ Route::controller(UserRoleController::class)->group(function() {
     Route::get('user-roles/{id}', 'listUserRoles');
     Route::post('role-delete/{id}', 'delete_user_role');
     Route::post('role/{id}', 'store_user_role');
-    ROute::get('permission', 'teste');
 });
 
 Route::controller(RestaurantController::class)->group(function() {
@@ -192,6 +191,7 @@ Route::controller(ReservationController::class)->group(function() {
     Route::get('reservation/{id}', 'findById');
     Route::delete('reservation/{id}', 'deleteAction');
     Route::put('reservation', 'updateAction');
+    Route::get('resource-teste', 'teste');
 });
 
 Route::controller(RoleController::class)->group(function() {

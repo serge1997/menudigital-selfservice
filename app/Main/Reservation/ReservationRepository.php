@@ -3,6 +3,7 @@ namespace App\Main\Reservation;
 
 use App\Models\Reservation;
 use Illuminate\Database\Eloquent\Collection;
+use App\Http\Resources\ReservationResource;
 use App\Traits\Permission;
 use App\Http\Services\Util\Util;
 use DateTime;
@@ -33,28 +34,28 @@ class ReservationRepository implements ReservationRepositoryInterface
     public function getAll(): Collection
     {
         return new Collection(
-            Reservation::all()
+            ReservationResource::collection(Reservation::all())
         );
     }
 
     public function find($id): Collection
     {
         return new Collection(
-
-            Reservation::select(
-                'id',
-                'person_quantity',
-                'hour',
-                'customer_firstName',
-                'customer_lastName',
-                'customer_email',
-                'customer_tel',
-                'reser_canal',
-                'date_come_in',
-                'observation'
-                )
-                    ->where('id', $id)
-                        ->first()
+            new ReservationResource(Reservation::find($id))
+            // Reservation::select(
+            //     'id',
+            //     'person_quantity',
+            //     'hour',
+            //     'customer_firstName',
+            //     'customer_lastName',
+            //     'customer_email',
+            //     'customer_tel',
+            //     'reser_canal',
+            //     'date_come_in',
+            //     'observation'
+            //     )
+            //         ->where('id', $id)
+            //             ->first()
         );
     }
 
@@ -88,5 +89,10 @@ class ReservationRepository implements ReservationRepositoryInterface
             return;
         }
         throw new Exception("Você não tem permissao");
+    }
+
+    public function ressourceTeste()
+    {
+        return new Collection(ReservationResource::collection(Reservation::all()));
     }
 }

@@ -58,7 +58,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
                 if(managerAccess){
-                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                    managerAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },
@@ -86,7 +86,7 @@ const routes = [
              window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
              axios.get('/api/user').then((response) => {
                 if (administrativeAccess){
-                    Object.values(administrativeAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                    administrativeAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },
@@ -116,7 +116,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
                 if (managerAccess){
-                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                    managerAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },
@@ -137,7 +137,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
                 if (managerAccess){
-                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                    managerAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
 
             })
@@ -153,7 +153,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
                 if (managerAccess){
-                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                   managerAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },
@@ -177,7 +177,7 @@ const routes = [
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
                 if (stockAccess){
-                    Object.values(stockAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                    stockAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },

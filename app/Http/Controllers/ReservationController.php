@@ -73,4 +73,13 @@ class ReservationController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+
+    public function teste()
+    {
+        try{
+            return response()->json($this->reservationRepositoryInterface->ressourceTeste());
+        }catch(Exception $e){
+            return response()->json($e->getMessage());
+        }
+    }
 }

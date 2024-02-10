@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Reservation extends Model
 {
@@ -25,6 +26,11 @@ class Reservation extends Model
     ];
 
     protected $dateFormat = 'd/m/y';
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     /*public function setDateComeInAttribute( $value ) {
         $this->attributes['date_come_in'] = (new Carbon($value))->format('d/m/y');

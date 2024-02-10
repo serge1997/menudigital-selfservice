@@ -20,10 +20,10 @@
                 <div>
                     <Button @click="showReservation(reservation.id)" text icon="pi pi-eye"/>
                 </div>
-                <div v-if="auth.showActions">
+                <div v-if="administrativeAccess.includes(`${auth.position_id}`)">
                     <Button @click="getReservation(reservation.id)" text icon="pi pi-pencil"/>
                 </div>
-                <div v-if="auth.showActions">
+                <div v-if="administrativeAccess.includes(`${auth.position_id}`)">
                     <Button @click="$emit('deleteReservation', reservation.id)" icon="pi pi-trash" text class="text-danger"/>
                 </div>
             </div>
@@ -183,6 +183,7 @@ export default {
                 department: null,
                 adm: 1,
                 showActions: false,
+                position_id: null,
             },
             reservation: null,
             reservationData: {
@@ -197,7 +198,8 @@ export default {
                 reser_canal: null,
                 observation: null
             },
-            formErrMessage: null
+            formErrMessage: null,
+            administrativeAccess: localStorage.getItem('administrativeAccess').split(',')
         }
     },
 
@@ -269,12 +271,8 @@ export default {
     },
     mounted(){
         getAuth().then(result => {
-            // this.username = result.name
-            // this.position.includes(result.position_id) ? this.is_toShow = true : null
-            if (result.department_id == this.auth.adm){
-                this.auth.showActions = true
-            }
-        });
+            this.auth.position_id = result.position_id;
+        })
     }
 }
 </script>

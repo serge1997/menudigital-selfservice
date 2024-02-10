@@ -11,4 +11,5 @@ interface ReservationRepositoryInterface
     public function find($id): Collection;
     public function update($request);
     public function delete($request, $id);
+    public function ressourceTeste();
 }

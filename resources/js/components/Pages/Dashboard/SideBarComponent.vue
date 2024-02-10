@@ -36,7 +36,7 @@
                             Gestão de reservação
                           </router-link>
                         </li>
-                        <li class="list-group-item rounded-0 border-0">
+                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'NewItem'}">
                                 <span class="pi pi-plus"></span>
                                 New item

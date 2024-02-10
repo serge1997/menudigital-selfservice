@@ -27,4 +27,9 @@ class ItensPedido extends Model
     {
         return $this->belongsTo(Pedido::class, 'item_pedido');
     }
+
+    public function menuitem(): BelongsTo
+    {
+        return $this->belongsTo(Menuitems::class, 'item_id');
+    }
 }

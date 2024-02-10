@@ -109,6 +109,7 @@ import Textarea from "primevue/textarea";
 import Toolbar from "primevue/toolbar";
 import Calendar from "primevue/calendar";
 import Dropdown from "primevue/dropdown";
+import { getAuth } from './../../auth';
 export default {
     name: 'Reservation',
 
@@ -164,6 +165,11 @@ export default {
             dateInvalidClass: null,
             invalid: null,
             reservations: null,
+            user: {
+                name: null,
+                position_id: null,
+            },
+            administrativeAccess: localStorage.getItem('administrativeAccess').split(',')
         }
     },
 
@@ -280,6 +286,9 @@ export default {
 
     mounted(){
         this.listAllReservation();
+        getAuth().then(result => {
+            this.user.position_id = result.position_id;
+        })
     }
 }
 </script>

@@ -21,4 +21,9 @@ class MealType extends Model
     {
         return $this->hasMany(Option::class, "type_id");
     }
+
+    public function menuitem(): HasMany
+    {
+        return $this->hasMany(Menuitems::class, 'type_id');
+    }
 }
