@@ -23,7 +23,8 @@ class LoginRepository implements LoginRepositoryInterface
         $request->session()->put('auth-vue', $user->id);
         $data['token'] = $user->createToken('browser')->plainTextToken;
         $data['stockAccess'] = Position::stock()->pluck('id');
-        $data['managerAcess'] = Position::manager()->pluck('id');
+        $data['managerAccess'] = Position::manager()->pluck('id');
+        $data['administrativeAccess'] = Position::administrative()->pluck('id');
 
 
         return $data;

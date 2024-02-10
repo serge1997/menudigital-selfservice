@@ -21,7 +21,7 @@
           <button :class="planningClass" v-for="(tal, index) in users" :id="`btn-${index}-${day.day}`" class="btn border mt-4 p-3 form-control" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="createID(index, day.day)"></button>
         </div>
       </div>
-      <div class="row p-3 mt-3 d-flex gap-2">
+      <div v-if="Object.values(managerAcess).includes(`${position_id}`)" class="row p-3 mt-3 d-flex gap-2">
         <Button @click="createPlaning" class="col-md-4 m-auto" label="Criar Escala" />
         <Button @click="clearPlaning" class="col-md-4 m-auto" label="Limpar Escala" severity="danger"/>
       </div>
@@ -52,7 +52,7 @@ import SideBarComponent from "./SideBarComponent.vue";
 import Button from 'primevue/button';
 import ProgressBar from 'primevue/progressbar';
 import { randTime } from './../../../rand';
-
+import { getAuth } from "./../auth.js";
 export default {
   name: 'EmployeePlanning',
   components: {
@@ -84,7 +84,9 @@ export default {
       users_name: [],
       planningData: null,
       load: false,
-      planningClass: null
+      planningClass: null,
+      managerAcess: localStorage.getItem('managerAccess').split(','),
+      position_id: null
     }
   },
   methods: {
@@ -176,6 +178,10 @@ export default {
   },
   mounted(){
     this.loadPlanning();
+    getAuth().then(result => {
+        this.position_id = result.position_id;
+    });
+
   }
 }
 </script>

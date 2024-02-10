@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Main\Login\LoginRepositoryInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
 
 class LoginController extends Controller
 {
@@ -30,7 +31,8 @@ class LoginController extends Controller
             return response()->json([
                 'token'        => $data['token'],
                 'stockAccess'  => $data['stockAccess'],
-                'managerAcess' => $data['managerAcess']
+                'managerAccess' => $data['managerAccess'],
+                'administrativeAccess' => $data['administrativeAccess']
             ]);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);

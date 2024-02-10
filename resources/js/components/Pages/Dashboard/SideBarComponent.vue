@@ -12,7 +12,7 @@
                 </div>
                 <div class="w-100 d-flex flex-column justify-content-between">
                     <ul class="list-group w-100 mt-4">
-                        <li v-if="manager_show" class="list-group-item rounded-0 border-0">
+                        <li v-if="administrativeAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{name: 'OperadorPanel'}">
                             <span class="pi pi-dollar"></span>
                                 Caixa
@@ -24,7 +24,7 @@
                                 Waiter
                             </router-link>
                         </li>
-                        <li v-if="manager_show" class="list-group-item border-0 rounded-0">
+                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item border-0 rounded-0">
                             <router-link class="nav-link" :to="{name: 'BusinessInteligence'}">
                             <span class="pi pi-chart-bar"></span>
                                 Business Inteligence
@@ -36,19 +36,19 @@
                             Gestão de reservação
                           </router-link>
                         </li>
-                        <li v-if="manager_show" class="list-group-item rounded-0 border-0">
+                        <li class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'NewItem'}">
                                 <span class="pi pi-plus"></span>
                                 New item
                             </router-link>
                         </li>
-                        <li v-if="manager_show" class="list-group-item rounded-0 border-0">
+                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'NewMenuType'}">
                             <span class="pi pi-plus"></span>
                                 New Menu type
                             </router-link>
                         </li>
-                        <li v-if="manager_show" class="list-group-item rounded-0 border-0">
+                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'Employe'}">
                             <span class="pi pi-user-plus"></span>
                                 Colaborador
@@ -60,19 +60,19 @@
                             Escala
                           </router-link>
                         </li>
-                        <li v-if="stock_show" class="list-group-item rounded-0 border-0 border-top">
+                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0 border-top">
                             <router-link class="nav-link" :to="{ name: 'Stock'}">
                             <span class="pi pi-database"></span>
                                 Stock
                             </router-link>
                         </li>
-                        <li v-if="stock_show" class="list-group-item rounded-0 border-0 border-top">
+                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0 border-top">
                             <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
                                 <span class="pi pi-cart-plus"></span>
                                 Compras
                             </router-link>
                         </li>
-                        <li v-if="manager_show" class="list-group-item rounded-0 border-0">
+                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'SettingPanel'}">
                             <span class="pi pi-cog"></span>
                                 Setting
@@ -95,6 +95,7 @@ import { getAuth } from "../auth.js";
 import Button from 'primevue/button';
 import Sidebar from "primevue/sidebar";
 import Avatar from "primevue/avatar";
+import { computed } from "vue";
 
 export default {
     name: 'SideBarComponent',
@@ -116,15 +117,19 @@ export default {
             restaurant: null,
             managerAccess: localStorage.getItem('managerAccess').split(','),
             stockAccess: localStorage.getItem('stockAccess').split(','),
+            administrativeAccess: localStorage.getItem('administrativeAccess').split(','),
             stock_show: false,
             manager_show: false,
-            position: [1, 7, 2, 8],
-            stock_permission: [1, 2, 3, 5, 7, 8, 4],
+            administrative_show: false,
             is_toShow: null,
 
         }
     },
-
+    provide(){
+        return{
+            position_id: computed(() => this.user.position_id)
+        }
+    },
     methods: {
        CloseSideBar() {
         this.sidebar = !this.sidebar
@@ -139,6 +144,7 @@ export default {
                 localStorage.removeItem('token')
                 localStorage.removeItem('stockAccess')
                 localStorage.removeItem('managerAccess')
+                localStorage.removeItem('administrativeAccess')
                 this.$router.push('/');
             }).catch((error) => {
                 console.log(error);
@@ -146,16 +152,21 @@ export default {
         },
     },
     mounted(){
+        console.log(this.administrativeAccess)
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
         getAuth().then(result => {
             this.username = result.name;
             this.user.position_id = result.position_id;
-            this.position.includes(result.position_id) ? this.is_toShow = true : null;
-            this.managerAccess.forEach((element, index) => {
+
+            this.managerAccess.forEach((element) => {
                 element == this.user.position_id ? this.manager_show = true : null
             });
             this.stockAccess.forEach(el => {
                 el == this.user.position_id ? this.stock_show = true : null
+            })
+
+            this.administrativeAccess.forEach(element => {
+                element == this.user.position_id ? this.administrative_show = true : null
             })
 
         });

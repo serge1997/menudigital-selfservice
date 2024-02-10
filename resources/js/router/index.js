@@ -20,9 +20,12 @@ import EmployeePlanning from "../components/Pages/Dashboard/EmployeePlanning.vue
 import Reservation from '../components/Pages/Dashboard/Reservation/Reservation.vue'
 
 
-const stock_permission = [1, 2, 3, 5, 7, 8, 4];
-const bi_permission = [1];
-
+var managerAccess;
+var stockAccess;
+var administrativeAccess;
+localStorage.getItem('managerAccess') ? managerAccess = localStorage.getItem('managerAccess').split(','): null;
+localStorage.getItem('stockAccess') ? stockAccess = localStorage.getItem('stockAccess').split(','): null;
+localStorage.getItem('administrativeAccess') ? administrativeAccess = localStorage.getItem('administrativeAccess').split(','): null;
 const routes = [
 
     {
@@ -51,6 +54,14 @@ const routes = [
         path: '/new/item',
         name: 'NewItem',
         component: NewItem,
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+                if(managerAccess){
+                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                }
+            })
+        },
         meta: {requiresAuth: true}
     },
 
@@ -72,12 +83,10 @@ const routes = [
         name: 'OperadorPanel',
         component: OperadorPanel,
         beforeEnter: (to, from, next) => {
-            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-            axios.get('/api/user').then((response) => {
-                if (response.data.department_id !== 1 && response.data.department_id !== 2 && response.data.position_id !== 1 && response.data.position_id !== 4 ){
-                    next('/home')
-                }else{
-                    next()
+             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+             axios.get('/api/user').then((response) => {
+                if (administrativeAccess){
+                    Object.values(administrativeAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },
@@ -91,11 +100,8 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-
-                if (!bi_permission.includes(response.data.position_id)){
-                    next('/home')
-                }else{
-                    next()
+                if (managerAccess){
+                    managerAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },
@@ -106,6 +112,14 @@ const routes = [
         path:'/new/type',
         name: 'NewMenuType',
         component: NewMenuType,
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+                if (managerAccess){
+                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
+                }
+            })
+        },
         meta: {requiresAuth: true}
     },
 
@@ -122,10 +136,8 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-                if (response.data.department_id !== 1 && response.data.department_id !== 2) {
-                    next('/home')
-                }else{
-                    next()
+                if (managerAccess){
+                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
 
             })
@@ -140,12 +152,9 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-                if (response.data.department_id !== 1) {
-                    next('/home')
-                }else{
-                    next()
+                if (managerAccess){
+                    Object.values(managerAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
-
             })
         },
         meta: {requiresAuth: true}
@@ -167,11 +176,8 @@ const routes = [
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
-
-                if (!stock_permission.includes(response.data.position_id)){
-                    next('/home')
-                }else{
-                    next()
+                if (stockAccess){
+                    Object.values(stockAccess).includes(`${response.data.position_id}`) ? next() : next('/home');
                 }
             })
         },

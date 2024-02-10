@@ -26,6 +26,15 @@ class Position extends Model
         $query->whereIn('id', [
             self::MANGER,
             self::CHEF_BAR,
+            self::CHEF_KITCHEN
+        ]);
+    }
+
+    public function scopeAdministrative(Builder $query): void
+    {
+        $query->whereIn('id', [
+            self::MANGER,
+            self::CHEF_BAR,
             self::CHEF_BAR,
             self::SALE_MANAGER,
             self::CASH_REGISTER

@@ -73,28 +73,31 @@ export default {
 
     methods: {
         login() {
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    axios.post('/api/login', this.credentials).then((response) => {
-                        this.visibleLoginModal = true;
-                        this.load = true;
-                        localStorage.setItem('token', response.data.token);
-                        localStorage.setItem('stockAccess', response.data.stockAccess);
-                        localStorage.setItem('managerAccess', response.data.managerAcess);
-                        this.$toast.success("Seja Bem vindo!");
-                        resolve(true);
-                        setTimeout(() => {this.$router.push({path: '/dashboard/operador'})}, this.randTime())
-                    }).catch((errors) => {
-                        errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
-                        this.msgerrors = errors.response.data.errors
-                        this.invalid = 'p-invalid'
-                    })
-                }, 0)
-            })
+            axios.post('/api/login', this.credentials).then((response) => {
+                this.visibleLoginModal = true;
+                this.load = true;
+                localStorage.setItem('token', response.data.token);
+                localStorage.setItem('stockAccess', response.data.stockAccess);
+                localStorage.setItem('managerAccess', response.data.managerAccess);
+                localStorage.setItem('administrativeAccess', response.data.administrativeAccess)
+                this.$toast.success("Seja Bem vindo!");
+                setTimeout(() => {this.$router.push({path: '/dashboard/operador'})}, this.randTime())
+                //this.$router.push({path: '/dashboard/operador'})
+                resolve(true);
+            }).catch((errors) => {
+
+                //errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
+            }).finally(this.visibleLoginModal = false, this.load = false)
+        },
+
+        pusher(){
+            setTimeout(() => {
+                this.$router.push({path: '/dashboard/operador'});
+            }, this.randTime())
         },
 
         randTime(){
-            return Math.floor(Math.random() * (2500 - 1500) + 1500);
+            return Math.floor(Math.random() * (1000 - 500) + 500);
         }
 
     },

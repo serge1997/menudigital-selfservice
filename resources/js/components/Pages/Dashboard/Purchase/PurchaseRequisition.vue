@@ -67,13 +67,13 @@
                 <Column field="prod_unmed" header="Ações" style="width: 25%">
                     <template #body="{ data }">
                         <div class="d-flex">
-                            <div v-if="showActionIcon">
+                            <div v-if="position_id">
                                 <PurchaseRequisitionEdition :id="data.id" :status_desc="data.stat_desc" />
                             </div>
                             <div>
                                 <ShowRequisition :id="data.id"/>
                             </div>
-                            <div v-if="showActionIcon">
+                            <div v-if="position_id">
                                 <Button @click="deleteRequisition(data.id)" style="color: red" icon="pi pi-trash" text/>
                             </div>
 
@@ -127,7 +127,7 @@ export default {
     data(){
         return {
             visibleNewPurchaseModal: false,
-            departments: null,
+            position_id: null,
             purchaseData: {
                 department_id: null,
                 user_id: null,
@@ -150,6 +150,7 @@ export default {
                 approved: "Aprovado",
                 rejected: "Recusado",
             },
+            managerAcess: localStorage.getItem('managerAccess'),
             showActionIcon: false,
         }
     },
@@ -226,13 +227,16 @@ export default {
         this.loadProducts();
         this.loadDepartments();
 
-        getAuth().then(result => {
-            if (result.department_id == this.user.department_id){
-                this.showActionIcon = true;
-            }
+        getAuth().then( async (result) => {
+            this.position_id = await result.position_id;
+            // if (result.department_id == this.user.department_id){
+            //     this.showActionIcon = true;
+
+            // }
             this.user.name = result.name
             this.user.id = result.id
             this.purchaseData.user_id = result.id
+            alert(this.position_id)
         });
     }
 }

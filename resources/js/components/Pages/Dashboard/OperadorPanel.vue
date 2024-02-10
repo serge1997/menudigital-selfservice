@@ -459,7 +459,7 @@ export default {
     },
 
     mounted(){
-        console.log(localStorage.getItem('item_id'))
+    
     }
 }
 
