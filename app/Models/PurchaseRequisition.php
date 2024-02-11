@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PurchaseRequisition extends Model
@@ -31,5 +32,10 @@ class PurchaseRequisition extends Model
     public function itens(): HasMany
     {
         return $this->hasMany(RequisitionItem::class, 'requisition_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

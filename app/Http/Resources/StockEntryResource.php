@@ -17,14 +17,16 @@ class StockEntryResource extends JsonResource
     {
         return [
            'productID' => $this->productID,
-           'emissao' => $this->emissao,
+           'emissao' => $this->created_at->format('d/m/yy'),
            'quantity' => $this->quantity,
            'unitCost' => $this->unitCost,
            'totalCost' => $this->totalCost,
            'supplierID' => $this->supplierID,
            'supp_name' => $this->supplier->sup_name,
            'requisition_id' => $this->requisition_id,
+           'requisition_date' => $this->requisition->created_at->format('d/m/yy'),
            'requisition_code' => $this->requisition->requisition_code,
+           'user_name' => $this->requisition->user->name,
            'prod_name' => $this->product->prod_name,
            'prod_unmed' => $this->product->prod_unmed,
            'prod_minquantity' => $this->product->min_quantity,

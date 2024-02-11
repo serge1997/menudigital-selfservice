@@ -1,8 +1,8 @@
 <template>
     <div class="container-fluid">
         <h5 class="text-center text-capitalize">Analise de custo e fornecedore</h5>
-        <div class="row d-flex justify-content-center mb-4 p-2 mt-3">
-            <div class="col-md-3 d-flex align-items-center justify-content-flex" v-for="sup in supplierCostData">
+        <div class="row d-flex justify-content-center mb-4 p-2 mt-3 gap-3">
+            <div class="col-md-3 d-flex align-items-center justify-content-flex gap-3 border rounded-2 p-2 shadow-sm" v-for="sup in supplierCostData">
                 <Knob class="m-auto" v-model="sup.percent" readonly :size="130"/>
                 <div class="w-100 d-flex flex-column">
                     <small class="fw-medium">{{ sup.sup_name }}</small>
@@ -51,7 +51,14 @@
                     <Column field="prod_unmed" header="Ação" style="width: 25%">
                         <template #body="{ data }">
                             <div class="d-flex">
-                                <ShowCostDetailsComponents @get-cost-details="getCostDetails(data.requisition_id)"/>
+                                <ShowCostDetailsComponents @get-cost-details="getCostDetails(data.requisition_id) "
+                                    :products-cost-detail="costshow"
+                                    :requer-name="requerName"
+                                    :requer-code="requerCode"
+                                    :delivery-date="deliveryDate"
+                                    :requer-date="requerDate"
+                                    :load-detail-bar="loadDetailBar"
+                                    />
                             </div>
                         </template>
                     </Column>
@@ -72,7 +79,6 @@ import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import ProgressBar from 'primevue/progressbar';
 import ShowCostDetailsComponents from './ShowCostDetailsComponents.vue';
-
 import { randTime } from './../../../../rand';
 
 export default {
@@ -125,7 +131,13 @@ export default {
                 {year: "2027"},
                 {year: "2028"},
                 {year: "2029"},
-            ]
+            ],
+            costshow: null,
+            requerName: null,
+            deliveryDate: null,
+            requerDate: null,
+            requerCode: null,
+            loadDetailBar: false,
         }
     },
 
@@ -157,9 +169,21 @@ export default {
             });
         },
         getCostDetails(requisition_id){
-            return new Promise( async (resole) => {
+            this.loadDetailBar = true
+            this.costshow = null
+            return new Promise((resole) => {
+               setTimeout( async () => {
                 const apiResponse = await axios.get('/api/stock-requistion/' + requisition_id)
-                console.log(apiResponse.data)
+                this.costshow = await apiResponse.data
+                for (let dt of this.costshow){
+                    this.requerName = dt.user_name;
+                    this.requerCode = dt.requisition_code;
+                    this.requerDate = dt.requisition_date;
+                    this.deliveryDate = dt.emissao
+                    this.loadDetailBar = false
+                }
+               }, randTime())
+
             })
         }
     },

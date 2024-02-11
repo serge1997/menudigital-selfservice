@@ -30,8 +30,7 @@ export default {
 }
 </script>
 <style scoped>
-.p-tabview{
-    text-decoration: none #ff0000;
-    color: #ff0000;
+.p-tabview-panels{
+    color: #333;
 }
 </style>
