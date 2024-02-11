@@ -214,4 +214,13 @@ class StockController extends Controller
     {
         return $stock->checkAllwaysRupture();
     }
+
+    public function listStockEntryByRequisition($requisition_id): JsonResponse
+    {
+        try{
+            return response()->json($this->stockRepositoryInterface->findStockEntryByRequisition($requisition_id));
+        }catch(Exception $e){
+            return response()->json($e->getMessage(). ' '.$e->getFile(), 500);
+        }
+    }
 }

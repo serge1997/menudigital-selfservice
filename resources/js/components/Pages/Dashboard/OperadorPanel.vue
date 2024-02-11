@@ -372,7 +372,7 @@ export default {
                        return this.getOrder()
                    }).catch((errors) => {
                        console.log(errors.response.data.message)
-                       errors.response.status === 500 ? this.$swal.fire({text: errors.response.data.message, icon: 'warning'}): null
+                       errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
                    })
                }
            })

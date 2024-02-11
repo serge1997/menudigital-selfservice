@@ -4,6 +4,7 @@ namespace App\Main\Stock;
 use App\Models\StockEntry;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use App\Http\Resources\StockEntryResource;
 use Illuminate\Support\Facades\DB;
 
 class StockRepository implements StockRepositoryInterface
@@ -113,5 +114,13 @@ class StockRepository implements StockRepositoryInterface
         return new Collection(
             $query
         );
+    }
+
+    public function findStockEntryByRequisition($requisition_id)
+    {
+        return StockEntryResource::collection(
+            StockEntry::where('requisition_id', $requisition_id)
+                ->get()
+            );
     }
 }

@@ -25,4 +25,9 @@ class Supplier extends Model
     {
         return $this->hasMany(Product::class, 'prod_supplierID');
     }
+
+    public function stockentry(): HasMany
+    {
+        return $this->hasMany(StockEntry::class, 'supplierID');
+    }
 }

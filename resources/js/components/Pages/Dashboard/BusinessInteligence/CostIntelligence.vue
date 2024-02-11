@@ -48,6 +48,13 @@
                     <Column field="cost" sortable style="width: 15%" header="Custo"></Column>
                     <Column field="totalCost" sortable style="width: 25%" header="Custo total"></Column>
                     <Column field="period" sortable style="width: 25%" header="period"></Column>
+                    <Column field="prod_unmed" header="Ação" style="width: 25%">
+                        <template #body="{ data }">
+                            <div class="d-flex">
+                                <ShowCostDetailsComponents @get-cost-details="getCostDetails(data.requisition_id)"/>
+                            </div>
+                        </template>
+                    </Column>
                 </DataTable>
             </div>
         </div>
@@ -64,6 +71,7 @@ import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
 import ProgressBar from 'primevue/progressbar';
+import ShowCostDetailsComponents from './ShowCostDetailsComponents.vue';
 
 import { randTime } from './../../../../rand';
 
@@ -80,7 +88,8 @@ export default {
         Button,
         InputText,
         Dropdown,
-        ProgressBar
+        ProgressBar,
+        ShowCostDetailsComponents
     },
 
     data(){
@@ -135,18 +144,24 @@ export default {
         },
         getFiltersData(){
             this.load = true;
-        return new Promise(resole => {
-            setTimeout(() => {
-                axios.post('/api/cost-analyse-filter', this.filtreParam).then( async (filterResponse) => {
-                    this.costData = await filterResponse.data.cost;
-                    this.supplierCostData = await filterResponse.data.supCost
-                    resole(true);
-                })
-                .catch(errors => console.log(errors))
-                .finally(this.load = false);
-            }, randTime())
-        });
-    },
+            return new Promise(resole => {
+                setTimeout(() => {
+                    axios.post('/api/cost-analyse-filter', this.filtreParam).then( async (filterResponse) => {
+                        this.costData = await filterResponse.data.cost;
+                        this.supplierCostData = await filterResponse.data.supCost
+                        resole(true);
+                    })
+                    .catch(errors => console.log(errors))
+                    .finally(this.load = false);
+                }, randTime())
+            });
+        },
+        getCostDetails(requisition_id){
+            return new Promise( async (resole) => {
+                const apiResponse = await axios.get('/api/stock-requistion/' + requisition_id)
+                console.log(apiResponse.data)
+            })
+        }
     },
 
     mounted(){

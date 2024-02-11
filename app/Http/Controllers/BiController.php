@@ -152,6 +152,7 @@ class BiController extends Controller
         //analyse custo produto / fornecedor
         $cost = StockEntry::select(
             'stock_entries.productID AS product_id',
+            'stock_entries.requisition_id',
             'products.prod_name',
             'suppliers.sup_name',
             DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
@@ -165,6 +166,7 @@ class BiController extends Controller
                     'stock_entries.productID',
                     'products.prod_name',
                     'suppliers.sup_name',
+                    'stock_entries.requisition_id',
                     DB::raw("CONCAT(SUBSTRING(MONTHNAME(stock_entries.emissao),1, 3), '/',YEAR(stock_entries.emissao))")
                 )
                 ->orderBy('suppliers.sup_name')
@@ -211,6 +213,7 @@ class BiController extends Controller
                 st.productID AS product_id,
                 pr.prod_name,
                 supp.sup_name,
+                st.requisition_id,
                 SUM(st.totalCost) AS totalCost,
                 SUM(st.quantity) AS quantity,
                 TRUNCATE(AVG(st.unitCost), 2) AS cost,
@@ -225,6 +228,7 @@ class BiController extends Controller
                     st.productID,
                     pr.prod_name,
                     supp.sup_name,
+                    st.requisition_id,
                     CONCAT(SUBSTRING(MONTHNAME(st.emissao),1, 3), '/',YEAR(st.emissao))
             ORDER BY supp.sup_name";
 

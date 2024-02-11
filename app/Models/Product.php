@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
@@ -23,5 +24,15 @@ class Product extends Model
     public  function supplier(): BelongsTo
     {
         return $this->belongsTo(Supplier::class, 'prod_supplierID');
+    }
+
+    public function stockentry(): HasMany
+    {
+        return $this->hasMany(StockEntry::class, 'productID');
+    }
+
+    public function saldo(): BelongsTo
+    {
+        return $this->belongsTo(Saldo::class, 'productID');
     }
 }
