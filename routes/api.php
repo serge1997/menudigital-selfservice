@@ -38,8 +38,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/user-token', [UserController::class, 'currentUser']);
-
+Route::middleware('auth::sanctum')->group(function() {
+   Route::get('user-token', [UserController::class, 'currentuser']);
+});
 
 Route::controller(MenuItemController::class)->group(function(){
     Route::post('menu-items', 'storeMenuItem');

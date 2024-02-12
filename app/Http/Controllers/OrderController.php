@@ -90,10 +90,10 @@ class OrderController extends Controller
         }
     }
 
-    public function getOrderHistory(): JsonResponse
+    public function getOrderHistory(Request $request): JsonResponse
     {
         try{
-            $orderHistoryResponse = $this->orderRepositotyInterface->getOrderHistory();
+            $orderHistoryResponse = $this->orderRepositotyInterface->getOrderHistory($request);
             return response()->json($orderHistoryResponse);
         }catch(Exception $e){
             return response()->json($e->getMessage());

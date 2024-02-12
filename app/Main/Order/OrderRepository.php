@@ -106,8 +106,13 @@ class OrderRepository implements OrderRepositoryInterface
 
     }
 
-    public function getOrderHistory(): Collection
+    public function getOrderHistory($request): Collection
     {
+        $where = "";
+        if ($request->start && $request->end){
+            $where .= "pedidos.ped_emissao >= '".substr($request->start, 0, 10)."' AND pedidos.ped_emissao <= '". substr($request->end, 0, 10)."'";
+        }
+        // var_dump($where); die;
         $orderHistory = DB::table('pedidos')
         ->select(
             'pedidos.id',
@@ -122,16 +127,17 @@ class OrderRepository implements OrderRepositoryInterface
                 ->join('users', 'pedidos.user_id', '=', 'users.id')
                     ->join('status', 'pedidos.status_id', '=', 'status.id')
                         ->where([['pedidos.status_id', '<>', 6], ['pedidos.status_id', '<>', 5]])
-                            ->groupBy(
-                                'id',
-                                'pedidos.ped_customerName',
-                                'users.name',
-                                'status.stat_desc',
-                                'pedidos.ped_tableNumber',
-                                'pedidos.ped_emissao'
-                            )
-                                ->orderBy('pedidos.ped_emissao', 'DESC')
-                                    ->get();
+                            ->whereRaw($where)
+                                ->groupBy(
+                                    'id',
+                                    'pedidos.ped_customerName',
+                                    'users.name',
+                                    'status.stat_desc',
+                                    'pedidos.ped_tableNumber',
+                                    'pedidos.ped_emissao'
+                                )
+                                    ->orderBy('pedidos.ped_emissao', 'DESC')
+                                        ->get();
 
         return new Collection($orderHistory);
     }

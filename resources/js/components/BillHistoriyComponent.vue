@@ -27,6 +27,18 @@
                                 <Column field="item_total" header="Subtotal"/>
                             </Datatable>
                         </div>
+                        <div class="w-100 d-flex flex-column mb-3">
+                            <div v-if="load" class="col-md-8 m-auto d-flex flex-column">
+                                <small class="text-center">Carregando...</small>
+                                <ProgressBar mode="indeterminate" style="height: 6px"/>
+                            </div>
+                            <span style="font-weight: 600;">Filtro </span>
+                            <div class="d-flex gap-3">
+                                <Calendar v-model="dateFilter.start" date-format="dd/mm/yy" showIcon placeholder="Inicio"/>
+                                <Calendar v-model="dateFilter.end" date-format="dd/mm/yy" showIcon iconDisplay="input" placeholder="Fim"/>
+                                <Button @click="filtreBillHistory" icon="pi pi-filter"></Button>
+                            </div>
+                        </div>
                         <table class="table table-active">
                             <thead>
                                 <tr>
@@ -75,12 +87,12 @@
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito</h1>
                         <span class="px-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                     stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
-                                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                            </span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
+                                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -108,7 +120,9 @@
 import Button from "primevue/button";
 import Datatable from "primevue/datatable";
 import Column from "primevue/column";
-import axios from "axios";
+import Calendar from 'primevue/calendar';
+import ProgressBar from "primevue/progressbar";
+import { randTime } from './../rand';
 
 export default {
     name: 'BillHistoryComponent',
@@ -116,7 +130,9 @@ export default {
     components: {
         Button,
         Datatable,
-        Column
+        Column,
+        Calendar,
+        ProgressBar
     },
 
     props: ['status'],
@@ -133,6 +149,11 @@ export default {
             },
             itens: null,
             showBillItem: false,
+            dateFilter: {
+                start: null,
+                end: null
+            },
+            load: false,
 
         }
     },
@@ -154,6 +175,16 @@ export default {
             this.order_id = localStorage.getItem('orderHistory');
         },
 
+        async geOrderHistory(){
+            return new Promise(resolve => {
+                setTimeout(async () => {
+                    let orderHistory = await axios.get('/api/order-history', {params: {start: this.dateFilter.start, end: this.dateFilter.end}});
+                    this.bills = await orderHistory.data
+                    resolve(this.load = false)
+                }, randTime())
+            })
+        },
+
         //show order or bill itens
         getOrderItem(id) {
             axios.get('/api/order-menu-itens/' + id).then((response) => {
@@ -163,14 +194,21 @@ export default {
                 console.log(errors)
             })
         },
+        filtreBillHistory(){
+            this.load = true;
+            return this.geOrderHistory();
+        }
     },
-
+    created(){
+        this.dateFilter.start = new Date();
+        this.dateFilter.end = new Date()
+    },
     async mounted(){
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
         let authuser = await axios.get('/api/user');
         this.gerente = await authuser.data.position_id
-        let orderHistory = await axios.get('/api/order-history');
-        this.bills = await orderHistory.data
+        this.geOrderHistory()
+
 
 
     }

@@ -9,7 +9,7 @@ interface OrderRepositoryInterface
     public function getOrderItens($id): Collection;
     public function createOrder($request);
     public function setOrderPaymentStatus($status_id, $pedido_id, $request);
-    public function getOrderHistory(): Collection;
+    public function getOrderHistory($request): Collection;
     public function updateHistoryOrderStatus($order_id, $request): void;
     public function addNewItemToOrder($request);
     public function getOrderTransfert($id): Collection;
