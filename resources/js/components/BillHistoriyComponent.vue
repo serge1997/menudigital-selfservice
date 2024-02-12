@@ -177,10 +177,16 @@ export default {
 
         async geOrderHistory(){
             return new Promise(resolve => {
-                setTimeout(async () => {
-                    let orderHistory = await axios.get('/api/order-history', {params: {start: this.dateFilter.start, end: this.dateFilter.end}});
-                    this.bills = await orderHistory.data
-                    resolve(this.load = false)
+                setTimeout(() => {
+                    axios.get('/api/order-history', {params: {start: this.dateFilter.start, end: this.dateFilter.end}})
+                    .then((response) => {
+                        this.bills = response.data
+                        resolve(true)
+                    })
+                    .catch(errors => console.log(errors))
+                    .finally(() => {
+                        this.load = false;
+                    });
                 }, randTime())
             })
         },
