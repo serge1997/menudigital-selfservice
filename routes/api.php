@@ -114,6 +114,7 @@ Route::controller(StockController::class)->group(function() {
     Route::put("current/stock-rest", "cureentSaldoCheck");
     Route::get('stock-search', 'filterDataTableAction');
     Route::get('stock-requistion/{requisition_id}', 'listStockEntryByRequisition');
+    Route::get('inventory-filter', 'listInventory');
 });
 
 //produto

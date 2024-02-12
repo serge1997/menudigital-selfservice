@@ -149,7 +149,8 @@ export default {
                 drinks: 0,
                 dessert: 0,
                 def: 0,
-                wine: 0
+                wine: 0,
+                fastFood: 0,
             },
             barchart:{
                 date: [],
@@ -237,8 +238,11 @@ export default {
                             this.type.wine += Number(typename.typevenda)
                             console.log(this.type.wine)
                             break;
-                        case "DESSERT":
+                        case "SOBREMESA":
                             this.type.dessert += Number(typename.typevenda);
+                            break;
+                        case "FASTFOOD":
+                            this.type.fastFood += Number(typename.typevenda);
                             break;
                         default:
                             this.type.def += typename.typevenda;
@@ -282,7 +286,8 @@ export default {
                     columns: [
                         ["DRINKS", this.type.drinks],
                         ["PRINCIPAL", this.type.principal],
-                        ["VINHO", this.type.wine]
+                        ["VINHO", this.type.wine],
+                        ["FASTFOOD", this.type.fastFood]
                     ],
                     type: donut(), // for ESM specify as: donut()
                     onclick: function(d, i) {

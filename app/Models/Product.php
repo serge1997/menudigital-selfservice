@@ -35,4 +35,9 @@ class Product extends Model
     {
         return $this->belongsTo(Saldo::class, 'productID');
     }
+
+    public function fiche(): BelongsTo
+    {
+        return $this->belongsTo(Technicalfiche::class, 'productID');
+    }
 }

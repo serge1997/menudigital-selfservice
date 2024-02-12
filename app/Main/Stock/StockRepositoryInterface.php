@@ -9,4 +9,5 @@ interface StockRepositoryInterface
     public function filterDataTable($request): Collection;
     public function filterCostIntelligence($request, $supplier, $year, $month): Collection;
     public function findStockEntryByRequisition($requisition_id);
+    public function getInventory($request);
 }

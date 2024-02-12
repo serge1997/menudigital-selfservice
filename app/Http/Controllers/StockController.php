@@ -223,4 +223,13 @@ class StockController extends Controller
             return response()->json($e->getMessage(). ' '.$e->getFile(), 500);
         }
     }
+
+    public function listInventory(Request $request)
+    {
+        try{
+            return response()->json($this->stockRepositoryInterface->getInventory($request));
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }

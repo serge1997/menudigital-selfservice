@@ -5,10 +5,15 @@ use App\Models\StockEntry;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use App\Http\Resources\StockEntryResource;
+use App\Models\Saldo;
+use App\Http\Resources\SaldoResource;
 use Illuminate\Support\Facades\DB;
 
 class StockRepository implements StockRepositoryInterface
 {
+    public $bar = [1, 5];
+    public $kitchen = [2, 3];
+
     public function findLastProductEntry($id)
     {
         $productInfo = StockEntry::where('productID', $id)
@@ -122,5 +127,18 @@ class StockRepository implements StockRepositoryInterface
             StockEntry::where('requisition_id', $requisition_id)
                 ->get()
             );
+    }
+
+    public function getInventory($request)
+    {
+
+        $query = Saldo::select('*')
+            ->join('technicalfiches AS te', 'te.productID', '=', 'saldos.productID')
+                ->join('menuitems AS me', 'me.id', '=', 'te.itemID')
+                    ->whereIn('me.type_id', $request->department == 1 ? $this->bar : $this->kitchen)
+                        ->get();
+
+        return SaldoResource::collection($query);
+
     }
 }

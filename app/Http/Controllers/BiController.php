@@ -71,10 +71,11 @@ class BiController extends Controller
                     "
                         CASE
                             WHEN menuitems.type_id = 2 THEN 'ENTRADA'
-                            WHEN menuitems.type_id = 3 THEN 'VINHO'
+                            WHEN menuitems.type_id = 5 THEN 'VINHO'
                             WHEN menuitems.type_id = 4 THEN 'PRINCIPAL'
                             WHEN menuitems.type_id = 1 THEN 'DRINKS'
-                            WHEN menuitems.type_id = 5 THEN 'SOBREMESA'
+                            WHEN menuitems.type_id = 6 THEN 'SOBREMESA'
+                            WHEN menuitems.type_id = 3 THEN 'FASTFOOD'
                         ELSE '' END AS type
                     "
                     ),
