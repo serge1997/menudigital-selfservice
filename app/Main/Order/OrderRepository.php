@@ -22,6 +22,7 @@ use Exception;
 use Illuminate\Support\Facades\Hash;
 use App\Traits\Permission;
 use App\Traits\AuthSession;
+use App\Models\Restaurant;
 
 class OrderRepository implements OrderRepositoryInterface
 {
@@ -321,7 +322,7 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getOrdersReport()
     {
-
+        $restaurant = Restaurant::find(Restaurant::RESTAURANT_KEY);
         $report = DB::table('itens_pedido')
             ->select(
                 'menuitems.item_name',
@@ -330,25 +331,43 @@ class OrderRepository implements OrderRepositoryInterface
             )
                 ->join('menuitems', 'itens_pedido.item_id', '=', 'menuitems.id')
                     ->join('pedidos', 'itens_pedido.item_pedido', '=', 'pedidos.id')
-                        ->where('item_emissao', Util::Today())
-                            ->where([['itens_pedido.item_delete', false], ['pedidos.status_id', '<>', 6]])
-                                ->groupby(
-                                    'menuitems.item_name'
-                                )->get();
+                        ->where([
+                                ['itens_pedido.item_delete', false],
+                                ['pedidos.status_id', '<>', 6],
+                                ['pedidos.ped_emissao', Util::Today()]
+                            ])
+                            ->whereTime('pedidos.created_at', '>=', $restaurant->res_open)
+                                ->whereTime('pedidos.created_at', '<=', $restaurant->res_close)
+                                    ->groupby(
+                                        'menuitems.item_name'
+                                    )->get();
 
         $paiement_data = DB::table('pedidos')
             ->select(DB::raw('SUM(itens_pedido.item_total) cash'), 'status.stat_desc')
                 ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
                     ->rightJoin('status', 'pedidos.status_id', '=', 'status.id')
-                        ->where('pedidos.ped_emissao', Util::Today())
-                            ->groupBy([
-                                'status.stat_desc'
-                            ])->get();
+                        ->where([
+                            ['itens_pedido.item_delete', false],
+                            ['pedidos.status_id', '<>', 6],
+                            ['pedidos.ped_emissao', Util::Today()]
+                        ])
+                            ->whereTime('pedidos.created_at', '>=', $restaurant->res_open)
+                                ->whereTime('pedidos.created_at', '<=', $restaurant->res_close)
+                                    ->groupBy([
+                                        'status.stat_desc'
+                                    ])->get();
 
         $itemCanceled = DB::table('itens_pedido')
                 ->select(DB::raw('SUM(item_quantidade * item_price) valor'))
-                        ->where([['item_emissao', Util::Today()], ['item_quantidade', '<', 0]])
-                            ->get();
+                    ->where([
+                        ['itens_pedido.item_delete', false],
+                        ['item_delete', '=', 1],
+                        ['item_emissao', Util::Today()],
+                        ['item_quantidade', '<', 0]
+                    ])
+                        ->whereTime('created_at', '>=', $restaurant->res_open)
+                            ->whereTime('created_at', '<=', $restaurant->res_close)
+                                ->get();
 
 
 

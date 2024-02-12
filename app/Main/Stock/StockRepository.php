@@ -132,7 +132,12 @@ class StockRepository implements StockRepositoryInterface
     public function getInventory($request)
     {
 
-        $query = Saldo::select('*')
+        $query = Saldo::select(
+            DB::raw('DISTINCT saldos.productID'),
+            'saldos.saldoFinal',
+            'saldos.saldoInicial',
+            'saldos.emissao'
+        )
             ->join('technicalfiches AS te', 'te.productID', '=', 'saldos.productID')
                 ->join('menuitems AS me', 'me.id', '=', 'te.itemID')
                     ->whereIn('me.type_id', $request->department == 1 ? $this->bar : $this->kitchen)

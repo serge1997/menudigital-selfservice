@@ -82,13 +82,13 @@ export default {
                 localStorage.setItem('administrativeAccess', response.data.administrativeAccess)
                 this.$toast.success("Seja Bem vindo!");
                 setTimeout(() => {this.$router.push({path: '/dashboard/operador'})}, this.randTime())
-                //this.$router.push({path: '/dashboard/operador'})
             }).catch((errors) => {
                 errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
                 this.msgerrors = errors.response.data.errors
                 this.invalid = 'p-invalid'
-                //errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
-            }).finally(this.visibleLoginModal = false, this.load = false)
+            }).finally(() => {
+                this.visibleLoginModal = false, this.load = false
+            })
         },
 
         pusher(){
