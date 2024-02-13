@@ -4,15 +4,30 @@
             <Toolbar class="w-100">
                 <template #start>
                     <div class="d-flex gap-2">
-                        <Calendar date-format="dd/mm/yy" v-model="dateFilter.start" showIcon placeholder="start"/>
-                        <Calendar date-format="dd/mm/yy" v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
-                        <Button @click.prevent="getGeneralStat" icon="pi pi-filter"></Button>
+                        <div class="d-flex flex-column">
+                            <span class="fw-medium">Inicio</span>
+                            <Calendar date-format="dd/mm/yy" v-model="dateFilter.start" showIcon placeholder="start"/>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span class="fw-medium">Fim</span>
+                            <Calendar date-format="dd/mm/yy" v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
+                        </div>
+                    </div>
+                </template>
+                <template #center>
+                    <div class="d-flex gap-2">
+                        <div class="d-flex flex-column">
+                            <span class="fw-medium">Menu</span>
+                            <Dropdown style="width: 15rem;" :options="menuItems" optionValue="id" optionLabel="item_name" placeholder="Selecione item do menu..." v-model="dateFilter.item"/>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <span class="fw-medium">Colaborador</span>
+                            <Dropdown style="width: 15rem;" :options="users" optionValue="id" optionLabel="name" placeholder="Selecione colaborador..." v-model="dateFilter.user"/>
+                        </div>
                     </div>
                 </template>
                 <template #end>
-                    <div>
-                        <Button @click="$router.push({ name: 'OperadorPanel'})" label="Panel" data-bs-dismiss="modal" icon="pi pi-plus"/>
-                    </div>
+                    <Button @click.prevent="getGeneralStat" icon="pi pi-filter"></Button>
                 </template>
             </Toolbar>
         </div>
@@ -113,8 +128,8 @@
 </template>
 <script>
 import InputText from 'primevue/inputtext';
-import bb, {area, areaSpline, bar, line, donut} from 'billboard.js'
-//import SideBarComponent from './SideBarComponent.vue';
+import bb, {area, areaSpline, bar, line, donut} from 'billboard.js';
+import Dropdown from 'primevue/dropdown';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from "primevue/button";
@@ -130,7 +145,8 @@ export default {
         Column,
         Button,
         Toolbar,
-        Calendar
+        Calendar,
+        Dropdown
     },
 
     data() {
@@ -158,7 +174,9 @@ export default {
             },
             dateFilter: {
                 start: null,
-                end: null
+                end: null,
+                user: null,
+                item: null
             },
             monthlySell:{
                 currentMonth: null,
@@ -169,7 +187,9 @@ export default {
             cardClass: {
                 cardClassThis: null,
                 cardClassLast: null
-            }
+            },
+            users: null,
+            menuItems: null,
         }
     },
 
@@ -191,7 +211,8 @@ export default {
                 {'start': start.substr(0, 15),},
                 {'end': end.substr(0, 15)}
             ]
-            axios.get(`/api/bi/general-stat/${params[0].start}/${params[1].end}`).then((response) => {
+            axios.get('/api/bi/general-stat', {params: {start: this.dateFilter.start, end: this.dateFilter.end, user: this.dateFilter.user, item: this.dateFilter.item}})
+            .then((response) => {
                 console.log("response")
                 console.log(response)
                 for (let data of response.data){
@@ -201,20 +222,21 @@ export default {
                 }
 
                 this.SetDoubleBarChart();
-                this.get_type_waiter_dash(params[0].start, params[1].end)
+                this.get_type_waiter_dash()
             })
         },
 
-        async get_type_waiter_dash(start, end){
-            this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
-            this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
-            start = this.dateFilter.start.toString();
-            end = this.dateFilter.end.toString();
-            const params = [
-                {'start': start.substr(0, 15),},
-                {'end': end.substr(0, 15)}
-            ]
-            axios.get(`/api/bi/dash-type-waiter/${params[0].start}/${params[1].end}`).then((response) => {
+        async get_type_waiter_dash(){
+            // this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
+            // this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
+            // start = this.dateFilter.start.toString();
+            // end = this.dateFilter.end.toString();
+            // const params = [
+            //     {'start': start.substr(0, 15),},
+            //     {'end': end.substr(0, 15)}
+            // ]
+            axios.get('/api/bi/dash-type-waiter', {params: {start: this.dateFilter.start, end: this.dateFilter.end, user: this.dateFilter.user, item: this.dateFilter.item}})
+            .then((response) => {
                 this.monthlySell.currentMonth = response.data.thisMonth;
                 this.monthlySell.lastMonth = response.data.lastMonth;
                 this.monthlySell.totalDay = response.data.totalDay
@@ -317,21 +339,28 @@ export default {
                     this.monthlyComparaison = false;
                 }
             }
-        //    console.log(thisMonth + ' - ' + lastMonth);
-        //    if (result){
-        //        this.cardClass.cardClassThis = 'alert alert-success';
-        //        this.cardClass.cardClassLast = 'alert alert-danger'
-        //    }else{
-        //        this.cardClass.cardClassThis = 'alert alert-danger';
-        //        this.cardClass.cardClassLast = 'alert alert-success'
-        //    }
-        //    //result === false ? this.cardClass = 'alert alert-danger' : this.cardClass = 'alert alert-success'
-        //    this.monthlyComparaison = result;
+       },
+
+       async getUsers(){
+            const userResponse = await axios.get('/api/users');
+            this.users = await userResponse.data
+       },
+
+       async getMenuItems(){
+            const menuResponse = await this.axios.get('/api/menu-items');
+            this.menuItems = await menuResponse.data;
+
        }
     },
 
+    created(){
+        this.dateFilter.start = new Date();
+        this.dateFilter.end = new Date()
+    },
     mounted() {
         this.getGeneralStat();
+        this.getUsers();
+        this.getMenuItems();
         //this.monthCompare();
         //this.get_type_waiter_dash()
         //this.donut()

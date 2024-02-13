@@ -17,38 +17,76 @@ class BiController extends Controller
     /**
      * @throws \Exception
      */
-    public function waiterStat($start, $end){
+    public function waiterStat(Request $request){
+
+        $start = substr($request->start, 0, 10);
+        $end = substr($request->end, 0, 10);
+        $user = $request->user;
+        $item = $request->item;
+        $today = new DateTime();
+        $today = $today->format('Y-m-d');
 
         $todayForLastMonth = new DateTime();
+        $lastMonth = $todayForLastMonth->sub(new DateInterval('P1M'));
+        $lastMonth = $lastMonth->format('Y-m');
+
         $todayThisMonth = new DateTime();
+        $thisMonth = $todayThisMonth->format('Y-m');
+
+        //where query
+        $user_where = "";
+        $itemsColection_where = "";
+        $mealType_where = "";
+        $thismonth_where = "";
+        $lastmonth_where = "";
+
+        if ($user){
+            $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' AND pedidos.user_id = '{$user}' ";
+            $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <>  '6' AND pedidos.user_id = '{$user}' ";
+            $mealType_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
+            $thismonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
+            $lastmonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
+        }else{
+            $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' ";
+            $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <>  '6' ";
+            $mealType_where .= "pedidos.status_id <> '6'";
+            $lastmonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$lastMonth."%' ";
+            $thismonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%' ";
+        }
+
+        if ($item){
+            $user_where .= "AND itens_pedido.item_id = {$item}";
+            $itemsColection_where .= "AND itens_pedido.item_id = {$item}";
+            $mealType_where .= "AND itens_pedido.item_id = {$item}";
+            $thismonth_where .= "AND itens.item_id = {$item}";
+            $lastmonth_where .= "AND itens.item_id = {$item}";
+        }
+
+
         $startDate = new DateTime($start);
         $endDate = new DateTime($end);
         $endDate = $endDate->format('Y-m-d');
         $startDate = $startDate->format('Y-m-d');
 
         //last month sell
-        $lastMonth = $todayForLastMonth->sub(new DateInterval('P1M'));
-        $lastMonth = $lastMonth->format('Y-m');
+
 
         $sellLastMonthQuery = "SELECT SUM(itens.item_total) AS total FROM itens_pedido AS itens ";
         $sellLastMonthQuery.= "INNER JOIN pedidos AS pd ON pd.id = itens.item_pedido ";
-        $sellLastMonthQuery .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$lastMonth."%'";
+        $sellLastMonthQuery .= $lastmonth_where;
         $sellLastMontValue = DB::select($sellLastMonthQuery);
 
         //this month sell
-        $thisMonth = $todayThisMonth->format('Y-m');
         $sellThisMonthQuery = "SELECT SUM(itens.item_total) AS total FROM itens_pedido AS itens ";
         $sellThisMonthQuery.= "INNER JOIN pedidos AS pd ON pd.id = itens.item_pedido ";
-        $sellThisMonthQuery .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%'";
+        $sellThisMonthQuery .= $thismonth_where;
         $sellThisMonthValue = DB::select($sellThisMonthQuery);
 
         //sell today
-        $today = new DateTime();
-        $today = $today->format('Y-m-d');
         $sellingToday = DB::table('itens_pedido')
             ->select(DB::raw('SUM(itens_pedido.item_total) AS totalDay'))
                 ->join('pedidos', 'itens_pedido.item_pedido', '=', 'pedidos.id')
-                    ->where([['status_id', '<>', 6], ['pedidos.ped_emissao', '=' ,$today]])
+                    ->whereRaw($user_where)
                         ->get();
 
         $waiter = DB::table("pedidos")
@@ -85,12 +123,12 @@ class BiController extends Controller
                     ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
                     ->join('pedidos', 'pedidos.id', '=', 'itens_pedido.item_pedido')
                         ->whereBetween('itens_pedido.item_emissao', [$startDate, $endDate])
-                        ->where('pedidos.status_id', '<>', 6)
-                            ->groupBy(
-                                'menuitems.type_id',
-                                'menuitems.item_name'
-                                )
-                                ->get();
+                            ->whereRaw($mealType_where)
+                                ->groupBy(
+                                    'menuitems.type_id',
+                                    'menuitems.item_name'
+                                    )
+                                    ->get();
 
         $itemsColection = DB::table('pedidos')
                             ->select(
@@ -103,7 +141,7 @@ class BiController extends Controller
                                 ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
                                     ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
                                         ->join('users', 'pedidos.user_id', 'users.id')
-                                            ->where([['itens_pedido.item_delete', false],['pedidos.status_id', '<>', 6]])
+                                            ->whereRaw($itemsColection_where)
                                                 ->whereBetween('itens_pedido.item_emissao', [$startDate, $endDate])
                                                     ->groupBy(
                                                         'itens_pedido.item_emissao',
@@ -128,8 +166,23 @@ class BiController extends Controller
     /**
      * @throws \Exception
      */
-    public function getGeneralStat($start, $end): JsonResponse
+    public function getGeneralStat(Request $request): JsonResponse
     {
+        $start = substr($request->start, 0, 10);
+        $end = substr($request->end, 0, 10);
+        $user = $request->user;
+        $item = $request->item;
+
+        $where_close = "";
+        if ($user){
+            $where_close .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
+        }else{
+            $where_close .= "pedidos.status_id <> '6' ";
+        }
+        if($item){
+            $where_close .= "AND itens_pedido.item_id = {$item}";
+        }
+
         $startDate = new DateTime($start);
         $endDate = new DateTime($end);
         $endDate = $endDate->format('Y-m-d');
@@ -141,7 +194,7 @@ class BiController extends Controller
                 )
                     ->join('pedidos', 'itens_pedido.item_pedido', '=', 'pedidos.id')
                             ->whereBetween('item_emissao', [$startDate, $endDate])
-                                ->where('pedidos.status_id', '<>', 6)
+                                ->whereRaw($where_close)
                                     ->groupBy('item_emissao')
                                         ->get();
 
