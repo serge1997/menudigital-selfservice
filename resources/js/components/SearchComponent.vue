@@ -110,8 +110,8 @@ export default {
 
     methods: {
         async getSearchResult(){
-            await axios.get('/api/search/', {params: {search: this.search}}).then((response) =>{
-                this.result = response.data.items
+            await axios.get('/api/menu-items-search', {params: {search: this.search}}).then((response) =>{
+                this.result = response.data
 
                 if (this.result.length < 1){
                     this.notFound = "Não há item corespondante";

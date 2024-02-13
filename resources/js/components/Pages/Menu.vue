@@ -43,6 +43,10 @@
             </div>
         </div>
         <div class="row p-4">
+            <div v-if="loadBarType" class="col-md-8 d-flex flex-column mb-3 m-auto">
+                <small class="text-center">Aguarde...</small>
+                <ProgressBar mode="indeterminate" style="height: 6px;"/>
+            </div>
             <div v-if="itemOfType < 1" v-for="item in MenuItems" :key="item.id" class="col-lg-5 col-md-10 mb-4 m-auto" disabled>
                 <div class="card rounded-0 p-0">
                     <div class="card-body d-flex p-0">
@@ -88,9 +92,13 @@
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="visibleShowItemMenuModal" v-if="show" maximizable modal :header="show.item_name" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog v-model:visible="visibleShowItemMenuModal" maximizable modal :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100 mt-3">
-                <div class="d-flex justify-content-between">
+                <div v-if="loadBar" class="col-md-8 d-flex flex-column mb-3 m-auto">
+                    <small class="text-center">Aguarde...</small>
+                    <ProgressBar mode="indeterminate" style="height: 6px;"/>
+                </div>
+                <div v-if="show" class="d-flex justify-content-between">
                     <div class="w-50">
                         <img class="w-100" src="/img/banner.jpg" alt="">
                         <div class="mt-2 d-flex justify-content-center">
@@ -118,6 +126,8 @@ import Button from "primevue/button";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
 import Dialog from "primevue/dialog";
+import ProgressBar from 'primevue/progressbar';
+import { randTime } from './../../rand';
 
 export default {
     name: 'Menu',
@@ -128,7 +138,8 @@ export default {
         Button,
         DataView,
         Tag,
-        Dialog
+        Dialog,
+        ProgressBar
     },
 
     data() {
@@ -142,6 +153,8 @@ export default {
             },
             isCart: false,
             load: true,
+            loadBar: false,
+            loadBarType: false,
             isRupture: false,
             fiche: null,
             visibleRight: false,
@@ -158,7 +171,7 @@ export default {
                 }).catch((errors) => {
                     console.log(errors)
                 })
-            }, 1000)
+            }, randTime())
         })
     },
 
@@ -177,10 +190,18 @@ export default {
         },
 
         getItemOfType(id_type) {
-            axios.get('/api/meal-types/menu-items/filter/' + id_type).then((response) => {
-                this.itemOfType = response.data
-            }).catch((errors) => {
-                console.log(errors)
+            this.loadBarType = true
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.get('/api/meal-types/menu-items/filter/' + id_type)
+                    .then(async (response) => {
+                        this.itemOfType = await response.data;
+                        this.loadBarType = false
+                        resolve(true);
+                    }).catch((errors) => {
+                        console.log(errors)
+                    })
+                }, 1000)
             })
         },
 
@@ -200,13 +221,22 @@ export default {
             })
         },
 
-        ShowItem(id){
-            axios.get('/api/menu-items/fiche/'+id).then((response) => {
-                this.show = response.data.item
-                this.fiche = response.data.fiche
-                console.log(this.show)
-            }).catch((errors) => {
-                console.log(errors);
+        async ShowItem(id){
+            this.loadBar = true;
+            this.show = null;
+            this.fiche = null;
+            return new Promise(async resolve => {
+                try{
+                    setTimeout( async () => {
+                        const response = await axios.get('/api/menu-items/fiche/'+id)
+                        this.show = await response.data.item
+                        this.fiche = await response.data.fiche
+                        this.loadBar = false
+                        resolve(true)
+                    }, randTime())
+                }catch(errors){
+                    console.log(errors.response)
+                }
             })
         },
 
@@ -221,10 +251,6 @@ export default {
     mounted() {
         this.getMenuType()
         this.stockCureentlyCheck()
-        //this.getMenuItems()
-        //this.checkCart()
-        //localStorage.removeItem('userRole')
-        //console.log(localStorage.getItem('table'))
     }
 }
 

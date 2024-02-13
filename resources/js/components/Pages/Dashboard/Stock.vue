@@ -107,6 +107,7 @@ import Button from "primevue/button";
 import Tag from "primevue/tag";
 import InputText from "primevue/inputtext";
 import { getAuth } from '../auth';
+import { randTime } from '../../../rand';
 import _ from "lodash";
 
 export default {
@@ -170,7 +171,7 @@ export default {
                     }).catch((errors) => {
                         console.log(errors)
                     })
-                }, 3000)
+                }, randTime())
             })
            }
         },
