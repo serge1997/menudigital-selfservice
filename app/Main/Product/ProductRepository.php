@@ -10,7 +10,9 @@ class ProductRepository implements ProductRepositoryInterface
     public function getAll(): Collection
     {
         return new Collection(
-            Product::where('is_delete', false)->get()
+            Product::where('is_delete', false)
+                ->orderBy('prod_name')
+                    ->get()
         );
     }
 

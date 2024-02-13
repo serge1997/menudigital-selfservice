@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 class StockRepository implements StockRepositoryInterface
 {
     public $bar = [1, 5];
-    public $kitchen = [2, 3];
+    public $kitchen = [2, 3, 4, 6];
 
     public function findLastProductEntry($id)
     {

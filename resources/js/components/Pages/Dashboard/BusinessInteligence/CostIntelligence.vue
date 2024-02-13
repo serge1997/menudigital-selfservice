@@ -3,7 +3,7 @@
         <h5 class="text-center text-capitalize">Analise de custo e fornecedore</h5>
         <div class="row d-flex justify-content-center mb-4 p-2 mt-3 gap-3">
             <div class="col-md-3 d-flex align-items-center justify-content-flex gap-3 border rounded-2 p-2 shadow-sm" v-for="sup in supplierCostData">
-                <Knob class="m-auto" v-model="sup.percent" readonly :size="130"/>
+                <Knob class="m-auto" v-model="sup.percent" readonly :size="100"/>
                 <div class="w-100 d-flex flex-column">
                     <small class="fw-medium">{{ sup.sup_name }}</small>
                     <small>Total: <span class="fw-medium text-danger">{{ sup.totalCost }} R$</span></small>

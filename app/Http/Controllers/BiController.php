@@ -212,7 +212,11 @@ class BiController extends Controller
             //var_dump($condition_like); die;
             $query = "SELECT
                 st.productID AS product_id,
-                pr.prod_name,
+                CASE
+                    WHEN pr.prod_unmed = 'g' THEN CONCAT(pr.prod_name, '/ ', pr.prod_unmed)
+                ELSE
+                   pr.prod_name
+                END prod_name,
                 supp.sup_name,
                 st.requisition_id,
                 SUM(st.totalCost) AS totalCost,
@@ -230,7 +234,8 @@ class BiController extends Controller
                     pr.prod_name,
                     supp.sup_name,
                     st.requisition_id,
-                    CONCAT(SUBSTRING(MONTHNAME(st.emissao),1, 3), '/',YEAR(st.emissao))
+                    CONCAT(SUBSTRING(MONTHNAME(st.emissao),1, 3), '/',YEAR(st.emissao)),
+                    pr.prod_unmed
             ORDER BY supp.sup_name";
 
             $supplier = StockEntry::select(

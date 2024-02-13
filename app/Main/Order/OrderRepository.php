@@ -354,7 +354,6 @@ class OrderRepository implements OrderRepositoryInterface
                     ->rightJoin('status', 'pedidos.status_id', '=', 'status.id')
                         ->where([
                             ['itens_pedido.item_delete', false],
-                            ['pedidos.status_id', '<>', 6],
                             ['pedidos.ped_emissao', Util::Today()]
                         ])
                             ->whereTime('pedidos.created_at', '>=', $restaurant->res_open)

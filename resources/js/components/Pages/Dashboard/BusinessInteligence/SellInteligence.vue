@@ -4,8 +4,8 @@
             <Toolbar class="w-100">
                 <template #start>
                     <div class="d-flex gap-2">
-                        <Calendar v-model="dateFilter.start" showIcon placeholder="start"/>
-                        <Calendar v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
+                        <Calendar date-format="dd/mm/yy" v-model="dateFilter.start" showIcon placeholder="start"/>
+                        <Calendar date-format="dd/mm/yy" v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
                         <Button @click.prevent="getGeneralStat" icon="pi pi-filter"></Button>
                     </div>
                 </template>
@@ -50,7 +50,7 @@
                     </div>
                    <div class="d-flex justify-content-center align-items-center">
                        <div class="d-flex justify-content-center align-items-center rounded-circle" :class="cardClass.cardClassThis">
-                           <i v-if="monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
+                           <i v-if="!monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                            <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                        </div>
                        <small class="text-success px-1 fw-medium">+53%</small>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="d-flex justify-content-center align-items-center rounded-circle" :class="cardClass.cardClassLast">
-                            <i v-if="!monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
+                            <i v-if="monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                             <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                         </div>
                     </div>
@@ -316,7 +316,6 @@ export default {
                 }else{
                     this.monthlyComparaison = false;
                 }
-                return this.monthlyComparaison = result
             }
         //    console.log(thisMonth + ' - ' + lastMonth);
         //    if (result){

@@ -214,11 +214,6 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::put('user-position/{user_id}/{position_id}', 'updateByUserAction');
     });
 
-    //login
-    Route::controller(LoginController::class)->group(function() {
-        Route::post('login', 'loginAction');
-        Route::post('logout', 'logoutAction')->middleware('auth:sanctum');
-    });
 
     //planning
     Route::controller(PlanningController::class)->group(function() {
@@ -226,5 +221,11 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('planning', 'listAllAction');
         Route::delete('planning', 'clearAction');
     });
+});
+
+ //login
+ Route::controller(LoginController::class)->group(function() {
+    Route::post('login', 'loginAction');
+    Route::post('logout', 'logoutAction')->middleware('auth:sanctum');
 });
 
