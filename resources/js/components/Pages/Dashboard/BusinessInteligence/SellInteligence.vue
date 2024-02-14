@@ -203,14 +203,6 @@ export default {
             this.type.wine = 0;
             this.type.dessert = 0;
             this.type.drinks = 0;
-            this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
-            this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
-            let start = this.dateFilter.start.toString();
-            let end = this.dateFilter.end.toString();
-            const params = [
-                {'start': start.substr(0, 15),},
-                {'end': end.substr(0, 15)}
-            ]
             axios.get('/api/bi/general-stat', {params: {start: this.dateFilter.start, end: this.dateFilter.end, user: this.dateFilter.user, item: this.dateFilter.item}})
             .then((response) => {
                 console.log("response")
@@ -227,14 +219,6 @@ export default {
         },
 
         async get_type_waiter_dash(){
-            // this.dateFilter.start == null ? this.dateFilter.start = new Date() : ''
-            // this.dateFilter.end == null ? this.dateFilter.end = new Date() : ''
-            // start = this.dateFilter.start.toString();
-            // end = this.dateFilter.end.toString();
-            // const params = [
-            //     {'start': start.substr(0, 15),},
-            //     {'end': end.substr(0, 15)}
-            // ]
             axios.get('/api/bi/dash-type-waiter', {params: {start: this.dateFilter.start, end: this.dateFilter.end, user: this.dateFilter.user, item: this.dateFilter.item}})
             .then((response) => {
                 this.monthlySell.currentMonth = response.data.thisMonth;
@@ -354,8 +338,16 @@ export default {
     },
 
     created(){
-        this.dateFilter.start = new Date();
-        this.dateFilter.end = new Date()
+        // let start = new Date();
+        // let end = new Date();
+        // this.dateFilter.start = new Date();
+        // this.dateFilter.end = new Date()
+        // this.dateFilter.start = start.toLocaleDateString('pt-BR', {
+        //     year: 'numeric',
+        //     month: '2-digit',
+        //     day: '2-digit',
+        // })
+        // this.dateFilter.end = start.toLocaleDateString('pt-BR')
     },
     mounted() {
         this.getGeneralStat();

@@ -16,6 +16,7 @@ use App\Http\Services\Util\Util;
 use Illuminate\Support\Facades\DB;
 use App\Models\RequisitionStatus;
 use App\Http\Services\UserInstance;
+use App\Events\RequisitionSended;
 
 class PurchaseRequisitionController extends Controller
 {
@@ -37,6 +38,7 @@ class PurchaseRequisitionController extends Controller
             $requision->status_id = PurchaseRequisition::REQUISITION_WAITING;
             $requision->delivery_date = $delivery_date;
             $requision->requisition_code = $requisition_code;
+            DB::beginTransaction();
             $requision->save();
             foreach ($product_ids as $key => $id){
                 $cost = $product->getLastProductCost($id);
@@ -51,9 +53,12 @@ class PurchaseRequisitionController extends Controller
                 $item->confirm_quantity = 0;
                 $item->total = $cost * $request->quantity[$key];
                 $item->save();
+                event(new RequisitionSended($requision));
             }
+            DB::commit();
             return response()->json("Requisição enviando com sucesso");
         }catch (Exception $e){
+            DB::rollBack();
             return response($e->getMessage(), 422);
         }
 

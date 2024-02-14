@@ -5,7 +5,10 @@
             <div v-if="load" class="p-1 mb-3">
                 <ProgressBar mode="indeterminate" style="height: 6px"/>
             </div>
-            <Dropdown @change="filtreInventory" v-model="department_id" class="w-100 mt-2" :options="filter" option-value="id" option-label="department" placeholder="selectione um departamento..."/>
+            <div class="d-flex flex-column">
+                <span class="fw-medium"><i style="font-size: 0.9rem" class="pi pi-filter"></i> Filtro por departamento</span>
+                <Dropdown @change="filtreInventory" v-model="department_id" class="w-100 mt-2" :options="filter" option-value="id" option-label="department" placeholder="selectione um departamento..."/>
+            </div>
         </div>
         <DataTable :value="inventory" scrollable scrollHeight="flex">
             <Column field="prod_name" sortable style="width: 25%" exportHeader="Product Code" header="inventory"></Column>

@@ -18,6 +18,10 @@
 
             <Dialog v-model:visible="visibleNewPurchaseModal" maximizable modal header="Nova requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="w-100 mt-3">
+                    <div v-if="load" class="col-md-10 m-auto d-flex flex-column mb-4">
+                        <span class="text-center">aguarde..</span>
+                        <ProgressBar mode="indeterminate" style="height: 6px"/>
+                    </div>
                     <div class="w-100 m-auto d-flex justify-content-between align-items-center">
                         <h6>Requerente: {{ user.name }}</h6>
                        <div class="w-50 d-flex flex-column">
@@ -89,6 +93,7 @@ import SideBarComponent from "../SideBarComponent.vue";
 import PurchaseRequisitionEdition from "./PurchaseRequisitionEdition.vue";
 import ShowRequisition from "./ShowRequisition.vue";
 import { getAuth } from "./../../auth.js";
+import { randTime } from "./../../../../rand";
 import Toolbar from "primevue/toolbar";
 import InputText from "primevue/inputtext";
 import Dialog from "primevue/dialog";
@@ -99,7 +104,7 @@ import Dropdown from "primevue/dropdown";
 import Calendar from "primevue/calendar";
 import Tag from "primevue/tag";
 import _ from "lodash";
-import axios from "axios";
+import ProgressBar from "primevue/progressbar";
 
 export default {
     name: 'PurchaseRequisition',
@@ -116,7 +121,8 @@ export default {
         Button,
         Dropdown,
         Calendar,
-        Tag
+        Tag,
+        ProgressBar
     },
     watch: {
         requisitions: _.debounce(function(newRequisition){
@@ -152,26 +158,37 @@ export default {
             },
             managerAcess: localStorage.getItem('managerAccess').split(','),
             showActionIcon: false,
+            load: false
         }
     },
     methods: {
         createPurchaseRequisition(){
-            axios.post('/api/purchase-requisition', this.purchaseData).then((response) => {
-                console.log(response.data)
-                this.$swal.fire({
-                    text: response.data,
-                    icon: 'success'
-                })
-                this.invalidInput = ''
-                this.visibleNewPurchaseModal = false
-                this.purchaseData.quantity = [];
-                this.purchaseData.products_id = []
-                this.purchaseData.delivery_date = "";
-                this.errMsg = "";
-            }).catch((errors) => {
-                this.invalidInput = 'p-invalid';
-                this.errMsg = errors.response.data.errors
-                console.log(errors)
+            this.load = true;
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/purchase-requisition', this.purchaseData)
+                    .then((response) => {
+                        console.log(response.data)
+                        this.$swal.fire({
+                            text: response.data,
+                            icon: 'success'
+                        })
+                        this.invalidInput = ''
+                        this.visibleNewPurchaseModal = false
+                        this.purchaseData.quantity = [];
+                        this.purchaseData.products_id = []
+                        this.purchaseData.delivery_date = "";
+                        this.errMsg = "";
+                    })
+                    .catch((errors) => {
+                        this.invalidInput = 'p-invalid';
+                        this.errMsg = errors.response.data.errors
+                        console.log(errors)
+                    })
+                    .finally(() => {
+                        this.load = false
+                    })
+                }, randTime())
             })
         },
         decrementProductInput(index){

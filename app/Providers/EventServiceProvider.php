@@ -12,6 +12,8 @@ use App\Listeners\CancelOrderListener;
 use App\Listeners\ReduceStockItem;
 use App\Events\IsRuputureEvent;
 use App\Listeners\ActiveRuputureListener;
+use App\Events\RequisitionSended;
+use App\Listeners\SendEmailRequistion;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,10 @@ class EventServiceProvider extends ServiceProvider
 
         IsRuputureEvent::class => [
             ActiveRuputureListener::class
+        ],
+
+        RequisitionSended::class => [
+            SendEmailRequistion::class
         ]
 
     ];
