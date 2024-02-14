@@ -47,11 +47,17 @@
                     <Column field="sup_name" sortable style="width: 10%" header="Name"></Column>
                     <Column field="sup_email" sortable style="width: 20%" header="Email"></Column>
                     <Column field="sup_tel" sortable style="width: 10%" header="Supplier Contact"></Column>
-                    <Column header="Status" style="width: 10%">
+                    <Column header="Ações" style="width: 10%">
                         <template #body="{ data }">
                             <div class="d-flex">
                                 <Button @click="showSupplierToEdit(data.id)" icon="pi pi-pencil" text/>
-                                <Button @click="deleteSupplier(data.id)" icon="pi pi-trash" text/>
+                                <Button @click="deleteSupplier(data.id)" style="color: red" icon="pi pi-trash" text/>
+                                <Button text>
+                                    <a :href="`https://wa.me//55${data.sup_tel.replace(/\W/g, '')}?text=Tenho%20Casino%20em%20Bar`"><i style="color: green" class="pi pi-whatsapp"></i></a>
+                                </Button>
+                                <Button text v-if="data.sup_email">
+                                    <a :href="`mailto:${data.sup_email}`"><i class="pi pi-envelope"></i></a>
+                                </Button>
                             </div>
                         </template>
                     </Column>

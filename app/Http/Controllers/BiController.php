@@ -42,24 +42,24 @@ class BiController extends Controller
 
         if ($user){
             $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' AND pedidos.user_id = '{$user}' ";
-            $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <>  '6' AND pedidos.user_id = '{$user}' ";
+            $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $mealType_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
-            $thismonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
-            $lastmonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
+            $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
+            $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
         }else{
             $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' ";
-            $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <>  '6' ";
-            $mealType_where .= "pedidos.status_id <> '6'";
-            $lastmonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$lastMonth."%' ";
-            $thismonth_where .= "WHERE pd.status_id <> 6 AND item_emissao LIKE '%".$thisMonth."%' ";
+            $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' ";
+            $mealType_where .= "pedidos.status_id <> '6' ";
+            $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' ";
+            $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' ";
         }
 
         if ($item){
-            $user_where .= "AND itens_pedido.item_id = {$item}";
-            $itemsColection_where .= "AND itens_pedido.item_id = {$item}";
-            $mealType_where .= "AND itens_pedido.item_id = {$item}";
-            $thismonth_where .= "AND itens.item_id = {$item}";
-            $lastmonth_where .= "AND itens.item_id = {$item}";
+            $user_where .= "AND itens_pedido.item_id = '{$item}'";
+            $itemsColection_where .= "AND itens_pedido.item_id = '{$item}'";
+            $mealType_where .= "AND itens_pedido.item_id = '{$item}'";
+            $thismonth_where .= "AND itens.item_id = '{$item}'";
+            $lastmonth_where .= "AND itens.item_id = '{$item}'";
         }
 
 
@@ -121,14 +121,15 @@ class BiController extends Controller
                     DB::raw("SUM(itens_pedido.item_total) typevenda"),
                                 )
                     ->join('menuitems','itens_pedido.item_id','=','menuitems.id')
-                    ->join('pedidos', 'pedidos.id', '=', 'itens_pedido.item_pedido')
-                        ->whereBetween('itens_pedido.item_emissao', [$startDate, $endDate])
-                            ->whereRaw($mealType_where)
-                                ->groupBy(
-                                    'menuitems.type_id',
-                                    'menuitems.item_name'
-                                    )
-                                    ->get();
+                        ->join('pedidos', 'pedidos.id', '=', 'itens_pedido.item_pedido')
+                            ->join('menu_mealtype AS mt', 'menuitems.type_id', '=', 'mt.id_type')
+                                ->whereBetween('itens_pedido.item_emissao', [$startDate, $endDate])
+                                    ->whereRaw($mealType_where)
+                                        ->groupBy(
+                                            'menuitems.type_id',
+                                            'menuitems.item_name'
+                                            )
+                                            ->get();
 
         $itemsColection = DB::table('pedidos')
                             ->select(
@@ -180,7 +181,7 @@ class BiController extends Controller
             $where_close .= "pedidos.status_id <> '6' ";
         }
         if($item){
-            $where_close .= "AND itens_pedido.item_id = {$item}";
+            $where_close .= "AND itens_pedido.item_id = '{$item}'";
         }
 
         $startDate = new DateTime($start);
