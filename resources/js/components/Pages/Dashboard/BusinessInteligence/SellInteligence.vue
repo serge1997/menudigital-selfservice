@@ -1,11 +1,14 @@
 <template>
     <div class="container-fluid">
-        <div class="col-md-10 m-auto py-2 d-flex">
+        <div class="col-md-10 m-auto d-flex">
             <Toolbar class="w-100">
                 <template #start>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex align-items-center gap-1">
                         <div class="d-flex flex-column">
-                            <span class="fw-medium">Inicio</span>
+                            <span class="fw-medium">
+                                <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
+                                Inicio
+                            </span>
                             <Calendar date-format="dd/mm/yy" v-model="dateFilter.start" showIcon placeholder="start"/>
                         </div>
                         <div class="d-flex flex-column">
@@ -15,19 +18,32 @@
                     </div>
                 </template>
                 <template #center>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 align-items-center">
                         <div class="d-flex flex-column">
-                            <span class="fw-medium">Menu</span>
+                            <span class="d-flex align-items-center">
+                                <span class="fw-medium">
+                                    <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroMenu" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
+                                    Menu
+                                </span>
+                            </span>
                             <Dropdown style="width: 15rem;" :options="menuItems" optionValue="id" optionLabel="item_name" placeholder="Selecione item do menu..." v-model="dateFilter.item"/>
                         </div>
                         <div class="d-flex flex-column">
-                            <span class="fw-medium">Colaborador</span>
+                            <span class="d-flex align-items-center">
+                                <span class="fw-medium">
+                                    <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroColaborador" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
+                                    Colaborador
+                                </span>
+                            </span>
                             <Dropdown style="width: 15rem;" :options="users" optionValue="id" optionLabel="name" placeholder="Selecione colaborador..." v-model="dateFilter.user"/>
                         </div>
                     </div>
                 </template>
                 <template #end>
-                    <Button @click.prevent="getGeneralStat" icon="pi pi-filter"></Button>
+                    <div class="d-flex align-items-center">
+                        <Button @click.prevent="getGeneralStat" icon="pi pi-filter" class="border-bottom" text title="Filtro"></Button>
+                        <Button @click.prevent="limparFiltros" icon="pi pi-filter-slash" class="border-bottom" text title="Limpar filtro"></Button>
+                    </div>
                 </template>
             </Toolbar>
         </div>
@@ -219,6 +235,11 @@ export default {
         },
 
         async get_type_waiter_dash(){
+            this.type.fastFood = null;
+            this.type.dessert = null;
+            this.type.principal = null;
+            this.type.wine = null;
+            this.type.starter = null;
             axios.get('/api/bi/dash-type-waiter', {params: {start: this.dateFilter.start, end: this.dateFilter.end, user: this.dateFilter.user, item: this.dateFilter.item}})
             .then((response) => {
                 this.monthlySell.currentMonth = response.data.thisMonth;
@@ -227,8 +248,9 @@ export default {
                 this.dataTable = response.data.itemsCollection
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
-                        this.typesCollection.push(typename.type)
+                         this.typesCollection.push(typename.type)
                     }
+                    console.log(typename)
                     switch(typename.type) {
                         case "ENTRADA":
                             this.type.starter += Number(typename.typevenda);
@@ -238,11 +260,9 @@ export default {
                             break;
                         case "DRINKS":
                             this.type.drinks += Number(typename.typevenda)
-                            console.log(this.type.drinks)
                             break;
                         case "VINHO":
                             this.type.wine += Number(typename.typevenda)
-                            console.log(this.type.wine)
                             break;
                         case "SOBREMESA":
                             this.type.dessert += Number(typename.typevenda);
@@ -296,15 +316,7 @@ export default {
                         ["FASTFOOD", this.type.fastFood]
                     ],
                     type: donut(), // for ESM specify as: donut()
-                    onclick: function(d, i) {
-                        console.log("onclick", d, i);
-                    },
-                    onover: function(d, i) {
-                        console.log("onover", d, i);
-                    },
-                    onout: function(d, i) {
-                        console.log("onout", d, i);
-                    }
+
                 },
                 donut: {
                     title: "Food group KPI"
@@ -334,6 +346,34 @@ export default {
             const menuResponse = await this.axios.get('/api/menu-items');
             this.menuItems = await menuResponse.data;
 
+       },
+       limparFiltros(){
+        this.dateFilter.user = null;
+        this.dateFilter.item = null;
+        this.dateFilter.start = null;
+        this.dateFilter.end = null;
+        return this.getGeneralStat();
+       },
+       limparFiltroMenu(){
+        this.dateFilter.item = null;
+        return this.getGeneralStat();
+       },
+       limparFiltroColaborador(){
+        this.dateFilter.user = null;
+        return this.getGeneralStat();
+       },
+       limparFiltroData(){
+        this.dateFilter.start = null;
+        this.dateFilter.end = null;
+        return this.getGeneralStat();
+       },
+
+       resetVariable(){
+        this.type.fastFood = null;
+        this.type.dessert = null;
+        this.type.principal = null;
+        this.type.wine = null;
+        this.type.starter = null;
        }
     },
 
@@ -409,5 +449,8 @@ export default {
   #table {
     height: 290px;
     overflow: scroll;
+  }
+  .icon-filtro{
+    cursor: pointer
   }
 </style>

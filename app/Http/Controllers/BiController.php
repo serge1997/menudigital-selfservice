@@ -125,11 +125,12 @@ class BiController extends Controller
                             ->join('menu_mealtype AS mt', 'menuitems.type_id', '=', 'mt.id_type')
                                 ->whereBetween('itens_pedido.item_emissao', [$startDate, $endDate])
                                     ->whereRaw($mealType_where)
-                                        ->groupBy(
-                                            'menuitems.type_id',
-                                            'menuitems.item_name'
-                                            )
-                                            ->get();
+                                        ->whereNotNull('menuitems.type_id')
+                                            ->groupBy(
+                                                'menuitems.type_id',
+                                                'menuitems.item_name'
+                                                )
+                                                ->get();
 
         $itemsColection = DB::table('pedidos')
                             ->select(

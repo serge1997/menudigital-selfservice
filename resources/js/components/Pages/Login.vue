@@ -67,21 +67,22 @@ export default {
             logAnim: false,
             invalid: null,
             visibleLoginModal: false,
-            load: false
+            load: false,
+            domain: 'http://127.0.0.1:8000',
         }
     },
 
     methods: {
         login() {
+            this.visibleLoginModal = true;
+            this.load = true;
             axios.post('/api/login', this.credentials).then((response) => {
-                this.visibleLoginModal = true;
-                this.load = true;
                 localStorage.setItem('token', response.data.token);
                 localStorage.setItem('stockAccess', response.data.stockAccess);
                 localStorage.setItem('managerAccess', response.data.managerAccess);
                 localStorage.setItem('administrativeAccess', response.data.administrativeAccess)
                 this.$toast.success("Seja Bem vindo!");
-                setTimeout(() => {this.$router.push({path: '/dashboard/operador'})}, this.randTime())
+                setTimeout(() => {location.href = `${this.domain}/dashboard/operador`}, this.randTime())
             }).catch((errors) => {
                 errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
                 this.msgerrors = errors.response.data.errors
