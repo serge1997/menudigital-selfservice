@@ -64,18 +64,10 @@
                                     </ul>
                                 </div>
                                 <button class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="getOrderItem(pedido.id)">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                        stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
+                                   <i class="pi pi-eye"></i>
                                 </button>
                                 <router-link :to="{ name: 'Bill', params: {id:pedido.id}}" class="nav-link p-0 px-2 text-black" @click="imprimir">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
-                                        class="feather feather-printer"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6
-                                        18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6"
-                                         y="14" width="12" height="8"></rect>
-                                    </svg>
+                                    <i class="pi pi-print"></i>
                                 </router-link>
                                 <button v-if="pedido.status_id != 5 && pedido.status_id != 6" @click="StorParams(pedido.id, a = 0)" data-bs-toggle="modal" data-bs-target="#OrderStat" class="btn" data-bs-toggl="tooltip" data-bs-placement="top" title="Change payment method">
                                     <svg
@@ -459,7 +451,7 @@ export default {
     },
 
     mounted(){
-    
+
     }
 }
 

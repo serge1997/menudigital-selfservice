@@ -340,9 +340,10 @@ class OrderRepository implements OrderRepositoryInterface
     public function getOrdersReport()
     {
         $today = Util::Today();
-
+        $today = date('Y-m-d', strtotime("{$today}"));
+        $order = Pedido::where('ped_emissao', $today)->orderBy('created_at', 'ASC')->first();
+        $close_date = date('Y-m-d', strtotime("{$order->ped_emissao} +1 day"));
         $restaurant = Restaurant::find(Restaurant::RESTAURANT_KEY);
-        $add_a_day = date('Y-m-d', strtotime("{$today} +1 day"))." {$restaurant->res_close}";
 
         $report = DB::table('itens_pedido')
             ->select(
@@ -355,13 +356,12 @@ class OrderRepository implements OrderRepositoryInterface
                         ->where([
                                 ['itens_pedido.item_delete', false],
                                 ['pedidos.status_id', '<>', 6],
-                                // ['pedidos.ped_emissao', Util::Today()]
+                                ['pedidos.created_at', '>=', $order->ped_emissao." ".$restaurant->res_open],
+                                ['pedidos.created_at', '<=',  $close_date." ".$restaurant->res_close]
                             ])
-                            ->whereTime('pedidos.created_at', '>=', $restaurant->res_open)
-                                ->whereDate('pedidos.created_at', '<=', $add_a_day)
-                                    ->groupby(
-                                        'menuitems.item_name'
-                                    )->get();
+                                ->groupby(
+                                    'menuitems.item_name'
+                                )->get();
 
         $paiement_data = DB::table('pedidos')
             ->select(DB::raw('SUM(itens_pedido.item_total) cash'), 'status.stat_desc')
@@ -369,24 +369,20 @@ class OrderRepository implements OrderRepositoryInterface
                     ->rightJoin('status', 'pedidos.status_id', '=', 'status.id')
                         ->where([
                             ['itens_pedido.item_delete', false],
-                            // ['pedidos.ped_emissao', Util::Today()]
+                            ['pedidos.created_at', '>=', $order->ped_emissao." ".$restaurant->res_open],
+                            ['pedidos.created_at', '<=',  $close_date." ".$restaurant->res_close]
                         ])
-                            ->whereTime('pedidos.created_at', '>=', $restaurant->res_open)
-                                ->whereDate('pedidos.created_at', '<=', $add_a_day)
-                                    ->groupBy([
-                                        'status.stat_desc'
-                                    ])->get();
+                            ->groupBy([
+                                'status.stat_desc'
+                            ])->get();
 
         $itemCanceled = DB::table('itens_pedido')
                 ->select(DB::raw(' SUM(item_price * item_quantidade) valor'))
-                    ->where(
-                    'item_delete', 1
-                        // ['item_emissao', Util::Today()],
-                        // ['item_quantidade', '<', 0]
-                    )
-                        ->whereDate('created_at', '>=', date('Y-m-d', strtotime("{$today} -24 hour")))
-                            // ->whereDate('created_at', '<=', $add_a_day)
-                                ->get();
+                    ->where([
+                        ['item_delete', 1],
+                        ['itens_pedido.created_at', '>=', $order->ped_emissao." ".$restaurant->res_open],
+                        ['itens_pedido.created_at', '<=',  $close_date." ".$restaurant->res_close]
+                    ])->get();
 
 
 
