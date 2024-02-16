@@ -31,14 +31,15 @@ class CartController extends Controller
         }
     }
 
-    public function AddItemdToCart($id, Request $request)
+    public function AddItemdToCart($id, Request $request): JSonResponse
     {
         try {
 
-            $this->cartRepositoryInterface->addToCart($id, $request);
+            $cartData = $this->cartRepositoryInterface->addToCart($id, $request);
+            return response()->json($cartData);
         }catch(Exception $e){
 
-            return response()->json($e->getMessage(), 500);
+            return response()->json($e->getMessage()." ".$e->getFile(). " ".$e->getLine(), 500);
         }
     }
 
@@ -72,10 +73,10 @@ class CartController extends Controller
         }
     }
 
-    public function deleteItemFromCart($cartId, $table)
+    public function deleteItemFromCart($id)
     {
         try{
-            $this->cartRepositoryInterface->deleteFromCart($cartId, $table);
+            $this->cartRepositoryInterface->deleteFromCart($id);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);
         }

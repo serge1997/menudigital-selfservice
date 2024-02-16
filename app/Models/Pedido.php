@@ -11,6 +11,16 @@ class Pedido extends Model
 {
     use HasFactory;
 
+    protected $filable = [
+        'ped_emissao',
+        'ped_tableNumber',
+        'ped_customerName',
+        'ped_delete',
+        'status_id',
+        'user_id',
+        'ped_customer_quantity'
+    ];
+
     public function item(): HasMany
     {
         return $this->hasMany(ItensPedido::class, 'item_pedido');

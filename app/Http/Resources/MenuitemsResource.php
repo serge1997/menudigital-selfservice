@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -23,7 +24,9 @@ class MenuitemsResource extends JsonResource
             'is_lowstock' => $this->is_lowstock,
             'type_id' => $this->type_id,
             'desc_type' => $this->type->desc_type,
-            'foto_type' => $this->type->foto_type,
+            'foto_type' => $this->type->foto_type
         ];
     }
+
+
 }

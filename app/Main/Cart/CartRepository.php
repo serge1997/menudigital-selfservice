@@ -9,21 +9,29 @@ use App\Models\Cart;
 use App\Models\MealType;
 use App\Models\Option;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Collection;
+use App\Http\Resources\CartResource;
+use App\Main\MenuItem\MenuItemRepositoryInterface;
 
 class CartRepository implements CartRepositoryInterface
 {
+    public MenuItemRepositoryInterface $menuItemRepositoryInterface;
+    public function __construct(
+        MenuItemRepositoryInterface $menuItemRepositoryInterface
+    )
+    {
+        $this->menuItemRepositoryInterface = $menuItemRepositoryInterface;
+    }
 
     public function addToCart($id, $request)
     {
-        $price = Menuitems::select('item_price')
-            ->where('id', $id)
-            ->first();
+        $menuitem = $this->menuItemRepositoryInterface->find($id);
 
         $cart = new Cart();
         $cart->item_id = $id;
         $cart->tableNumber = $request->tableNumber;
-        $cart->unit_price = $price->item_price;
-        $cart->total = $price->item_price;
+        $cart->unit_price = $menuitem->item_price;
+        $cart->total = $menuitem->item_price;
 
 
             $unitPrice = DB::table('carts')->select('unit_price')
@@ -49,6 +57,10 @@ class CartRepository implements CartRepositoryInterface
            }else {
                 $cart->save();
            }
+        return CartResource::collection(
+            Cart::where('tableNumber', $request->tableNumber)
+                ->get()
+        );
     }
 
     public function addQuantity($id): array
@@ -104,10 +116,9 @@ class CartRepository implements CartRepositoryInterface
         ];
     }
 
-    public function deleteFromCart($cartId, $table)
+    public function deleteFromCart($id)
     {
-        DB::table('carts')->where([['id', $cartId], ['tableNumber', $table]])
-            ->delete();
+        Cart::find($id)->delete();
     }
 
     public function getCartItens($table): array
@@ -140,7 +151,7 @@ class CartRepository implements CartRepositoryInterface
         }
 
         return [
-            'items' => $items,
+            'items' => CartResource::collection(Cart::where('tableNumber', $table)->get()),
             'total' => $total,
             'options' => $options
         ];

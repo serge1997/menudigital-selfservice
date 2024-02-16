@@ -30,4 +30,9 @@ class Menuitems extends Model
     {
         return $this->belongsTo(MealType::class, 'type_id', 'id_type');
     }
+
+    public function cart(): BelongsTo
+    {
+        return $this->belongsTo(Cart::class, 'item_id');
+    }
 }

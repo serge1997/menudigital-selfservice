@@ -60,9 +60,7 @@
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
-                                <div>
-                                    <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
-                                </div>
+                                <Button icon="pi pi-cart-plus" @click="addToCart(item.id)" />
                                 <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
                             </div>
                         </div>
@@ -82,9 +80,7 @@
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
-                                <div>
-                                    <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
-                                </div>
+                                <Button icon="pi pi-cart-plus" @click="addToCart(item.id)" />
                                 <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
                             </div>
                         </div>
@@ -115,18 +111,83 @@
                 </div>
             </div>
         </Dialog>
+        <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="col-lg-8 col-md-12">
+            <Accordion class="p-accordion" :activeIndex="0">
+                <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
+                    <div class="col-md-12 d-flex justify-content-evenly">
+                        <div class="col-md-2 item-img d-flex justify-content-start">
+                            <img alt="item menu image" class="img-thumbnail w-100" src="img/banner.jpg">
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-center align-items-center">
+                            <div class="col-md-2">
+                                <Button class="w-100" @click="AddQuantity(item.cart_id)" icon="pi pi-plus" />
+                            </div>
+                            <div class="col-md-4 d-flex flex-column">
+                                <InputText class="text-center w-100" type="text" :value="item.quantity"/>
+                            </div>
+                            <div class="col-md-2">
+                                <Button class="w-100" @click="ReduceQuantity(item.cart_id)" icon="pi pi-minus" />
+                            </div>
+                            <div class="w-100 d-flex justify-content-center bg-white">
+                                <span class="fw-medium">{{ item.total}} <small>R$</small></span>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                            <Button @click="DeleteFromCart(item.cart_id)" severity="danger" icon="pi pi-times"/>
+                        </div>
+                    </div>
+                    <div>
+                        <InputText v-model="cart.comments" class="w-75 p-3 mt-3" placeholder="Customer comment" />
+                    </div>
+                    <div class="w-100 mt-3 p-3">
+                        <div class="d-flex flex-wrap gap-3">
+                            <div v-for="option in options" class="flex align-items-center gap-2">
+                                <!-- <RadioButton v-model="cart.options" name="pizza" :value="option.option_name" />
+                                <label for="ingredient1" class="ml-2">{{ option.option_name }}</label> -->
+                            </div>
+                        </div>
+                    </div>
+                </AccordionTab>
+            </Accordion>
+            <div class="w-100 p-3">
+                <h6 class="text-uppercase text-center p-2">Order information</h6>
+                <div class="w-100">
+                    <label for="customer-name">Customer name</label>
+                    <InputText class="w-100" id="customer-name" v-model="cart.ped_customerName" type="text" placeholder="customer name" />
+                    <small class="text-danger" v-if="errMsg" v-text="errMsg[0]"></small>
+                    <label for="ped_customer_total" class="mt-3">Customer Total</label>
+                    <InputText v-model="cart.ped_customer_quantity"  class="w-100" placeholder="Total customer" />
+                </div>
+                <div class="w-100 p-3">
+                    <DataTable :value="cartItems">
+                        <Column field="item_name" header="Item name"></Column>
+                        <Column field="quantity" header="Quantity"></Column>
+                        <Column field="unit_price" header="Price"></Column>
+                        <Column field="total" header="Subtotal"></Column>
+                    </DataTable>
+                </div>
+            </div>
+            <div class="w-100 d-flex mt-3 justify-content-end">
+                <Button @click="confirmOrder" label="Confirm order"/>
+            </div>
+        </Sidebar>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
+import Sidebar from "primevue/sidebar";
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import SearchComponent from '../SearchComponent.vue';
-import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
 import Button from "primevue/button";
 import DataView from "primevue/dataview";
 import Tag from "primevue/tag";
 import Dialog from "primevue/dialog";
 import ProgressBar from 'primevue/progressbar';
+import InputText from "primevue/inputtext";
 import { randTime } from './../../rand';
 
 export default {
@@ -134,16 +195,24 @@ export default {
 
     components: {
         SearchComponent,
-        CartSidebarComponent,
         Button,
         DataView,
         Tag,
         Dialog,
-        ProgressBar
+        ProgressBar,
+        Sidebar,
+        Accordion,
+        AccordionTab,
+        DataTable,
+        Column,
+        InputText
     },
 
     data() {
         return {
+            visibleRight: false,
+            cartItems: null,
+            options: null,
             MenuItems: null,
             MenuType: null,
             itemOfType: null,
@@ -158,7 +227,18 @@ export default {
             isRupture: false,
             fiche: null,
             visibleRight: false,
-            visibleShowItemMenuModal: false
+            visibleShowItemMenuModal: false,
+            quantity: null,
+            total: null,
+            cart: {
+                comments: null,
+                options: [],
+                tableNumber: localStorage.getItem('table'),
+                ped_tableNumber: localStorage.getItem('table'),
+                user_id: null,
+                ped_customerName: null,
+                ped_customer_quantity: null,
+            },
         }
     },
 
@@ -176,6 +256,16 @@ export default {
     },
 
     methods: {
+
+        async getCartItem(){
+           return new Promise( async resolve => {
+                const cartResponse = await axios.get('/api/cart-itens/'+ this.table.tableNumber);
+                this.cartItems = await cartResponse.data.items
+                this.options = await cartResponse.data.options
+                resolve(true)
+
+           })
+        },
 
         getMenuType() {
             return new Promise((resolve, reject) => {
@@ -207,7 +297,9 @@ export default {
 
         addToCart(id) {
             axios.post('/api/add-to-cart/' + id, this.table).then((response) => {
-                console.log(response.data)
+               this.visibleRight = true;
+               this.cartItems = response.data
+               console.log(response.data)
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -238,6 +330,54 @@ export default {
                     console.log(errors.response)
                 }
             })
+        },
+
+        async AddQuantity(id) {
+           try{
+                const quantityResponse = await axios.put(`/api/cart-add/quantity/${id}`);
+                this.quantity = await quantityResponse.data.quantity
+                this.total = await quantityResponse.data.total
+                return this.getCartItem();
+           }catch(errors){
+                console.log(errors)
+           }
+
+        },
+
+        async ReduceQuantity(id) {
+           try{
+                const reduceResponse =  await axios.put('/api/cart-reduce/quantity/' + id)
+                this.quantity = await reduceResponse.data.quantity
+                this.total = await reduceResponse.data.total
+                return this.getCartItem()
+           }catch(errors){
+                console.log(errors)
+           }
+
+        },
+
+        confirmOrder() {
+            axios.post('/api/order', this.cart).then((response) => {
+                console.log(response.data)
+                this.$router.push('/dashboard/garcom')
+                this.$toast.success(response.data)
+            }).catch((errors) => {
+                console.log(errors)
+                //this.$toast.error(errors.response.data)
+                if (errors.response.status === 500){
+                    this.visibleRight = false
+                    this.$swal.fire({
+                        text: !errors.response.data.message ? errors.response.data : errors.response.data.message  ,
+                        icon: "warning"
+                    })
+                }
+                this.errMsg = errors.response.data.errors.ped_customerName
+            })
+        },
+
+        async DeleteFromCart(id) {
+            await axios.delete(`/api/cart-item/${id}`)
+            return this.getCartItem();
         },
 
         stockCureentlyCheck(){

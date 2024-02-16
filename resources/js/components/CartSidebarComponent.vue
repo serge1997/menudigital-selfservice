@@ -1,10 +1,10 @@
 <template>
-    <div class="col-lg-6 col-md-10" @click="reload">
+    <div class="col-lg-6 col-md-10">
         <Button v-if="!rupture" icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id)" />
         <Button v-else icon="pi pi-cart-plus" @click="visibleRight = true; $emit('AddToCart', id, rupture)" disabled />
-        <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="col-lg-8 col-md-12">
+        <Sidebar v-model:visible="visibleright" header="Cart" position="right" class="col-lg-8 col-md-12">
             <Accordion class="p-accordion" :activeIndex="0">
-                <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
+                <AccordionTab v-for="item in cartitems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
                     <div class="col-md-12 d-flex justify-content-evenly">
                         <div class="col-md-2 item-img d-flex justify-content-start">
                             <img alt="item menu image" class="img-thumbnail w-100" src="img/banner.jpg">
@@ -28,7 +28,7 @@
                         </div>
                     </div>
                     <div>
-                        <InputText v-model="cart.comments" class="w-75 p-3 mt-3" placeholder="customer comment" />
+                        <InputText v-model="cart.comments" class="w-75 p-3 mt-3" placeholder="Customer comment" />
                     </div>
                     <div class="w-100 mt-3 p-3">
                         <div class="d-flex flex-wrap gap-3">
@@ -46,6 +46,8 @@
                     <label for="customer-name">Customer name</label>
                     <InputText class="w-100" id="customer-name" v-model="cart.ped_customerName" type="text" placeholder="customer name" />
                     <small class="text-danger" v-if="errMsg" v-text="errMsg[0]"></small>
+                    <label for="ped_customer_total" class="mt-3">Customer Total</label>
+                    <InputText v-model="cart.ped_customer_quantity"  class="w-100" placeholder="Total customer" />
                 </div>
                 <div class="w-100 p-3">
                     <DataTable :value="cartItems">
@@ -87,19 +89,21 @@ export default {
         Column,
         RadioButton
     },
-    props:['id', 'rupture'],
+    props:['id', 'rupture', 'cartitems', 'options'],
     data(){
         return {
-            visibleRight: false,
+            visibleright: false,
             table: localStorage.getItem('table'),
-            cartItems: null,
+            items: null,
+            option: null,
             cart: {
                 comments: null,
                 options: [],
                 tableNumber: localStorage.getItem('table'),
                 ped_tableNumber: localStorage.getItem('table'),
                 user_id: null,
-                ped_customerName: null
+                ped_customerName: null,
+                ped_customer_quantity: null,
             },
             options: null,
             errMsg: null
@@ -107,23 +111,26 @@ export default {
     },
 
     methods:{
-        getCartItem(){
-            axios.get('/api/cart-itens/'+ this.table).then((response) => {
-                this.cartItems = response.data.items
-                this.options = response.data.options
-            }).catch((errors) => {
-                console.log(errors)
+         async getCartItems(){
+            return new Promise( async resolve => {
+                 const cartResponse = await axios.get('/api/cart-itens/'+ this.table);
+                 this.items = await cartResponse.data.items
+                 this.option = await cartResponse.data.options
+                 resolve(true)
+
             })
-        },
+         },
+
         reload(){
-            return this.getCartItem()
+            return this.getCartItems()
         },
+
         AddQuantity(id) {
             axios.put(`/api/cart-add/quantity/${id}`).then((response) => {
                 this.quantity = response.data.quantity
                 this.total = response.data.total
                 console.log(response.data.total)
-                return this.getCartItem();
+                return this.getCartItems();
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -134,7 +141,7 @@ export default {
                 this.quantity = response.data.quantity
                 this.total = response.data.total
                 console.log(response.data.total)
-                return this.getCartItem()
+                return this.getCartItems()
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -142,7 +149,7 @@ export default {
         DeleteFromCart(cartID, table) {
             table = this.table
             axios.delete(`/api/cart-item/${cartID}/${table}`).then((response) => {
-                return this.getCartItem();
+                return this.getCartItems();
             }).catch((errors) => {
                 console.log(errors)
             })
@@ -167,8 +174,8 @@ export default {
             })
         }
     },
-    async mounted() {
-        this.getCartItem()
+    mounted() {
+        this.getCartItems()
         getAuth().then(result => {
             this.cart.user_id = result.id
         });

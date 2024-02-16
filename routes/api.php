@@ -175,7 +175,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('add-to-cart/{id}', 'AddItemdToCart');
         Route::put('cart-add/quantity/{id}', 'incrementItemQuantity');
         Route::put('cart-reduce/quantity/{id}', 'decrementItemQuantity');
-        Route::delete('cart-item/{cartId}/{table}', 'deleteItemFromCart');
+        Route::delete('cart-item/{id}', 'deleteItemFromCart');
         Route::get('cart-itens/{table}', 'getCartItens');
     });
 
