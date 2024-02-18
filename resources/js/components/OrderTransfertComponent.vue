@@ -1,12 +1,12 @@
 <template>
     <!-- Button trigger modal -->
-    <button type="button" @click="$emit('getTransfertItems', id)" class="btn" data-bs-toggle="modal" data-bs-target="#transfertModal">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-divide-square">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line>
-            <line x1="12" y1="16" x2="12" y2="16"></line><line x1="12" y1="8" x2="12" y2="8"></line>
-        </svg>
-    </button>
+    <div class="d-flex align-items-center">
+        <Button
+            icon="pi pi-arrow-right-arrow-left" type="button"
+            @click="$emit('getTransfertItems', id)" title="transferir item"
+            text data-bs-toggle="modal" data-bs-target="#transfertModal"
+        />
+    </div>
 
     <!-- Modal -->
     <div class="modal fade" id="transfertModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

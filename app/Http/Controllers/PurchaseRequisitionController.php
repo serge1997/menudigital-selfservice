@@ -24,14 +24,14 @@ class PurchaseRequisitionController extends Controller
     {
         try{
             $request->validated();
-            $date = new \DateTime($request->delivery_date);
+            $date = new \DateTime(substr($request->delivery_date, 0, 10));
             $delivery_date = $date->format('Y-m-d');
             $requisition_code = "";
             $string_format = Util::randomString();
             $number_format = Util::randomNumber();
             $requisition_code .= $string_format;
             $requisition_code.=$number_format;
-            $requisition_code.=str_replace('-', '',$date->format('m-d'));
+            $requisition_code.= str_replace('-', '',$date->format('m-d'));
             $product_ids = $request->products_id;
             $req_values = $request->all();
             $requision = new PurchaseRequisition($req_values);
@@ -59,7 +59,7 @@ class PurchaseRequisitionController extends Controller
             return response()->json("Requisição enviando com sucesso");
         }catch (Exception $e){
             DB::rollBack();
-            return response($e->getMessage(), 422);
+            return response($e->getMessage(). " ".$e->getFile(). " ".$e->getLine(), 422);
         }
 
             //$request->validated();

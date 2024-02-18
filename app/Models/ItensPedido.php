@@ -10,6 +10,7 @@ class ItensPedido extends Model
 {
     use HasFactory;
 
+
     protected $table = 'itens_pedido';
 
     protected $fillable = [

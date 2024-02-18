@@ -64,11 +64,11 @@ class OrderController extends Controller
         }
     }
 
-    public function orderPayment($status_id, $pedido_id, Request $request): JsonResponse
+    public function orderPayment(Request $request): JsonResponse
     {
         try{
             $message = "Pagamento realisado com successo";
-            $this->orderRepositotyInterface->setOrderPaymentStatus($status_id, $pedido_id, $request);
+            $this->orderRepositotyInterface->setOrderPaymentStatus($request);
             return response()->json($message);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);

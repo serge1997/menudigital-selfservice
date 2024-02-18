@@ -90,19 +90,18 @@ class OrderRepository implements OrderRepositoryInterface
         return new Collection($orderItens);
     }
 
-    public function setOrderPaymentStatus($status_id, $pedido_id, $request)
+    public function setOrderPaymentStatus($request)
     {
-        $auth = $request->session()->get('auth-vue');
-        foreach (UserInstance::get_user_roles($auth) as $confirm):
-            if ($confirm->role_id == Role::MANAGER || $confirm->role_id === Role::CAN_USE_CASHIER):
-                DB::table('pedidos')
-                    ->where('id', $pedido_id)
-                    ->update([
-                        'status_id' => $status_id
-                    ]);
-                return true;
-            endif;
-        endforeach;
+        if ($this->can_manage($request) || $this->can_cashier($request)):
+            $order = $request->order;
+            $status = $request->status;
+            DB::table('pedidos')
+                ->where('id', $order)
+                ->update([
+                    'status_id' => $status
+                ]);
+            return true;
+        endif;
         throw new Exception("Voçê não tem permissão");
 
     }

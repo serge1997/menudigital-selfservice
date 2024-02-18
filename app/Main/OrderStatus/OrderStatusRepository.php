@@ -8,6 +8,6 @@ class OrderStatusRepository implements OrderStatusRepositoryInterface
 {
     public function getAll(): Collection
     {
-        return new Collection(OrderStatus::all());
+        return new Collection(OrderStatus::whereNotIn('id', [5, 6])->get());
     }
 }

@@ -29,7 +29,7 @@
                            <small class="text-danger" v-if="errMsg" v-for="errdepartment in errMsg.department_id" v-text="errdepartment"></small>
                        </div>
                        <div class="w-25 d-flex flex-column">
-                           <Calendar :class="invalidInput" v-model="purchaseData.delivery_date" showIcon placeholder="Data entrega desejada"/>
+                           <Calendar date-format="dd/mm/yy" :class="invalidInput" v-model="purchaseData.delivery_date" showIcon placeholder="Data entrega desejada"/>
                            <small class="text-danger" v-if="errMsg" v-for="errdata in errMsg.delivery_date" v-text="errdata"></small>
                        </div>
                     </div>

@@ -64,7 +64,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('order', 'confirmOrder');
         Route::get('orders-status', 'OperadorOrderList');
         Route::get('order-menu-itens/{id}', 'listOrderItens');
-        Route::put('order-payment/{id}/{pedido}', 'orderPayment');
+        Route::put('order-payment', 'orderPayment');
         Route::get('dashboard/cancel', 'getCanceledStatus');
         Route::post('new-item', 'postNewOrderItem');
         Route::get('order-history', 'getOrderHistory');

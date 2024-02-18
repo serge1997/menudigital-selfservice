@@ -25,8 +25,6 @@ class SendEmailRequistion
     public function handle(RequisitionSended $event): void
     {
         $requisition = $event->requisition;
-        $requisition->delivery_date = new DateTime($requisition->delivery_date);
-        $requisition->delivery_date = $requisition->delivery_date->format('d/m/Y');
         $requerente = User::find($requisition->user_id);
         $manager = User::find(User::GERENTE);
         Mail::send('Mail.requisition', ['user' => $requerente, 'requisition' => $requisition], function($header) use ($manager) {

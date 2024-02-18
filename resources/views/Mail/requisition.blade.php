@@ -27,7 +27,7 @@
                     <li class="list-group-item">Requerente: {{ $user->name }}</li>
                 @endif
                 @if (isset($requisition))
-                    <li class="list-group-item">Data de entrega (expetativa do requerente): {{ $requisition->delivery_date }}</li>
+                    <li class="list-group-item">Data de entrega (expetativa do requerente): {{ date('d/m/Y', strtotime($requisition->delivery_date)) }}</li>
                     <li class="list-group-item">Código da requisição: {{ $requisition->requisition_code }}</li>
                 @endif
             </ul>

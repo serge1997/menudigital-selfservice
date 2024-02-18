@@ -50,42 +50,29 @@
                             <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.stat_desc }}</td>
                             <td v-else class="success-bg">{{ pedido.stat_desc }}</td>
                             <td class="d-flex jusitify-content-center align-items-center">
-                                <div class="btn-group">
-                                    <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    </button>
-                                    <ul class="dropdown-menu p-0 shadow">
-                                        <h6 class="text-capitalize fw-medium p-2 bg-dark text-white">pagamento</h6>
-                                        <div class="">
-                                            <li v-for="stat in status">
-                                                <button class="btn dropdown-btn" @click="setOrderPaymentStatus(stat.id, pedido.id)" v-if="pedido.status_id != 5 && pedido.status_id != 6"></button>
-                                                <button class="btn dropdown-btn fw-medium text-capitalize" @click="setOrderPaymentStatus(stat.id, pedido.id)" v-else-if="stat.id != 5">{{ stat.stat_desc }}</button>
-                                            </li>
-                                        </div>
-                                    </ul>
-                                </div>
-                                <button class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click.prevent="getOrderItem(pedido.id)">
-                                   <i class="pi pi-eye"></i>
-                                </button>
-                                <router-link :to="{ name: 'Bill', params: {id:pedido.id}}" class="nav-link p-0 px-2 text-black" @click="imprimir">
-                                    <i class="pi pi-print"></i>
-                                </router-link>
-                                <button v-if="pedido.status_id != 5 && pedido.status_id != 6" @click="StorParams(pedido.id, a = 0)" data-bs-toggle="modal" data-bs-target="#OrderStat" class="btn" data-bs-toggl="tooltip" data-bs-placement="top" title="Change payment method">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                                        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-3">
-                                        <path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                    </svg>
-                                </button>
-                                <div v-if="pedido.status_id == 5 || pedido.status_id == 6">
+                                <Button title="Pagar"
+                                      @click="getPaymentOrderItens(pedido.id)"
+                                      icon="pi pi-money-bill" text
+                                />
+                                <Button
+                                   data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                   @click.prevent="getOrderItem(pedido.id)"
+                                   icon="pi pi-eye"
+                                   text
+                                />
+                                <Button
+                                    icon="pi pi-print"
+                                    text
+                                />
+                                <div class="d-flex align-items-center">
                                     <OrderTransfertComponent @get-TransfertItems="getTransferItens(pedido.id)" :transfert-items="titems" :tables="tables"/>
                                 </div>
-                                <button @click="setOrderID(pedido.id)" data-bs-toggle="modal" data-bs-target="#cancelorder" class="btn border-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round"
-                                         stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
-                                    </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
-                                    </svg>
-                                </button>
+                                <Button
+                                    @click="setOrderID(pedido.id)" data-bs-toggle="modal"
+                                    data-bs-target="#cancelorder" text
+                                    icon="pi pi-trash"
+                                    class="text-danger"
+                                />
                             </td>
                         </tr>
                     </tbody>
@@ -259,6 +246,53 @@
                 </div>
             </div>
         </div>
+        <Dialog v-model:visible="visiblePaymentModal" maximizable modal header="Pagamento" :style="{ width: '80rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="row">
+                <input type="hidden" v-model.trim="order_id" />
+                <div class="col-md-5">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantidade</th>
+                                <th>Preco</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item in itens">
+                                <td>{{ item.item_name }}</td>
+                                <td>{{ item.item_quantidade }}</td>
+                                <td>{{ item.item_price }}</td>
+                                <td>{{ item.item_total }}</td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr class="fw-medium b fs-5">
+                                <td>Totais</td>
+                                <td>{{ billTotalItem }}</td>
+                                <td></td>
+                                <td class="text-left" colspan="2">
+                                    {{ billTotal.toFixed(2) }} R$
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <div class="type-paiement col-md-6 d-flex flex-column">
+                    <div>
+
+                    </div>
+                    <div class="d-flex justify-content-center gap-3 p-3 flex-wrap">
+                        <div v-for="stat in status">
+                            <Button style="width: 15rem;" class="p-3" :severity="severity_btn" @click="setOrderPaymentStatus(stat.id, order_id)">
+                                <span>{{ stat.stat_desc }}</span>
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Dialog>
     </div>
 </template>
 
@@ -273,6 +307,7 @@ import _ from 'lodash'
 import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
+import Dialog from 'primevue/dialog';
 export default {
     name: 'OperadorPanel',
 
@@ -284,7 +319,8 @@ export default {
         InventoryComponent,
         Toolbar,
         Button,
-        InputText
+        InputText,
+        Dialog
     },
 
     data() {
@@ -309,9 +345,13 @@ export default {
                 password: null,
                 status_id: null
             },
+            order_id: null,
             titems: null,
             billTotal: 0,
-            billTotalItem: null
+            billTotalItem: null,
+            visiblePaymentModal: false,
+            severity_btn: null
+
 
         }
     },
@@ -349,8 +389,11 @@ export default {
 
         },
 
-        setOrderPaymentStatus(id, pedido) {
-
+        setOrderPaymentStatus(status_id, order_id) {
+           const data = {
+                status: status_id,
+                order: order_id
+           }
            this.$swal.fire({
                icon: "question",
                text: "Do you want really to achieve this action",
@@ -359,7 +402,7 @@ export default {
                showCancelButton: true
            }).then((result) => {
                if (result.isConfirmed){
-                   axios.put(`/api/order-payment/${id}/${pedido}`, this.cancel).then((response) => {
+                   axios.put('/api/order-payment', data).then((response) => {
                        this.$toast.success(response.data)
                        return this.getOrder()
                    }).catch((errors) => {
@@ -383,11 +426,16 @@ export default {
         },
 
         StorParams(OrderId, item_id){
+            if (localStorage.getItem('OrderId')){
+                localStorage.removeItem('OrderId');
+            }
+            if (localStorage.getItem('item_id')){
+                localStorage.removeItem('item_id');
+            }
             localStorage.setItem('OrderId', OrderId);
             localStorage.setItem('item_id', item_id);
             this.item_id = localStorage.getItem('item_id');
             this.item_pedido = localStorage.getItem('OrderId');
-            console.log(`${this.item_pedido} and ${this.item_id}`)
         },
 
         setOrderID(id){
@@ -448,9 +496,36 @@ export default {
                 })
         },
 
+        async getPaymentOrderItens(id){
+            this.visiblePaymentModal = true;
+            this.order_id = id;
+            this.billTotal = 0
+            this.billTotalItem = 0
+            let result = await axios.get('/api/order-menu-itens/' + id);
+            this.itens = await result.data
+
+            for (let bill of this.itens) {
+                this.billTotal += Number(bill.item_total)
+                this.billTotalItem += Number(bill.item_quantidade)
+            }
+
+        },
+        setSeverity(id){
+            switch(id) {
+                case 1 :
+                    return this.severity_btn = "success";
+                break;
+                case 2 :
+                    return this.severity_btn = "primary";
+                break;
+                default: null
+            }
+        }
+
     },
 
     mounted(){
+
 
     }
 }
