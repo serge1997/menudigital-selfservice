@@ -47,8 +47,8 @@
                 </template>
             </Toolbar>
         </div>
-        <div class="col-md-8 m-auto d-flex justify-content-between p-2">
-            <div class="col-md-3 shadow p-2" id="score">
+        <div class="row m-auto mt-2 d-flex justify-content-center p-2 gap-4">
+            <div class="col-md-2  border p-2 bg-white shadow-sm" id="score">
                 <div class="d-flex justify-content-between border-0 bg-white" id="score">
                     <div class="d-flex justify-content-center alert alert-warning py-0 rounded-circle px-2 py-2">
                         <i class="pi pi-dollar" style="font-size: 1.2rem; color: #f0ad4e;"></i>
@@ -66,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3 shadow p-2" id="score">
+            <div class="col-md-2 border shadow-sm p-2 bg-white" id="score">
                 <div class="d-flex justify-content-between border-0 bg-white" id="score">
                     <div class="d-flex justify-content-center alert alert-primary py-0 rounded-circle px-2 py-2">
                         <i class="pi pi-dollar" style="font-size: 1.2rem; color: #0275d8;"></i>
@@ -88,7 +88,7 @@
                    </div>
                 </div>
             </div>
-            <div class="col-md-3 shadow p-2" id="score">
+            <div class="col-md-2 border shadow-sm p-2 bg-white" id="score">
                 <div class="d-flex justify-content-between border-0 bg-white" id="score">
                     <div class="d-flex justify-content-center alert alert-danger py-0 rounded-circle px-2 py-2">
                         <i class="pi pi-dollar" style="font-size: 1.2rem; color: #e63958;"></i>
@@ -98,7 +98,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column" v-for="sell in monthlySell.lastMonth">
                             <span class="fw-medium">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</span>
-                            <small>Venda mes anetrior</small>
+                            <small>Venda mes anterior</small>
                         </p>
                     </div>
                     <div class="d-flex align-items-center">
@@ -106,6 +106,22 @@
                             <i v-if="monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                             <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 border shadow-sm bg-white p-2" id="score">
+                <div class="d-flex justify-content-between border-0 bg-white" id="score">
+                    <div class="d-flex justify-content-center alert alert-warning py-0 rounded-circle px-2 py-2">
+                        <i class="pi pi-dollar" style="font-size: 1.2rem; color: #f0ad4e;"></i>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between p-0 bg-white">
+                    <div class="d-flex flex-column">
+                        <span class="fw-medium">{{ couverts == null ? '00 ' : couverts }}</span>
+                        <small>Couverts</small>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="pi pi-users" style="color: #e63958; font-weight: 400; font-size: 1.3rem"></i>
                     </div>
                 </div>
             </div>
@@ -175,6 +191,7 @@ export default {
             typesCollection: [],
             typeName: [],
             dataTable: null,
+            couverts: null,
             type:{
                 starter: 0,
                 principal: 0,
@@ -244,8 +261,9 @@ export default {
             .then((response) => {
                 this.monthlySell.currentMonth = response.data.thisMonth;
                 this.monthlySell.lastMonth = response.data.lastMonth;
-                this.monthlySell.totalDay = response.data.totalDay
-                this.dataTable = response.data.itemsCollection
+                this.monthlySell.totalDay = response.data.totalDay;
+                this.dataTable = response.data.itemsCollection;
+                this.couverts = response.data.couverts;
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
                          this.typesCollection.push(typename.type)

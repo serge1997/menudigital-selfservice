@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Pedido;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -39,6 +40,8 @@ class BiController extends Controller
         $mealType_where = "";
         $thismonth_where = "";
         $lastmonth_where = "";
+        $couverts_where = "pedidos.ped_delete = '0' ";
+        $couverts = "";
 
         if ($user){
             $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' AND pedidos.user_id = '{$user}' ";
@@ -46,6 +49,7 @@ class BiController extends Controller
             $mealType_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
             $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
+            $couverts_where .= "AND user_id = '{$user}' ";
         }else{
             $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' ";
             $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' ";
@@ -53,6 +57,10 @@ class BiController extends Controller
             $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' ";
             $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' ";
         }
+        $startDate = new DateTime($start);
+        $endDate = new DateTime($end);
+        $endDate = $endDate->format('Y-m-d');
+        $startDate = $startDate->format('Y-m-d');
 
         if ($item){
             $user_where .= "AND itens_pedido.item_id = '{$item}'";
@@ -60,17 +68,18 @@ class BiController extends Controller
             $mealType_where .= "AND itens_pedido.item_id = '{$item}'";
             $thismonth_where .= "AND itens.item_id = '{$item}'";
             $lastmonth_where .= "AND itens.item_id = '{$item}'";
+            $couverts_where .= "AND itens.item_id = '{$item}' ";
+            $couverts .= Pedido::join('itens_pedido as itens', 'pedidos.id', '=', 'itens.item_pedido')
+                ->whereRaw($couverts_where)
+                    ->whereBetween('pedidos.ped_emissao', [$startDate, $endDate])
+                        ->sum('pedidos.ped_customer_quantity');
+        }else {
+            $couverts .= Pedido::whereRaw($couverts_where)
+                ->whereBetween('pedidos.ped_emissao', [$startDate, $endDate])
+                    ->sum('pedidos.ped_customer_quantity');
         }
 
-
-        $startDate = new DateTime($start);
-        $endDate = new DateTime($end);
-        $endDate = $endDate->format('Y-m-d');
-        $startDate = $startDate->format('Y-m-d');
-
         //last month sell
-
-
         $sellLastMonthQuery = "SELECT SUM(itens.item_total) AS total FROM itens_pedido AS itens ";
         $sellLastMonthQuery.= "INNER JOIN pedidos AS pd ON pd.id = itens.item_pedido ";
         $sellLastMonthQuery .= $lastmonth_where;
@@ -153,6 +162,7 @@ class BiController extends Controller
                                                         ->orderBy('itens_pedido.item_emissao','desc')
                                                             ->get();
 
+
         return response()->json(
                 [
                     'waiter'=>$waiter,
@@ -160,7 +170,8 @@ class BiController extends Controller
                     'itemsCollection' => $itemsColection,
                     'lastMonth' => $sellLastMontValue,
                     'thisMonth' => $sellThisMonthValue,
-                    'totalDay' => $sellingToday
+                    'totalDay' => $sellingToday,
+                    'couverts' => $couverts
                 ]
             );
     }
