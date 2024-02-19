@@ -1,7 +1,7 @@
 <template>
     <div class="container">
-        <Button v-if="status_desc !== 'Recusado' && status_desc !== 'Aprovado'" @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
-        <Button v-else @click="getRequisitionItens(id)"  icon="pi pi-pencil" disabled text/>
+        <!--<Button v-if="status_desc !== 'Recusado' && status_desc !== 'Aprovado'" @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/> -->
+        <Button @click="getRequisitionItens(id)"  icon="pi pi-pencil" text/>
         <Dialog v-model:visible="visibleEditionPurchaseModal" maximizable modal header="Edição requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
                 <h6>Lista dos itens</h6>

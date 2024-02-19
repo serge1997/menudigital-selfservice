@@ -37,7 +37,7 @@ class RequisitionRepository implements RequisitionInterface
                 throw new Exception("Produto não faz parte da lista de requisition ou foi rejeitado. Consulte a lista e tente novamente");
             }
 
-            if ($check_product->quantity != $quantidade){
+            if ($check_product->confirm_quantity != $quantidade){
                 throw new Exception("A quantidade de requisição e de entrega devem ser iguais");
             }
         }
