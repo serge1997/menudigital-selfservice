@@ -30,11 +30,9 @@
                     </div>
                     <div class="row d-flex">
                         <div class="col-lg-4 col-md-10 d-flex flex-column gap-2 align-items-start">
-                            <div class="col-md-12 d-flex">
+                            <div class="col-md-12 d-flex gap-3">
                                 <label class="fw-medium">N pessoa:  </label>
-                                <Button icon="pi pi-plus" severity="success"/>
                                 <InputText type="number" :class="invalid" v-model="reservationData.person_quantity" class="w-25" placeholder="000"/>
-                                <Button icon="pi pi-minus" severity="primary" />
                             </div>
                             <small class="text-danger" v-if="formErrMessage" v-for="person in formErrMessage.person_quantity" v-text="person"></small>
                         </div>

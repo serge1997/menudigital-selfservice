@@ -338,10 +338,13 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function getOrdersReport()
     {
+        //beugs quando 00h chega sobre o primeiro pedido do dia, caso não tiver pedido as 00h
+        //fazer um new date -1
         $today = Util::Today();
         $today = date('Y-m-d', strtotime("{$today}"));
         $order = Pedido::where('ped_emissao', $today)->orderBy('created_at', 'ASC')->first();
         $close_date = date('Y-m-d', strtotime("{$order->ped_emissao} +1 day"));
+        var_dump($close_date); die;
         $restaurant = Restaurant::find(Restaurant::RESTAURANT_KEY);
 
         $report = DB::table('itens_pedido')

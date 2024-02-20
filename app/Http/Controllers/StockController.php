@@ -33,6 +33,16 @@ class StockController extends Controller
         $this->stockRepositoryInterface = $stockRepositoryInterface;
     }
 
+    public function listAllAction(): JsonResponse
+    {
+        try{
+            $deliveryResponse = $this->stockRepositoryInterface->listAllDelevery();
+            $deliveryResponse = $deliveryResponse->unique();
+            return response()->json($deliveryResponse);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
     public function filterDataTableAction(Request $request): JsonResponse
     {
         try{
@@ -45,7 +55,6 @@ class StockController extends Controller
 
     public function storeStockEntry(StockEntryRequest $request, StockServiceRepository $service, RequisitionRepository $requisition) :JsonResponse
     {
-
         $request->validated();
         $hoje = new DateTime();
         $hoje = $hoje->format("Y-m-d");

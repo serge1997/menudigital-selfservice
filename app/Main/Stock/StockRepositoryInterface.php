@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface StockRepositoryInterface
 {
+    public function listAllDelevery();
     public function findLastProductEntry($id);
     public function filterDataTable($request): Collection;
     public function filterCostIntelligence($request, $supplier, $year, $month): Collection;

@@ -97,6 +97,7 @@ Route::middleware('auth:sanctum')->group(function() {
     //stock
     Route::controller(StockController::class)->group(function() {
         Route::post('stock-entry', 'storeStockEntry');
+        Route::get('stock-entry', 'listAllAction');
         Route::get('products-stat', 'get_stock_stat');
         Route::post('update/technical-fiche', 'Update_technical_fiche');
         Route::get('inventory', 'get_inventory');

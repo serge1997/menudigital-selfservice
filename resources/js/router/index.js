@@ -18,6 +18,7 @@ import PublicMenu from '../components/Pages/PublicMenu.vue'
 import PurchaseRequisition from "../components/Pages/Dashboard/Purchase/PurchaseRequisition.vue";
 import EmployeePlanning from "../components/Pages/Dashboard/EmployeePlanning.vue";
 import Reservation from '../components/Pages/Dashboard/Reservation/Reservation.vue'
+import ConsultDelivery from '../components/Pages/Dashboard/ConsultDelivery.vue';
 
 
 var managerAccess;
@@ -145,6 +146,7 @@ const routes = [
         meta: {requiresAuth: true}
     },
 
+
     {
         path: '/dashboard/setting',
         name: 'SettingPanel',
@@ -205,6 +207,20 @@ const routes = [
         path: '/dashboard/reservation',
         name: 'Reservation',
         component: Reservation,
+        meta: {requiresAuth: true}
+    },
+    {
+        path: '/dashboard/consult-delivery',
+        name: 'ConsultDelivery',
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+                if (stockAccess){
+                    stockAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
+                }
+            })
+        },
+        component: ConsultDelivery,
         meta: {requiresAuth: true}
     }
 ]

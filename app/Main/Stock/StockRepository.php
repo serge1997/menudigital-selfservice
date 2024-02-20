@@ -6,6 +6,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use App\Http\Resources\StockEntryResource;
 use App\Models\Saldo;
+use App\Models\PurchaseRequisition;
+use App\Http\Resources\PurchaseRequisitionResource;
 use App\Http\Resources\SaldoResource;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +16,17 @@ class StockRepository implements StockRepositoryInterface
     public $bar = [1, 5];
     public $kitchen = [2, 3, 4, 6];
 
+    public function listAllDelevery()
+    {
+        return PurchaseRequisitionResource::collection(
+            PurchaseRequisition::select('*')
+                ->whereIn('id', function($query){
+                    $query->select('requisition_id')
+                        ->from('stock_entries')
+                            ->where('is_delete', false);
+                })->get()
+        );
+    }
     public function findLastProductEntry($id)
     {
         $productInfo = StockEntry::where('productID', $id)

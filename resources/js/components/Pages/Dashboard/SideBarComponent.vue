@@ -2,7 +2,7 @@
     <Sidebar v-model:visible="visibleSidebar">
         <template #container="{ closeCallback }">
             <div class="d-flex flex-column align-content-between h-full">
-                <div class="d-flex align-items-center justify-content-between px-4 pt-3 flex-shrink-0">
+                <div class="d-flex align-items-center justify-content-between px-4 flex-shrink-0">
                     <div v-for="rest in restaurant">
                         <img class="w-25 type-btn" :src="'/img/logo/'+ rest.res_logo" alt="">
                     </div>
@@ -60,16 +60,22 @@
                             Escala
                           </router-link>
                         </li>
-                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0 border-top">
+                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'Stock'}">
                             <span class="pi pi-database"></span>
                                 Stock
                             </router-link>
                         </li>
-                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0 border-top">
+                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                             <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
                                 <span class="pi pi-cart-plus"></span>
                                 Compras
+                            </router-link>
+                        </li>
+                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                            <router-link class="nav-link" :to="{ name: 'ConsultDelivery'}">
+                                <span class="pi pi-truck"></span>
+                                Consulte Entrega
                             </router-link>
                         </li>
                         <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
