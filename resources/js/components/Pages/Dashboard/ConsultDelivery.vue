@@ -27,7 +27,7 @@
                             <template #body = "{ data }">
                                 <div class="d-flex gap-2">
                                     <Button @click="showDeliveryItems(data.id)" icon="pi pi-eye" text />
-                                    <Button icon="pi pi-trash" class="text-danger" text />
+                                    <Button @click="deleteDelivery(data.id)" icon="pi pi-trash" class="text-danger" text />
                                 </div>
                             </template>
                         </Column>
@@ -59,6 +59,12 @@
                 </div>
             </div>
         </div>
+        <Dialog v-model:visible="visibleDeleteDeliveryModal" maximizable modal header="" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <div class="col-md-8 d-flex flex-column m-auto">
+                <p class="text-center">{{ loadMsg }}</p>
+                <ProgressBar v-if="visibleDeleteDeliveryModal" mode="indeterminate" style="height: 6px"></ProgressBar>
+            </div>
+        </Dialog>
     </div>
 </template>
 <script>
@@ -83,14 +89,16 @@ export default {
         SideBarComponent,
         Button,
         Dialog,
-        ProgressBar
+        ProgressBar,
     },
     data(){
         return {
             deliveryList: null,
             visibleDeliveryItemsModal: false,
+            visibleDeleteDeliveryModal: false,
             showItems: false,
-            load: false
+            load: false,
+            loadMsg: 'Atualizando saldo....'
         }
     },
     methods: {
@@ -101,9 +109,6 @@ export default {
             }catch(errors) {
                 console.log(errors)
             }
-
-
-
         },
         showDeliveryItems(id){
             this.load = true;
@@ -111,11 +116,42 @@ export default {
             this.showItems = null
             return new Promise(resolve => {
                 setTimeout( async () => {
-                    const showResponse = await axios.get('/api/stock-requistion/' + id)
-                    this.showItems = await showResponse.data;
-                    this.load = false
-                    resolve(true);
+                    try{
+                        const showResponse = await axios.get('/api/stock-requistion/' + id)
+                        this.showItems = await showResponse.data;
+                        this.load = false
+                        resolve(true);
+                    }catch(errors){
+                        console.log(errors)
+                    }finally{
+                        this.load = false
+                    }
                 }, randTime())
+            })
+        },
+        deleteDelivery(id){
+            this.$swal.fire({
+                text: 'Está sendo deletado uma entrega. clique em ok para continuar',
+                icon: 'warning',
+                showCancelButton: true
+            }).then((result) => {
+                if (result.isConfirmed){
+                    this.visibleDeleteDeliveryModal = true;
+                    setTimeout(() => {this.loadMsg = 'Atualizando as entregas...'}, 800);
+                    setTimeout(() => {this.loadMsg = "deletando a entrega..."}, 2000)
+                    // return new Promise(resolve => {
+                    //     try {
+                    //         setTimeout( async () => {
+                    //             const response = await axios.delete('/api/stock-delivery/requisition/' + id);
+                    //             console.log(response.data);
+                    //         })
+                    //     }catch(errors){
+                    //         console.log(errors.message);
+                    //     }finally{
+
+                    //     }
+                    // })
+                }
             })
         }
     },

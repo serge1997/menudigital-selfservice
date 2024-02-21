@@ -106,6 +106,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('stock-search', 'filterDataTableAction');
         Route::get('stock-requistion/{requisition_id}', 'listStockEntryByRequisition');
         Route::get('inventory-filter', 'listInventory');
+        Route::delete('stock-delivery/requisition/{id}', 'deleteDeliveryByRequisitionIdAction');
     });
 
     //produto

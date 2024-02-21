@@ -39,6 +39,8 @@ use App\Main\Login\LoginRepositoryInterface;
 use App\Main\Login\LoginRepository;
 use App\Main\Planning\PlanningRepositoryInterface;
 use App\Main\Planning\PlanningRepository;
+use App\Main\PurchaseRequisition\PurchaseRequisitionRepositoryInterface;
+use App\Main\PurchaseRequisition\PurchaseRequisitionRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -66,6 +68,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PositionRepositoryInterface::class, PositionRepository::class);
         $this->app->bind(LoginRepositoryInterface::class, LoginRepository::class);
         $this->app->bind(PlanningRepositoryInterface::class, PlanningRepository::class);
+        $this->app->bind(PurchaseRequisitionRepositoryInterface::class, PurchaseRequisitionRepository::class);
     }
 
     /**

@@ -241,4 +241,15 @@ class StockController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+
+    public function deleteDeliveryByRequisitionIdAction($id, Request $request): JsonResponse
+    {
+        try{
+            $this->stockRepositoryInterface->deleteDeliveryByRequisitionId($id, $request);
+            return response()->json("A entrega foi deletada com successo");
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }
+

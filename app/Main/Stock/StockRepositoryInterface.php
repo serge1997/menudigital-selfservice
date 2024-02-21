@@ -11,4 +11,6 @@ interface StockRepositoryInterface
     public function filterCostIntelligence($request, $supplier, $year, $month): Collection;
     public function findStockEntryByRequisition($requisition_id);
     public function getInventory($request);
+    public function deleteDeliveryByRequisitionId($id, $request);
+    public function reduceSaldoAfterDeleteDelivery($id): void;
 }
