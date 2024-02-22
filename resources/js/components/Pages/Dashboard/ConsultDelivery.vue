@@ -49,7 +49,7 @@
                                 <Column header="Ação">
                                     <template #body="{ data }">
                                         <div class="d-flex gap-1">
-                                            <Button icon="pi pi-trash" class="text-danger" text />
+                                            <Button @click="deleteOneProduct(data.requisition_id, data.productID)" icon="pi pi-trash" class="text-danger" text />
                                         </div>
                                     </template>
                                 </Column>
@@ -139,18 +139,40 @@ export default {
                     this.visibleDeleteDeliveryModal = true;
                     setTimeout(() => {this.loadMsg = 'Atualizando as entregas...'}, 800);
                     setTimeout(() => {this.loadMsg = "deletando a entrega..."}, 2000)
-                    // return new Promise(resolve => {
-                    //     try {
-                    //         setTimeout( async () => {
-                    //             const response = await axios.delete('/api/stock-delivery/requisition/' + id);
-                    //             console.log(response.data);
-                    //         })
-                    //     }catch(errors){
-                    //         console.log(errors.message);
-                    //     }finally{
-
-                    //     }
-                    // })
+                     return new Promise(resolve => {
+                        setTimeout(() => {
+                            axios.delete('/api/stock-delivery/requisition/' + id)
+                            .then((response) => {
+                                this.$swal.fire({text: response.data, icon: 'success'});
+                                this.loadDelivery()
+                                resolve(true);
+                            })
+                            .catch(errors => console.log(errors))
+                            .finally(() => {
+                                this.visibleDeleteDeliveryModal = false
+                            })
+                        }, 3000)
+                     })
+                }
+            })
+        },
+        /**delete a single product from delivery group */
+        deleteOneProduct(requisition_id, product_id){
+            this.$swal.fire({
+                text: 'Está sendo deletar um produto entregado. Clique em ok para continuar',
+                icon: 'warning',
+                showCancelButton: true
+            })
+            .then((result) => {
+                if (result.isConfirmed){
+                    return new Promise(resolve => {
+                        axios.delete(`/api/stock-delivery/requisition/${requisition_id}/product/${product_id}`)
+                        .then((response) => {
+                            this.$swal.fire({text: response.data, icon: 'success'});
+                            resolve(true);
+                        })
+                        .catch(errors => console.log(errors))
+                    })
                 }
             })
         }

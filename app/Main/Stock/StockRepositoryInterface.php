@@ -2,6 +2,8 @@
 namespace App\Main\Stock;
 
 use Illuminate\Database\Eloquent\Collection;
+use App\Models\Saldo;
+use App\Models\Product;
 
 interface StockRepositoryInterface
 {
@@ -12,5 +14,10 @@ interface StockRepositoryInterface
     public function findStockEntryByRequisition($requisition_id);
     public function getInventory($request);
     public function deleteDeliveryByRequisitionId($id, $request);
-    public function reduceSaldoAfterDeleteDelivery($id): void;
+    public function reduceSaldo($id): void;//
+    public function deleteProductFromDelivery($requisition_id ,$product_id, $request): bool;
+    public function deleteFromStockEntryByRequisitionId($requisition_id);
+    public function reduceFromSaldoAfterDeleteDelivery(Product $product, Saldo $saldo, $requisition_id);
+    public function findStockEntryByRequisitionIdProductId($requisition_id ,$product_id);
+    public function findSaldoByProductId(Product $product);
 }

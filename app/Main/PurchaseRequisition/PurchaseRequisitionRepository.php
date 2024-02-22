@@ -4,7 +4,7 @@ use App\Models\RequisitionItem;
 use App\Models\PurchaseRequisition;
 class PurchaseRequisitionRepository implements PurchaseRequisitionRepositoryInterface
 {
-    public function deleteByRequisitionIdProductId($requisition_id, $product_id): void
+    public function deleteByRequisitionIdProductId($requisition_id, $product_id)
     {
         RequisitionItem::where([
             ['requisition_id', $requisition_id],
@@ -13,7 +13,7 @@ class PurchaseRequisitionRepository implements PurchaseRequisitionRepositoryInte
             'is_delete' => true
         ]);
     }
-    public function deleteByRequisitionId($requisition_id): void
+    public function deleteByRequisitionId($requisition_id)
     {
         PurchaseRequisition::where('id', $requisition_id)
             ->update([
