@@ -27,7 +27,7 @@ class PurchaseRequisitionResource extends JsonResource
             'requisition_code' => $this->requisition_code,
             'response_date' => $this->response_date,
             'user_id' => $this->user_id,
-            'devolution_date' => date('d/m/Y', strtotime(StockEntry::where([['requisition_id', $this->id], ['is_delete', true]])->first()->emissao)) ?? null,
+            'devolution_date' => StockEntry::where([['requisition_id', $this->id], ['is_delete', true]])->exists() ? date('d/m/Y', strtotime(StockEntry::where([['requisition_id', $this->id], ['is_delete', true]])->first()->emissao)) : "Não encontrado",
             'user_name' => $this->user->name ?? User::find($this->user_id)->name
         ];
     }

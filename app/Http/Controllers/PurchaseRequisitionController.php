@@ -17,76 +17,40 @@ use Illuminate\Support\Facades\DB;
 use App\Models\RequisitionStatus;
 use App\Http\Services\UserInstance;
 use App\Events\RequisitionSended;
+use App\Main\PurchaseRequisition\PurchaseRequisitionRepositoryInterface;
 
 class PurchaseRequisitionController extends Controller
 {
-    public function create(PurchaseRequisitionRequest $request, ProductRepositoty $product)
+    protected PurchaseRequisitionRepositoryInterface $purchaseRequisitionRepositoryInterface;
+
+    public function __construct(
+        PurchaseRequisitionRepositoryInterface $purchaseRequisitionRepositoryInterface
+    )
+    {
+        $this->purchaseRequisitionRepositoryInterface = $purchaseRequisitionRepositoryInterface;
+    }
+    public function createAction(PurchaseRequisitionRequest $request, ProductRepositoty $product)
     {
         try{
             $request->validated();
-            $date = new \DateTime(substr($request->delivery_date, 0, 10));
-            $delivery_date = $date->format('Y-m-d');
-            $requisition_code = "";
-            $string_format = Util::randomString();
-            $number_format = Util::randomNumber();
-            $requisition_code .= $string_format;
-            $requisition_code.=$number_format;
-            $requisition_code.= str_replace('-', '',$date->format('m-d'));
-            $product_ids = $request->products_id;
-            $req_values = $request->all();
-            $requision = new PurchaseRequisition($req_values);
-            $requision->status_id = PurchaseRequisition::REQUISITION_WAITING;
-            $requision->delivery_date = $delivery_date;
-            $requision->requisition_code = $requisition_code;
+            $message = "Requisição enviando com sucesso";
             DB::beginTransaction();
-            $requision->save();
-            foreach ($product_ids as $key => $id){
-                $cost = $product->getLastProductCost($id);
-                $cost = $cost->unitCost ?? 0;
-                $item = new RequisitionItem();
-                $item->requisition_id = $requision->id;
-                $item->product_id = $id;
-                $item->cost = $cost;
-                $item->requisition_code = $requisition_code;
-                $item->status_id = PurchaseRequisition::REQUISITION_WAITING;
-                $item->quantity = $request->quantity[$key];
-                $item->confirm_quantity = 0;
-                $item->total = $cost * $request->quantity[$key];
-                $item->save();
-                event(new RequisitionSended($requision));
-            }
+            $this->purchaseRequisitionRepositoryInterface->create($request);
             DB::commit();
-            return response()->json("Requisição enviando com sucesso");
+            return response()->json($message);
         }catch (Exception $e){
             DB::rollBack();
-            return response($e->getMessage(). " ".$e->getFile(). " ".$e->getLine(), 422);
+            return response($e->getMessage(), 422);
         }
-
-            //$request->validated();
-            //$cost->unitCost ?? $cost = 0
-            //return response()->json("Caiu aqui".$cost);
-
     }
 
     public function index(): JsonResponse
     {
-        $requisition = DB::table('purchase_requisitions')
-            ->select(
-                'purchase_requisitions.id',
-                'purchase_requisitions.delivery_date',
-                'purchase_requisitions.requisition_code',
-                DB::raw("DATE_FORMAT(purchase_requisitions.delivery_date, '%d-%m-%Y') as delivery_date"),
-                DB::raw("DATE_FORMAT(purchase_requisitions.created_at, '%d-%m-%Y') as created_at"),
-                'users.name AS require_name',
-                'requisitions_status.stat_desc',
-                'departments.name'
-            )
-            ->join('departments', 'purchase_requisitions.department_id', '=', 'departments.id')
-                ->join('requisitions_status','purchase_requisitions.status_id', '=', 'requisitions_status.id')
-                    ->join('users', 'purchase_requisitions.user_id', 'users.id')
-                        ->orderBy('purchase_requisitions.id', 'DESC')
-                            ->get();
-        return response()->json($requisition);
+       try{
+            return response()->json($this->purchaseRequisitionRepositoryInterface->listAll());
+       }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+       }
     }
 
     /**
@@ -97,21 +61,11 @@ class PurchaseRequisitionController extends Controller
      */
     public function show($id): JsonResponse
     {
-        $requisition = DB::table('purchase_requisitions')
-            ->select(
-                'itens_requisitions.product_id',
-                'purchase_requisitions.observation',
-                'itens_requisitions.status_id as show_status',
-                'itens_requisitions.confirm_quantity',
-                'itens_requisitions.quantity',
-                'products.prod_name',
-            )
-                ->join('itens_requisitions', 'itens_requisitions.requisition_id', 'purchase_requisitions.id')
-                ->join('products','itens_requisitions.product_id', '=', 'products.id' )
-                    ->where('purchase_requisitions.id', $id)
-                        ->get();
-
-        return response()->json($requisition,);
+       try{
+            return response()->json($this->purchaseRequisitionRepositoryInterface->findById($id));
+       }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+       }
     }
 
     /**

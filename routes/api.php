@@ -96,13 +96,13 @@ Route::middleware('auth:sanctum')->group(function() {
 
     //stock
     Route::controller(StockController::class)->group(function() {
-        Route::post('stock-entry', 'storeStockEntry');
+        Route::post('stock-entry', 'storeStockEntryAction');
         Route::get('stock-entry', 'listAllAction');
         Route::get('products-stat', 'get_stock_stat');
         Route::post('update/technical-fiche', 'Update_technical_fiche');
         Route::get('inventory', 'get_inventory');
-        Route::put('reset-saldo', 'resetSaldo');
-        Route::put("current/stock-rest", "cureentSaldoCheck");
+        Route::put('reset-saldo', 'resetSaldoAction');
+        Route::put("current/stock-rest", "cureentSaldoCheckAction");
         Route::get('stock-search', 'filterDataTableAction');
         Route::get('stock-requistion/{requisition_id}', 'listStockEntryByRequisition');
         Route::get('inventory-filter', 'listInventory');
@@ -150,7 +150,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     //purchase requisition
     Route::controller(PurchaseRequisitionController::class)->group(function() {
-        Route::post('purchase-requisition', 'create');
+        Route::post('purchase-requisition', 'createAction');
         Route::get('purchase-requisition', 'index');
         Route::get('purchase-requisition-show/{id}', 'show');
         Route::delete('purchase-requisition/{id}', 'deleteRequisition');

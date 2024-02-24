@@ -14,6 +14,8 @@ use App\Http\Services\Util\Util;
 use Illuminate\Support\Facades\DB;
 use App\Main\Product\ProductRepositoryInterface;
 use App\Main\PurchaseRequisition\PurchaseRequisitionRepositoryInterface;
+use App\Http\Services\Stock\StockServiceRepository;
+use App\Http\Services\Requisition\RequisitionRepository;
 use App\Models\Product;
 use App\Traits\Permission;
 
@@ -24,13 +26,76 @@ class StockRepository implements StockRepositoryInterface
     public $kitchen = [2, 3, 4, 6];
     private ProductRepositoryInterface $productRepositoryInterface;
     private PurchaseRequisitionRepositoryInterface $purchaseRequisitionRepositoryInterface;
+    private StockServiceRepository $serviceStock;
+    private RequisitionRepository $serviceRequisition;
 
     public function __construct(
         ProductRepositoryInterface $productRepositoryInterface,
-        PurchaseRequisitionRepositoryInterface $purchaseRequisitionRepositoryInterface
+        PurchaseRequisitionRepositoryInterface $purchaseRequisitionRepositoryInterface,
+        StockServiceRepository $serviceStock,
+        RequisitionRepository $serviceRequisition
+
     ){
         $this->productRepositoryInterface = $productRepositoryInterface;
         $this->purchaseRequisitionRepositoryInterface = $purchaseRequisitionRepositoryInterface;
+        $this->serviceStock = $serviceStock;
+        $this->serviceRequisition = $serviceRequisition;
+    }
+
+    public function storeStockEntry($request)
+    {
+        if ($this->can_manage($request) || $this->can_create_product($request)){
+            $productData = $this->productRepositoryInterface->findById($request->productID);
+            $product = $this->findSaldoByProductId($productData);
+            $this->serviceRequisition->checkRequisitionID($request->requisition_id, $request->productID, $request->quantity);
+            $data = $request->all();
+            $entry = new StockEntry($data);
+            $entry->totalCost = $request->unitCost * $request->quantity;
+            $entry->emissao = Util::Today();
+            $entry->save();
+            if ($product):
+                if ($productData->prod_unmed != "bt"):
+                    DB::table('saldos')
+                            ->where('productID', $request->productID)
+                                ->update([
+                                    'emissao' => Util::Today(),
+                                    'saldoInicial' => $product->saldoInicial + ($request->quantity * $productData->prod_contain),
+                                    'saldoFinal' => $product->saldoFinal + ($request->quantity * $productData->prod_contain)
+                                ]);
+                    $this->serviceStock->CheckRuptureLowStockState($request->productID);
+                    return true;
+                else:
+                    DB::table('saldos')
+                        ->where('productID', $request->productID)
+                            ->update([
+                                'emissao' => Util::Today(),
+                                'saldoInicial' => $product->saldoInicial + $request->quantity,
+                                'saldoFinal' => $product->saldoFinal + $request->quantity
+                            ]);
+                    $this->serviceStock->CheckRuptureLowStockState($request->productID);
+                    return true;
+                endif;
+            else:
+                if ($productData->prod_unmed != "bt"):
+                    $saldo = new Saldo();
+                    $saldo->productID = $request->productID;
+                    $saldo->emissao = Util::Today();
+                    $saldo->saldoInicial =  $request->quantity * $productData->prod_contain;
+                    $saldo->saldoFinal = $request->quantity * $productData->prod_contain;
+                    $saldo->save();
+                else:
+                    $saldo = new Saldo();
+                    $saldo->productID = $request->productID;
+                    $saldo->emissao = Util::Today();
+                    $saldo->saldoInicial =  $request->quantity;
+                    $saldo->saldoFinal = $request->quantity;
+                    $saldo->save();
+                endif;
+                $this->serviceStock->CheckRuptureLowStockState($request->productID);
+            endif;
+            return true;
+        }
+        throw new Exception(Util::PermisionExceptionMessage());
     }
     public function listAllDelevery()
     {
@@ -335,5 +400,53 @@ class StockRepository implements StockRepositoryInterface
             ['is_delete', true],
             ['requisition_id', $requisition_id]]
         )->get());
+    }
+    public function listStockProductStat()
+    {
+        $query = "
+            SELECT
+                MAX(st.emissao) emissao,
+                max(st.unitCost) unitCost,
+                st.productID,
+                p.prod_name,
+                p.min_quantity,
+                sp.sup_name,
+                CASE
+                    WHEN p.prod_unmed = 'bt' THEN TRUNCATE(sa.saldoFinal, 2)
+                ELSE
+                    TRUNCATE(sa.saldoFinal / p.prod_contain, 2)
+                END saldoFinal,
+                p.prod_unmed
+            FROM stock_entries st
+                INNER JOIN saldos sa
+                    ON sa.productID = st.productID
+                INNER join products p
+                    ON p.id = st.productID
+                    AND p.is_delete = 0
+                INNER JOIN suppliers sp
+                    ON sp.id = st.supplierID
+            GROUP BY
+                st.productID,
+                p.prod_name,
+                sp.sup_name,
+                p.prod_unmed,
+                p.prod_contain,
+                p.min_quantity,
+                saldoFinal
+            HAVING MAX(st.emissao)
+            ORDER BY p.prod_name
+        ";
+        return DB::select($query);
+    }
+
+    public function resetSaldo()
+    {
+        $query = "UPDATE saldos SET saldoInicial = saldoFinal";
+        DB::select($query);
+    }
+
+    public function cureentSaldoCheck()
+    {
+        $this->serviceStock->checkAllwaysRupture();
     }
 }

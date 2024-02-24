@@ -38,7 +38,7 @@ class RequisitionRepository implements RequisitionInterface
             }
 
             if ($check_product->confirm_quantity != $quantidade){
-                throw new Exception("A quantidade de requisição e de entrega devem ser iguais");
+                throw new Exception("A quantidade de requisição confirmada e de entrega devem ser iguais");
             }
         }
 

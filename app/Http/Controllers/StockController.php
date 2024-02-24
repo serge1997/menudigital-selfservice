@@ -53,175 +53,48 @@ class StockController extends Controller
         }
     }
 
-    public function storeStockEntry(StockEntryRequest $request, StockServiceRepository $service, RequisitionRepository $requisition) :JsonResponse
+    public function storeStockEntryAction(StockEntryRequest $request) :JsonResponse
     {
-        $request->validated();
-        $hoje = new DateTime();
-        $hoje = $hoje->format("Y-m-d");
-        $produtData = Product::where('id', $request->productID)
-            ->first();
-        $product = Saldo::select(DB::raw('MAX(emissao) emissao'), 'productID', 'saldoInicial', 'saldoFinal')
-            ->where('productID', $request->productID)
-                ->groupby('emissao', 'productID', 'saldoInicial', 'saldoFinal')
-                    ->first();
-        try {
-            $requisition->checkRequisitionID($request->requisition_id, $request->productID, $request->quantity);
-            $data = $request->all();
-            $entry = new StockEntry($data);
-            $entry->totalCost = $request->unitCost * $request->quantity;
-            $entry->emissao = $hoje;
-            $entry->save();
-            if ($product):
-                if ($produtData->prod_unmed != "bt"):
-                    DB::table('saldos')
-                            ->where('productID', $request->productID)
-                                ->update([
-                                    'emissao' => $hoje,
-                                    'saldoInicial' => $product->saldoInicial + ($request->quantity * $produtData->prod_contain),
-                                    'saldoFinal' => $product->saldoFinal + ($request->quantity * $produtData->prod_contain)
-                                ]);
-                    $service->CheckRuptureLowStockState($request->productID);
-                    return response()
-                        ->json('Action registred successfully', 200);
-                else:
-                    DB::table('saldos')
-                        ->where('productID', $request->productID)
-                            ->update([
-                                'emissao' => $hoje,
-                                'saldoInicial' => $product->saldoInicial + $request->quantity,
-                                'saldoFinal' => $product->saldoFinal + $request->quantity
-                            ]);
-                    $service->CheckRuptureLowStockState($request->productID);
-                    return response()
-                        ->json('Action registred successfully', 200);
-                endif;
-            else:
-                if ($produtData->prod_unmed != "bt"):
-                    $saldo = new Saldo();
-                    $saldo->productID = $request->productID;
-                    $saldo->emissao = $hoje;
-                    $saldo->saldoInicial =  $request->quantity * $produtData->prod_contain;
-                    $saldo->saldoFinal = $request->quantity * $produtData->prod_contain;
-                    $saldo->save();
-                else:
-                    $saldo = new Saldo();
-                    $saldo->productID = $request->productID;
-                    $saldo->emissao = $hoje;
-                    $saldo->saldoInicial =  $request->quantity;
-                    $saldo->saldoFinal = $request->quantity;
-                    $saldo->save();
-                endif;
-                $service->CheckRuptureLowStockState($request->productID);
-            endif;
-            return response()
-                ->json('Action registred successfully', 200);
-
-        }catch(\Exception $e){
-            return response()
-                ->json($e->getMessage(), 400);
+        try{
+            $message = "Entrega do produto salvou com sucesso !";
+            DB::beginTransaction();
+            $this->stockRepositoryInterface->storeStockEntry($request);
+            DB::commit();
+            return response()->json($message);
+        }catch(Exception $e){
+            DB::rollBack();
+            return response()->json($e->getMessage(), 500);
         }
 
     }
 
     public function get_stock_stat(): JsonResponse
     {
-        $query = "
-            SELECT
-                MAX(st.emissao) emissao,
-                max(st.unitCost) unitCost,
-                st.productID,
-                p.prod_name,
-                p.min_quantity,
-                sp.sup_name,
-                CASE
-                    WHEN p.prod_unmed = 'bt' THEN TRUNCATE(sa.saldoFinal, 2)
-                ELSE
-                    TRUNCATE(sa.saldoFinal / p.prod_contain, 2)
-                END saldoFinal,
-                p.prod_unmed
-            FROM stock_entries st
-                INNER JOIN saldos sa
-                    ON sa.productID = st.productID
-                INNER join products p
-                    ON p.id = st.productID
-                    AND p.is_delete = 0
-                INNER JOIN suppliers sp
-                    ON sp.id = st.supplierID
-            GROUP BY
-                st.productID,
-                p.prod_name,
-                sp.sup_name,
-                p.prod_unmed,
-                p.prod_contain,
-                p.min_quantity,
-                saldoFinal
-            HAVING MAX(st.emissao)
-            ORDER BY p.prod_name
-        ";
-        return response()
-            ->json(DB::select($query));
+        try{
+            return response()->json($this->stockRepositoryInterface->listStockProductStat());
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
-    public function show_technical_fiche(int $id): JsonResponse
+    public function resetSaldoAction(): JsonResponse
     {
-        $item = menuitems::where('id', $id)->get();
-        $fiche = DB::table('technicalfiches')
-            ->select(
-                'technicalfiches.itemID',
-                'technicalfiches.productID',
-                'menuitems.item_name',
-                'products.prod_name',
-                'technicalfiches.quantity',
-                'technicalfiches.cost',
-                'products.prod_unmed'
-            )
-                ->where('itemID', $id)
-                    ->join('menuitems', 'technicalfiches.itemID', '=', 'menuitems.id')
-                        ->join('products', 'technicalfiches.productID', '=', 'products.id')
-                            ->get();
-
-        return response()
-            ->json($fiche);
+        try{
+            $message = "Journey reset successffully";
+            $this->stockRepositoryInterface->resetSaldo();
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
-
-    public function get_inventory(): JsonResponse
+    public function cureentSaldoCheckAction()
     {
-        $inventoty = "
-            SELECT
-            p.prod_name,
-            CASE
-                WHEN p.prod_unmed <> 'bt' THEN TRUNCATE(sa.saldoInicial / p.prod_contain, 2)
-                ELSE
-                TRUNCATE(sa.saldoInicial, 2)
-            END saldoinicial,
-            CASE
-                WHEN p.prod_unmed <> 'bt' THEN  TRUNCATE(sa.saldoFinal / p.prod_contain, 2)
-                ELSE
-                TRUNCATE(sa.saldoFinal, 2)
-            END saldofinal
-        FROM saldos sa
-        INNER JOIN products p
-            ON sa.productID = p.id
-        ";
-
-        return response()->json(DB::select($inventoty));
-    }
-
-    public function resetSaldo(): JsonResponse
-    {
-        $query = "
-            UPDATE saldos SET saldoInicial = saldoFinal
-        ";
-
-        DB::select($query);
-
-        return response()->json("Journey reset successffully");
-    }
-
-    public function cureentSaldoCheck(StockServiceRepository $stock)
-    {
-        return $stock->checkAllwaysRupture();
+        try{
+            $this->stockRepositoryInterface->cureentSaldoCheck();
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
     public function listStockEntryByRequisition($requisition_id): JsonResponse

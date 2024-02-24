@@ -7,6 +7,7 @@ use App\Models\Product;
 
 interface StockRepositoryInterface
 {
+    public function storeStockEntry($request);
     public function listAllDelevery();
     public function findLastProductEntry($id);
     public function filterDataTable($request): Collection;
@@ -23,4 +24,7 @@ interface StockRepositoryInterface
     public function updateProductDeliveryQuantity($request);
     public function findAllDevolution();
     public function findDevolutionItemsByRequisitionId($requisition_id);
+    public function listStockProductStat();
+    public function resetSaldo();
+    public function cureentSaldoCheck();
 }
