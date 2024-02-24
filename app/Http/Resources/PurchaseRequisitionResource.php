@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Models\User;
+use App\Models\StockEntry;
 
 class PurchaseRequisitionResource extends JsonResource
 {
@@ -26,6 +27,7 @@ class PurchaseRequisitionResource extends JsonResource
             'requisition_code' => $this->requisition_code,
             'response_date' => $this->response_date,
             'user_id' => $this->user_id,
+            'devolution_date' => date('d/m/Y', strtotime(StockEntry::where([['requisition_id', $this->id], ['is_delete', true]])->first()->emissao)) ?? null,
             'user_name' => $this->user->name ?? User::find($this->user_id)->name
         ];
     }

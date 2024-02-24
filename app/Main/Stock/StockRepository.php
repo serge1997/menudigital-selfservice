@@ -178,7 +178,8 @@ class StockRepository implements StockRepositoryInterface
     {
         StockEntry::where('requisition_id', $requisition_id)
             ->update([
-                'is_delete' => true
+                'is_delete' => true,
+                'emissao' => Util::Today()
             ]);
     }
     /**
@@ -293,6 +294,7 @@ class StockRepository implements StockRepositoryInterface
                 ])->update([
                     'totalCost' => $productDelivred->totalCost - ($productDelivred->unitCost * $request->quantity),
                     'quantity' => $productDelivred->quantity - $request->quantity,
+                    'emissao' => $emissao
                 ]);
                 $stock = new StockEntry();
                 $stock->requisition_id = $request->requisition_id;
@@ -315,4 +317,23 @@ class StockRepository implements StockRepositoryInterface
         throw new Exception(Util::PermisionExceptionMessage());
     }
 
+    public function findAllDevolution()
+    {
+        return PurchaseRequisitionResource::collection(
+            PurchaseRequisition::select('*')
+                ->whereIn('id', function($query){
+                    $query->select('requisition_id')
+                        ->from('stock_entries')
+                            ->where('is_delete', true);
+                })->get()
+        );
+    }
+
+    public function findDevolutionItemsByRequisitionId($requisition_id)
+    {
+        return StockEntryResource::collection(StockEntry::where([
+            ['is_delete', true],
+            ['requisition_id', $requisition_id]]
+        )->get());
+    }
 }

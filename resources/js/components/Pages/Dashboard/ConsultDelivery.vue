@@ -11,8 +11,9 @@
                             </div>
                         </template>
                         <template #end>
-                            <div>
-                                <Button @click="visibleNewReservationModal = true" icon="pi pi-plus" label="Novo" />
+                            <div class="">
+                                <Button @click="$router.push({name: 'Stock'})" icon="pi pi-database" label="Stock" text/>
+                                <DeliveryDevolutionComponent />
                             </div>
                         </template>
                     </Toolbar>
@@ -89,6 +90,7 @@ import InputText from 'primevue/inputtext';
 import Calendar from 'primevue/calendar';
 import Toolbar from 'primevue/toolbar';
 import SideBarComponent from './SideBarComponent.vue';
+import DeliveryDevolutionComponent from '../../DeliveryDevolutionComponent.vue';
 import ProgressBar from 'primevue/progressbar';
 import Button from 'primevue/button';
 import { randTime } from '../../../rand';
@@ -101,6 +103,7 @@ export default {
         InputText,
         Toolbar,
         SideBarComponent,
+        DeliveryDevolutionComponent,
         Button,
         Dialog,
         ProgressBar,
@@ -190,7 +193,11 @@ export default {
             })
             .then((result) => {
                 if (result.isConfirmed){
+                    this.visibleDeleteDeliveryModal = true;
+                    setTimeout(() => {this.loadMsg = 'Atualizando as entregas...'}, 800);
+                    setTimeout(() => {this.loadMsg = "deletando a entrega..."}, 2000)
                     return new Promise(resolve => {
+                       setTimeout(() => {
                         axios.delete(`/api/stock-delivery/requisition/${requisition_id}/product/${product_id}`)
                         .then((response) => {
                             this.$swal.fire({text: response.data, icon: 'success'});
@@ -202,6 +209,10 @@ export default {
                                     icon: 'error'
                                 });
                         })
+                        .finally(() => {
+                            this.visibleDeleteDeliveryModal = false;
+                        })
+                       }, 3000)
                     })
                 }
             })
@@ -214,17 +225,25 @@ export default {
         },
         editproductDeliveryQuantityAction(){
             return new Promise(resolve => {
+                this.visibleDeleteDeliveryModal = true;
+                setTimeout(() => {this.loadMsg = 'Atualizando as entregas...'}, 800);
+                setTimeout(() => {this.loadMsg = "deletando a entrega..."}, 2000)
                 setTimeout(() => {
-                    this.axios.post('/api/stock-delivery/edit/product-quantity', this.editQuantityData).then((response) => {
+                    axios.post('/api/stock-delivery/edit/product-quantity', this.editQuantityData).then((response) => {
                         this.$swal.fire({
                             text: response.data,
                             icon: 'success'
                         })
+                        this.editQuantityData.quantity = null;
+                        this.showEditquantityInput = false;
                     })
                     .catch(errors => {
                         errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'error'});
                     })
-                })
+                    .finally(() => {
+                        this.visibleDeleteDeliveryModal = false;
+                    })
+                }, 3000)
             })
         }
     },

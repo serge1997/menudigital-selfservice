@@ -21,4 +21,6 @@ interface StockRepositoryInterface
     public function findStockEntryByRequisitionIdProductId($requisition_id ,$product_id);
     public function findSaldoByProductId(Product $product);
     public function updateProductDeliveryQuantity($request);
+    public function findAllDevolution();
+    public function findDevolutionItemsByRequisitionId($requisition_id);
 }

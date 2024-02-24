@@ -286,5 +286,24 @@ class StockController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+
+    public function findAllDevolutionAction(): JsonResponse
+    {
+        try{
+            return response()
+                ->json($this->stockRepositoryInterface->findAllDevolution());
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+    public function findDevolutionItemsByRequisitionIdAction($requisition_id): JsonResponse
+    {
+        try{
+            return response()
+                ->json($this->stockRepositoryInterface->findDevolutionItemsByRequisitionId($requisition_id));
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }
 
