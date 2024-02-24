@@ -229,15 +229,16 @@ class BiController extends Controller
         )
         ->join('products', 'stock_entries.productID', '=', 'products.id')
             ->join('suppliers', 'stock_entries.supplierID', 'suppliers.id')
-                ->groupBy(
-                    'stock_entries.productID',
-                    'products.prod_name',
-                    'suppliers.sup_name',
-                    'stock_entries.requisition_id',
-                    DB::raw("CONCAT(SUBSTRING(MONTHNAME(stock_entries.emissao),1, 3), '/',YEAR(stock_entries.emissao))")
-                )
-                ->orderBy('suppliers.sup_name')
-                    ->get();
+                ->where('stock_entries.is_delete', false)
+                    ->groupBy(
+                        'stock_entries.productID',
+                        'products.prod_name',
+                        'suppliers.sup_name',
+                        'stock_entries.requisition_id',
+                        DB::raw("CONCAT(SUBSTRING(MONTHNAME(stock_entries.emissao),1, 3), '/',YEAR(stock_entries.emissao))")
+                    )
+                    ->orderBy('suppliers.sup_name')
+                        ->get();
 
         //query gastos em fornecedor.
 
@@ -248,11 +249,10 @@ class BiController extends Controller
             DB::raw('SUM(stock_entries.quantity) AS quantity'),
         )
         ->join('suppliers', 'stock_entries.supplierID', '=', 'suppliers.id')
-            ->groupBy(
-                'suppliers.sup_name'
-            )
-                ->get();
-
+            ->where('stock_entries.is_delete', false)
+                ->groupBy(
+                    'suppliers.sup_name'
+                )->get();
         return response()->json([
             'cost' => $cost,
             'supCost' => $supplier
@@ -263,7 +263,7 @@ class BiController extends Controller
     {
         try{
 
-            $condition_like = "";
+            $condition_like = "st.is_delete = '0' AND ";
             if ($params->prodName) {
                 $condition_like .= "pr.prod_name LIKE '%".$params->prodName."%' AND ";
             }
@@ -313,11 +313,12 @@ class BiController extends Controller
                 DB::raw('SUM(stock_entries.quantity) AS quantity'),
             )
             ->join('suppliers', 'stock_entries.supplierID', '=', 'suppliers.id')
-                ->whereRaw("MONTHNAME(stock_entries.emissao) LIKE '%{$params->month}%' AND SUBSTRING(stock_entries.emissao, 1, 4) LIKE '%{$params->year}%'")
-                    ->groupBy(
-                        'suppliers.sup_name'
-                    )
-                    ->get();
+                ->where('stock_entries.is_delete', false)
+                    ->whereRaw("MONTHNAME(stock_entries.emissao) LIKE '%{$params->month}%' AND SUBSTRING(stock_entries.emissao, 1, 4) LIKE '%{$params->year}%'")
+                        ->groupBy(
+                            'suppliers.sup_name'
+                        )
+                        ->get();
 
             return response()->json([
                 'cost' => DB::select($query),

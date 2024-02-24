@@ -263,9 +263,26 @@ class StockController extends Controller
     {
         try{
             $message = "Entrega do produto deletada com successo";
+            DB::beginTransaction();
             $this->stockRepositoryInterface->deleteProductFromDelivery($requisition_id, $product_id, $request);
+            DB::commit();
             return response()->json($message);
         }catch(Exception $e){
+            DB::rollBack();
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function updateProductDeliveryQuantityAction(Request $request): JsonResponse
+    {
+        try{
+            $message = "A devolução do produto cadastrado com successo";
+            DB::beginTransaction();
+            $this->stockRepositoryInterface->updateProductDeliveryQuantity($request);
+            DB::commit();
+            return response()->json($message);
+        }catch(Exception $e){
+            DB::rollBack();
             return response()->json($e->getMessage(), 500);
         }
     }

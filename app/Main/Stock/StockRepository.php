@@ -153,9 +153,11 @@ class StockRepository implements StockRepositoryInterface
     public function findStockEntryByRequisition($requisition_id)
     {
         return StockEntryResource::collection(
-            StockEntry::where('requisition_id', $requisition_id)
-                ->get()
-            );
+            StockEntry::where([
+                ['requisition_id', $requisition_id],
+                ['is_delete', false]
+            ])->get()
+        );
     }
 
     public function getInventory($request)
@@ -185,9 +187,9 @@ class StockRepository implements StockRepositoryInterface
     public function deleteDeliveryByRequisitionId($id, $request)
     {
         if ($this->can_manage($request) || $this->can_create_product($request)){
+            $this->reduceSaldo($id);
             $this->deleteFromStockEntryByRequisitionId($id);
             $this->purchaseRequisitionRepositoryInterface->deleteByRequisitionId($id);
-            $this->reduceSaldo($id);
             return true;
         }
         throw new Exception(Util::PermisionExceptionMessage());
@@ -198,34 +200,56 @@ class StockRepository implements StockRepositoryInterface
         foreach ($deliveryItems as $item){
             $product = $this->productRepositoryInterface->findById($item->productID);
             $saldo = $this->findSaldoByProductId($product);
-            $this->purchaseRequisitionRepositoryInterface->deleteByRequisitionIdProductId($id, $product->id);
             $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $id);
+            $this->purchaseRequisitionRepositoryInterface->deleteByRequisitionIdProductId($id, $product->id);
         }
     }
 
-    public function reduceFromSaldoAfterDeleteDelivery(Product $product, Saldo $saldo, $requisition_id)
+    public function reduceFromSaldoAfterDeleteDelivery(Product $product, Saldo $saldo, $requisition_id, $quantity = null)
     {
         $stock = $this->findStockEntryByRequisitionIdProductId($requisition_id, $product->id);
-        if ($product->prod_unmed== "bt"){
-            Saldo::where('productID', $product->id)
-                ->update([
-                    'saldoFinal' => $saldo->saldoFinal - $stock->quantity,
-                    'saldoInicial' => $saldo->saldoInicial - $stock->quantity
-                ]);
-        }else{
-            Saldo::where('productID', $product->id)
-                ->update([
-                    'saldoFinal' => $saldo->saldoFinal - ($stock->quantity * $product->prod_contain),
-                    'saldoInicial' => $saldo->saldoInicial - ($stock->quantity * $product->prod_conatain),
-                ]);
+        if ($saldo->saldoFinal >= $stock->quantity && is_null($quantity)){
+            if ($product->prod_unmed== "bt"){
+                Saldo::where('productID', $product->id)
+                    ->update([
+                        'saldoFinal' => $saldo->saldoFinal - $stock->quantity,
+                        'saldoInicial' => $saldo->saldoInicial - $stock->quantity
+                    ]);
+            }else{
+                Saldo::where('productID', $product->id)
+                    ->update([
+                        'saldoFinal' => $saldo->saldoFinal - ($stock->quantity * $product->prod_contain),
+                        'saldoInicial' => $saldo->saldoInicial - ($stock->quantity * $product->prod_conatain),
+                    ]);
+            }
+            return true;
+        }else {
+            if ($quantity <= $saldo->saldoFinal && $quantity > $stock->$quantity){
+                if ($product->prod_unmed == "bt"){
+                    Saldo::where('productID', $product->id)
+                        ->update([
+                            'saldoFinal' => $saldo->saldoFinal - $quantity,
+                            'saldoInicial' => $saldo->saldoInicial - $quantity
+                        ]);
+                }else{
+                    Saldo::where('productID', $product->id)
+                        ->update([
+                            'saldoFinal' => $saldo->saldoFinal - ($quantity * $product->prod_contain),
+                            'saldoInicial' => $saldo->saldoInicial - ($quantity * $product->prod_conatain),
+                        ]);
+                }
+                return true;
+            }
         }
+        throw new Exception("Saldo indisponivel para realizar devolução");
     }
 
     public function findStockEntryByRequisitionIdProductId($requisition_id ,$product_id)
     {
         return StockEntry::where([
                 ['requisition_id', $requisition_id],
-                ['productID', $product_id]
+                ['productID', $product_id],
+                ['is_delete', false]
             ])->first();
     }
 
@@ -239,6 +263,7 @@ class StockRepository implements StockRepositoryInterface
         $product = $this->productRepositoryInterface->findById($product_id);
         $saldo = $this->findSaldoByProductId($product);
        if ($this->can_manage($request) || $this->can_create_product($request)){
+            $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $requisition_id);
             if (StockEntry::where('requisition_id', $requisition_id)->count() > 1){
                 $this->deleteFromStockEntryByRequisitionId($requisition_id);
                 $this->purchaseRequisitionRepositoryInterface
@@ -250,9 +275,43 @@ class StockRepository implements StockRepositoryInterface
                 $this->purchaseRequisitionRepositoryInterface
                     ->deleteByRequisitionId($requisition_id);
             }
-            $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $requisition_id);
             return true;
        }
+        throw new Exception(Util::PermisionExceptionMessage());
+    }
+    public function updateProductDeliveryQuantity($request)
+    {
+        $emissao = new \DateTime();
+        $emissao = $emissao->format('Y-m-d');
+        if ($this->can_manage($request) || $this->can_create_product($request)){
+            $productDelivred = $this->findStockEntryByRequisitionIdProductId($request->requisition_id, $request->product_id);
+            if ($request->quantity < $productDelivred->quantity){
+                StockEntry::where([
+                    ['productID', $request->product_id],
+                    ['requisition_id', $request->requisition_id],
+                    ['is_delete', false]
+                ])->update([
+                    'totalCost' => $productDelivred->totalCost - ($productDelivred->unitCost * $request->quantity),
+                    'quantity' => $productDelivred->quantity - $request->quantity,
+                ]);
+                $stock = new StockEntry();
+                $stock->requisition_id = $request->requisition_id;
+                $stock->unitCost = $productDelivred->unitCost;
+                $stock->productID = $request->product_id;
+                $stock->totalCost = $productDelivred->unitCost * $request->quantity;
+                $stock->supplierID = $productDelivred->supplierID;
+                $stock->quantity = $request->quantity;
+                $stock->emissao = $emissao;
+                $stock->is_delete = true;
+                $stock->save();
+                $product = $this->productRepositoryInterface->findById($request->product_id);
+                $saldo = $this->findSaldoByProductId($product);
+                $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $request->requisition_id, $request->quantity);
+                return true;
+            }else {
+                throw new Exception("quantidade informada invalida");
+            }
+        }
         throw new Exception(Util::PermisionExceptionMessage());
     }
 

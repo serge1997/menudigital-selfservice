@@ -108,6 +108,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('inventory-filter', 'listInventory');
         Route::delete('stock-delivery/requisition/{id}', 'deleteDeliveryByRequisitionIdAction');
         Route::delete('stock-delivery/requisition/{requisition_id}/product/{product_id}', 'deleteProductFromDeliveryAction');
+        Route::post('stock-delivery/edit/product-quantity', 'updateProductDeliveryQuantityAction');
     });
 
     //produto

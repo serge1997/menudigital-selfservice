@@ -34,7 +34,20 @@
                     </DataTable>
                 </div>
                 <div class="row">
-                    <Dialog v-model:visible="visibleDeliveryItemsModal" maximizable modal header="Produtos comprados" :style="{ width: '85rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                    <Dialog v-model:visible="visibleDeliveryItemsModal" @after-hide="showEditquantityInput = false" maximizable modal header="Produtos comprados" :style="{ width: '85rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                       <div class="col-md-12 m-auto">
+                           <div v-if="showEditquantityInput" class="col-md-10 m-auto d-flex flex-column align-items-center gap-2 p-2">
+                                <div class="w-100">
+                                    <label>Informe a quantidade a devolver: </label>
+                                </div>
+                                <div class="w-100 d-flex gap-2">
+                                    <InputText class="w-75" v-model="editQuantityData.quantity" placeholder="quantidade" />
+                                    <input type="hidden" v-model="editQuantityData.product_id">
+                                    <input type="hidden" v-model="editQuantityData.requisition_id" />
+                                    <Button @click="editproductDeliveryQuantityAction" label="confirmar" />
+                                </div>
+                           </div>
+                       </div>
                        <div class="w-100">
                             <div class="col-md-10 m-auto mb-3" v-if="load">
                                 <p class="text-center">aguarde...</p>
@@ -49,6 +62,7 @@
                                 <Column header="Ação">
                                     <template #body="{ data }">
                                         <div class="d-flex gap-1">
+                                            <Button @click="showEditProductDeliveryForm(data.requisition_id, data.productID)" icon="pi pi-pencil" text />
                                             <Button @click="deleteOneProduct(data.requisition_id, data.productID)" icon="pi pi-trash" class="text-danger" text />
                                         </div>
                                     </template>
@@ -98,7 +112,13 @@ export default {
             visibleDeleteDeliveryModal: false,
             showItems: false,
             load: false,
-            loadMsg: 'Atualizando saldo....'
+            loadMsg: 'Atualizando saldo....',
+            showEditquantityInput: false,
+            editQuantityData: {
+                requisition_id: null,
+                product_id: null,
+                quantity: null
+            }
         }
     },
     methods: {
@@ -147,7 +167,12 @@ export default {
                                 this.loadDelivery()
                                 resolve(true);
                             })
-                            .catch(errors => console.log(errors))
+                            .catch(errors => {
+                                errors.response.status === 500 && this.$swal.fire({
+                                    text: errors.response.data,
+                                    icon: 'error'
+                                });
+                            })
                             .finally(() => {
                                 this.visibleDeleteDeliveryModal = false
                             })
@@ -171,9 +196,35 @@ export default {
                             this.$swal.fire({text: response.data, icon: 'success'});
                             resolve(true);
                         })
-                        .catch(errors => console.log(errors))
+                        .catch(errors => {
+                            errors.response.status === 500 && this.$swal.fire({
+                                    text: errors.response.data,
+                                    icon: 'error'
+                                });
+                        })
                     })
                 }
+            })
+        },
+        showEditProductDeliveryForm(requisition_id, product_id)
+        {
+           this.showEditquantityInput = true
+           this.editQuantityData.requisition_id = requisition_id;
+           this.editQuantityData.product_id = product_id;
+        },
+        editproductDeliveryQuantityAction(){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    this.axios.post('/api/stock-delivery/edit/product-quantity', this.editQuantityData).then((response) => {
+                        this.$swal.fire({
+                            text: response.data,
+                            icon: 'success'
+                        })
+                    })
+                    .catch(errors => {
+                        errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'error'});
+                    })
+                })
             })
         }
     },
