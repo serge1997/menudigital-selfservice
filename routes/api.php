@@ -225,7 +225,10 @@ Route::middleware('auth:sanctum')->group(function() {
     Route::controller(PlanningController::class)->group(function() {
         Route::post('planning', 'createAction');
         Route::get('planning', 'listAllAction');
+        Route::get('planning/user/{id}', 'findByHtmlIdAction');
+        Route::delete('planning-user/{id}', 'deleteAction');
         Route::delete('planning', 'clearAction');
+        Route::put('planning/{id}', 'updateAction');
     });
 });
 

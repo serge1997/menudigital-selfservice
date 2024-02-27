@@ -16,6 +16,8 @@ class PlanningRepository implements PlanningRepositoryInterface
     {
         $users_name = $request->users_name;
         $html_id = $request->html_id;
+        $hour_in = $request->hour_in;
+        $hour_out = $request->hour_out;
         if ($this->can_manage($request)):
             foreach ($users_name as $key => $user)
             {
@@ -23,6 +25,8 @@ class PlanningRepository implements PlanningRepositoryInterface
                     $planning = new Planning();
                     $planning->user_name = $user;
                     $planning->html_id = $html_id[$key];
+                    $planning->hour_in = $hour_in[$key];
+                    $planning->hour_out = $hour_out[$key];
                     $planning->save();
                 }
             }
@@ -54,5 +58,36 @@ class PlanningRepository implements PlanningRepositoryInterface
         }
         throw new Exception(Util::PermisionExceptionMessage());
 
+    }
+    public function delete($id, $request)
+    {
+        if ($this->can_manage($request)){
+            Planning::where('html_id', $id)
+                ->delete();
+            return true;
+        }
+        throw new Exception(Util::PermisionExceptionMessage());
+    }
+
+    public function findByHtmlId($id)
+    {
+        return Planning::where('html_id', $id)
+            ->get();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function update($id, $request)
+    {
+        if ($this->can_manage($request)) {
+            $planning = Planning::find($id);
+            $planning->update([
+                'hour_in' => $request->hour_in,
+                'hour_out' => $request->hour_out
+            ]);
+            return true;
+        }
+        throw new Exception(Util::PermisionExceptionMessage());
     }
 }

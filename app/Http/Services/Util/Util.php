@@ -2,6 +2,8 @@
 namespace App\Http\Services\Util;
 
 use DateTime;
+use Exception;
+
 class Util
 {
     CONST ERROR_EXCEPTION_MESSAGE = "Ação não pode ser concluída";
@@ -55,6 +57,5 @@ class Util
     {
         return 'Vocês não tem permissão';
     }
-
 
 }

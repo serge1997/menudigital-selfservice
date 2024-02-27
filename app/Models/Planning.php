@@ -13,7 +13,9 @@ class Planning extends Model
 
     protected $fillable = [
         'user_name',
-        'html_id'
+        'html_id',
+        'hour_in',
+        'hour_out'
     ];
 
     public function clear()

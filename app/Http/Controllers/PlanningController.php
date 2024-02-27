@@ -47,4 +47,34 @@ class PlanningController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+
+    public function deleteAction($id, Request $request): JsonResponse
+    {
+        try{
+            $message = "Ação concluída com sucesso";
+            $this->planningRepositoryInterface->delete($id, $request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+    public function findByHtmlIdAction($id): JsonResponse
+    {
+        try{
+            return response()
+                ->json($this->planningRepositoryInterface->findByHtmlId($id));
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+    public function updateAction($id, Request $request): JsonResponse
+    {
+        try{
+            $message = "Ação salvou com successo";
+            $this->planningRepositoryInterface->update($id, $request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }
