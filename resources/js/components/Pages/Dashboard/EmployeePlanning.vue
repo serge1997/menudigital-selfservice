@@ -254,6 +254,7 @@ export default {
                 .then((response) => {
                     this.$toast.success(response.data);
                     this.loadPlanning();
+                    location.reload()
                     resolve(true);
                 })
                 .catch(errors => console.log(errors))
@@ -283,6 +284,7 @@ export default {
         axios.put('/api/planning/' + this.updateData.id, this.updateData)
         .then((response) => {
             this.$toast.success(response.data)
+            location.reload()
         })
         .catch(errors => {
             errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'warning'})

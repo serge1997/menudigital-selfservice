@@ -202,6 +202,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::delete('reservation/{id}', 'deleteAction');
         Route::put('reservation', 'updateAction');
         Route::get('resource-teste', 'teste');
+        Route::get('reservation-bi', 'reservationBiData');
     });
 
     //role

@@ -20,6 +20,11 @@ class PlanningController extends Controller
     public function createAction(Request $request): JsonResponse
     {
         try{
+            // $request->validate([
+            //     'hour_in' => ['required'],
+            //     'hour_out' => ['required'],
+            //     'user_name'
+            // ]);
             $message = "Escala criado com sucesso";
             $this->planningRepositoryInterface->create($request);
             return response()->json($message);

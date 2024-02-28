@@ -82,4 +82,13 @@ class ReservationController extends Controller
             return response()->json($e->getMessage());
         }
     }
+
+    public function reservationBiData(): JsonResponse
+    {
+        try{
+            return response()->json($this->reservationRepositoryInterface->listByCanalAVG());
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }

@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <SideBarComponent />
         <div class="container">
-            <div class="w-100 d-flex">
+            <div class="w-100 d-flex flex-column">
                 <Toolbar class="w-100">
                     <template #start>
                         <div>
@@ -15,6 +15,13 @@
                         </div>
                     </template>
                 </Toolbar>
+                <div class="col-sm-8 m-auto">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <MeterGroup :value="biData"/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="container">
@@ -39,7 +46,7 @@
                         <div class="col-md-4 d-flex flex-column gap-2 align-items-center">
                             <div class="col-md-12 d-flex justify-content-center gap-2">
                                 <label class="fw-medium">Date: </label>
-                                <Calendar @change="checkValidDate" dateFormat="dd/mm/yy" :class="invalid" showIcon iconDisplay="input" id="res-date" v-model="reservationData.date_come_in" />
+                                <Calendar @change="checkValidDate" dateFormat="dd/mm/yy" :class="invalid + ' ' + dateInvalidClass" showIcon iconDisplay="input" id="res-date" v-model="reservationData.date_come_in" />
                             </div>
                             <small class="text-danger" v-if="formErrMessage" v-for="date_come_in in formErrMessage.date_come_in" v-text="date_come_in"></small>
                             <small class="text-danger" v-text="dataInvalid"></small>
@@ -83,7 +90,7 @@
                         </div>
                     </div>
                     <div class="col-md-10 m-auto mt-3">
-                        <Dropdown v-model="reservationData.reser_canal" :class="invalid" option-value="canal" :options="reservationCanal" optionLabel="canal" placeholder="Select user function" class="w-100 md:w-14rem" />
+                        <Dropdown v-model="reservationData.reser_canal" :class="invalid" option-value="canal" :options="reservationCanal" optionLabel="canal" placeholder="Reservation canal" class="w-100 md:w-14rem" />
                         <small class="text-danger" v-if="formErrMessage" v-for="reser_canal in formErrMessage.reser_canal" v-text="reser_canal"></small>
                     </div>
                     <div class="w-100 d-flex justify-content-center mt-3">
@@ -108,6 +115,7 @@ import Toolbar from "primevue/toolbar";
 import Calendar from "primevue/calendar";
 import Dropdown from "primevue/dropdown";
 import { getAuth } from './../../auth';
+import MeterGroup from 'primevue/metergroup';
 export default {
     name: 'Reservation',
 
@@ -122,7 +130,8 @@ export default {
         Textarea,
         Dropdown,
         ProgressBar,
-        InputMask
+        InputMask,
+        MeterGroup
     },
 
     watch: {
@@ -145,6 +154,10 @@ export default {
                 {"canal": "Telefone"},
                 {"canal": "E-mail"}
             ],
+            biCanal: [
+                {label: "whatsapp", color:"#333",  value: 57}
+            ],
+            biData: JSON.parse(localStorage.getItem('meter_data')),
             reservationData: {
                 id: null,
                 person_quantity: null,
@@ -222,6 +235,7 @@ export default {
                         this.reservationData.date_come_in = '';
                         this.reservationData.hour = '';
                         resolve(true);
+                        this.loadBiData()
                         return this.listAllReservation();
                     })
                     .catch((errors) => {
@@ -240,18 +254,16 @@ export default {
             let save_btn = document.getElementById('btn-save')
             var today = new Date();
             var date = new Date(this.reservationData.date_come_in);
-            var todayFormat = today.toLocaleDateString('pt-BR', {
+            var todayFormat = today.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
             })
-
-            var dateFormat = date.toLocaleDateString('pt-BR', {
+            var dateFormat = date.toLocaleDateString('en-US', {
                 year: 'numeric',
                 month: '2-digit',
                 day: '2-digit',
             })
-
             if (dateFormat < todayFormat){
                 save_btn.setAttribute('disabled', 'disabled')
                 this.dataInvalid = "data invalida";
@@ -279,11 +291,21 @@ export default {
                 }
             })
 
+        },
+        async loadBiData(){
+            const biResponse = await axios.get('/api/reservation-bi');
+            this.biData = await biResponse.data;
+            if (localStorage.getItem('meter_data')){
+                localStorage.removeItem('meter_data');
+            }
+            localStorage.setItem('meter_data', JSON.stringify( await biResponse.data));
+            console.log(await biResponse.data)
         }
     },
 
     mounted(){
         this.listAllReservation();
+        this.loadBiData()
         getAuth().then(result => {
             this.user.position_id = result.position_id;
         })

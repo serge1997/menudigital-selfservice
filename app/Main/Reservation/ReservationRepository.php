@@ -73,8 +73,8 @@ class ReservationRepository implements ReservationRepositoryInterface
                     'customer_tel' => $request->customer_tel,
                     'reser_canal' => $request->reser_canal ?? $reservation['reser_canal'],
                     'date_come_in'=> $request->date_come_in ?? $reservation['date_come_in'],
-                    'hour' => $request->hour ?? $reservation['hour'],
-                    'observation' => $request->observation
+                    'hour' => substr($request->hour, 12, 4) ?? $reservation['hour'],
+                    'observation' => $request->observation,
                 ]);
 
             return;
@@ -94,5 +94,25 @@ class ReservationRepository implements ReservationRepositoryInterface
     public function ressourceTeste()
     {
         return new Collection(ReservationResource::collection(Reservation::all()));
+    }
+    public function listByCanalAVG()
+    {
+        $count = Reservation::count();
+        $query = Reservation::select(
+            'reser_canal as label',
+            DB::raw("COUNT(*) / {$count} * 100 as value"),
+            DB::raw("CASE
+                WHEN reser_canal = 'Whatsapp' THEN '#4ade80'
+                WHEN reser_canal = 'Instagram' THEN '#f43f5e'
+                WHEN reser_canal = 'Telefone' THEN '#fbbf24'
+                WHEN reser_canal = 'Facebook' THEN '#38bdf8'
+                WHEN reser_canal = 'E-mail' THEN '#FE3958'
+                ELSE '' END AS color
+            ")
+            )
+                ->groupBy('reser_canal')
+                    ->get();
+
+        return $query;
     }
 }

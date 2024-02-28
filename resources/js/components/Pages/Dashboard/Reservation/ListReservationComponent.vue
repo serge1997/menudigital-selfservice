@@ -91,9 +91,10 @@
                         <div class="col-md-4 d-flex flex-column gap-2 align-items-center">
                             <div class="col-md-12 d-flex justify-content-center gap-2">
                                 <label class="fw-medium">Date: </label>
-                                <Calendar dateFormat="dd/mm/yy" :class="invalid" id="res-date" showIcon iconDisplay="input" v-model="reservationData.date_come_in" />
+                                <Calendar @change="checkValidDate" dateFormat="dd/mm/yy" :class="invalid + ' ' + dateInvalidClass " id="res-date" showIcon iconDisplay="input" v-model="reservationData.date_come_in" />
                             </div>
                             <small class="text-danger" v-if="formErrMessage" v-for="date_come_in in formErrMessage.date_come_in" v-text="date_come_in"></small>
+                            <small class="text-danger" v-text="dataInvalid"></small>
                         </div>
                         <div class="col-md-4 d-flex flex-column align-items-center">
                             <div class="col-md-12 d-flex justify-content-center gap-2">
@@ -138,7 +139,7 @@
                         <small class="text-danger" v-if="formErrMessage" v-for="reser_canal in formErrMessage.reser_canal" v-text="reser_canal"></small>
                     </div>
                     <div class="w-100 d-flex justify-content-center mt-3">
-                        <Button @click.prevent="updateReservation" label="Confirmar reservação"/>
+                        <Button id="bt-update" @click.prevent="updateReservation" label="Confirmar a edição"/>
                     </div>
                 </div>
             </Dialog>
@@ -173,6 +174,16 @@ export default {
         Tag
     },
 
+    watch: {
+      'reservationData.date_come_in': {
+        handler:  function(newVal, oldVal){
+            console.log("working")
+            return this.checkValidDate()
+        },
+        deep: true
+      }
+    },
+
     data(){
         return {
             visibleShowReservationModal: false,
@@ -199,7 +210,9 @@ export default {
                 observation: null
             },
             formErrMessage: null,
-            administrativeAccess: localStorage.getItem('administrativeAccess').split(',')
+            administrativeAccess: localStorage.getItem('administrativeAccess').split(','),
+            dateInvalidClass: null,
+            dataInvalid: null
         }
     },
 
@@ -223,25 +236,25 @@ export default {
             var date = "";
             var formatHour = "";
             var dateFormat = "";
-            if (this.reservationCanal.date_come_in && this.reservationData.hour){
-                hour = new Date(this.reservationData.hour);
-                date = new Date(this.reservationData.date_come_in);
-                formatHour = hour.toLocaleDateString('pt-BR', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                });
 
-                dateFormat = date.toLocaleDateString('pt-BR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                });
-            }
+            hour = new Date(this.reservationData.hour);
+            date = new Date(this.reservationData.date_come_in);
+            formatHour = hour.toLocaleDateString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+
+            dateFormat = date.toLocaleDateString('pt-BR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            });
+
 
             const data = {
                 person_quantity: document.getElementById('res-person').value,
-                date_come_in: dateFormat || this.reservationData.date_come_in,
-                hour: formatHour || this.reservationData.hour,
+                date_come_in: dateFormat,
+                hour: formatHour,
                 id: document.getElementById('res-id').value,
                 customer_firstName: document.getElementById('res-fname').value,
                 customer_lastName: document.getElementById('res-lname').value,
@@ -256,6 +269,7 @@ export default {
                         this.$toast.success(response.data)
                         this.formErrMessage
                         this.invalid = '';
+                        location.reload()
                         resolve(true);
                     })
                     .catch((errors) => {
@@ -267,6 +281,31 @@ export default {
                     .finally(() => this.savingLoad = false);
                 }, 1000)
             })
+        },
+        checkValidDate(){
+            let calendar = document.getElementById('res-date');
+            let save_btn = document.getElementById('bt-update')
+            var today = new Date();
+            var date = new Date(this.reservationData.date_come_in);
+            var todayFormat = today.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            })
+            var dateFormat = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+            })
+            if (dateFormat < todayFormat){
+                save_btn.setAttribute('disabled', 'disabled')
+                this.dataInvalid = "data invalida";
+                this.dateInvalidClass = 'border border-danger'
+            }else {
+                save_btn.removeAttribute('disabled')
+                this.dataInvalid = null;
+                this.dateInvalidClass = null
+            };
         },
     },
     mounted(){
