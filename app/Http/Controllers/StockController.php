@@ -122,9 +122,12 @@ class StockController extends Controller
     {
         try{
             $message = "A entrega foi deletada com successo";
+            DB::beginTransaction();
             $this->stockRepositoryInterface->deleteDeliveryByRequisitionId($id, $request);
+            DB::commit();
             return response()->json($message);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json($e->getMessage(), 500);
         }
     }

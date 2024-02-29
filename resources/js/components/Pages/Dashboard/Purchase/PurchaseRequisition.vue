@@ -19,7 +19,7 @@
             <Dialog v-model:visible="visibleNewPurchaseModal" maximizable modal header="Nova requisição de compra" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="w-100 mt-3">
                     <div v-if="load" class="col-md-10 m-auto d-flex flex-column mb-4">
-                        <span class="text-center">aguarde..</span>
+                        <span class="text-center" v-text="loadingMessage"></span>
                         <ProgressBar mode="indeterminate" style="height: 6px"/>
                     </div>
                     <div class="w-100 m-auto d-flex justify-content-between align-items-center">
@@ -158,12 +158,16 @@ export default {
             },
             managerAcess: localStorage.getItem('managerAccess').split(','),
             showActionIcon: false,
-            load: false
+            load: false,
+            loadingMessage: "Carregando..."
         }
     },
     methods: {
         createPurchaseRequisition(){
             this.load = true;
+            setTimeout(() => { this.loadingMessage = "Salvando a requisição..."}, 1000)
+            setTimeout(() => { this.loadingMessage = "Enviando email de notificação..."}, 2000)
+            setTimeout(() => {this.loadingMessage = "aguarde..."}, 3800)
             return new Promise(resolve => {
                 setTimeout(() => {
                     axios.post('/api/purchase-requisition', this.purchaseData)
@@ -179,6 +183,7 @@ export default {
                         this.purchaseData.products_id = []
                         this.purchaseData.delivery_date = "";
                         this.errMsg = "";
+                        resolve(true);
                     })
                     .catch((errors) => {
                         this.invalidInput = 'p-invalid';
@@ -188,7 +193,7 @@ export default {
                     .finally(() => {
                         this.load = false
                     })
-                }, randTime())
+                }, 4000)
             })
         },
         decrementProductInput(index){

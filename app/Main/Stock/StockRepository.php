@@ -18,6 +18,7 @@ use App\Http\Services\Stock\StockServiceRepository;
 use App\Http\Services\Requisition\RequisitionRepository;
 use App\Models\Product;
 use App\Traits\Permission;
+use App\Events\SendedDeliveryDevolutionEmail;
 
 class StockRepository implements StockRepositoryInterface
 {
@@ -253,9 +254,11 @@ class StockRepository implements StockRepositoryInterface
     public function deleteDeliveryByRequisitionId($id, $request)
     {
         if ($this->can_manage($request) || $this->can_create_product($request)){
+            $requisition = PurchaseRequisition::find($id);
             $this->reduceSaldo($id);
             $this->deleteFromStockEntryByRequisitionId($id);
             $this->purchaseRequisitionRepositoryInterface->deleteByRequisitionId($id);
+            event(new SendedDeliveryDevolutionEmail($requisition));
             return true;
         }
         throw new Exception(Util::PermisionExceptionMessage());

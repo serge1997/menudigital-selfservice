@@ -14,6 +14,8 @@ use App\Events\IsRuputureEvent;
 use App\Listeners\ActiveRuputureListener;
 use App\Events\RequisitionSended;
 use App\Listeners\SendEmailRequistion;
+use App\Listeners\DeliveryDevolutionEmail;
+use App\Events\SendedDeliveryDevolutionEmail;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -40,6 +42,10 @@ class EventServiceProvider extends ServiceProvider
 
         RequisitionSended::class => [
             SendEmailRequistion::class
+        ],
+
+        SendedDeliveryDevolutionEmail::class => [
+            DeliveryDevolutionEmail::class
         ]
 
     ];
