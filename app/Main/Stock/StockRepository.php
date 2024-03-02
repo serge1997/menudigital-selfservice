@@ -240,9 +240,9 @@ class StockRepository implements StockRepositoryInterface
                         ->get();
         return SaldoResource::collection($query);
     }
-    public function deleteFromStockEntryByRequisitionId($requisition_id)
+    public function deleteFromStockEntryByRequisitionId($requisition_id, $product_id = null)
     {
-        StockEntry::where('requisition_id', $requisition_id)
+        StockEntry::where([['requisition_id', $requisition_id], ['productID', $product_id]])
             ->update([
                 'is_delete' => true,
                 'emissao' => Util::Today()
@@ -277,8 +277,10 @@ class StockRepository implements StockRepositoryInterface
     public function reduceFromSaldoAfterDeleteDelivery(Product $product, Saldo $saldo, $requisition_id, $quantity = null)
     {
         $stock = $this->findStockEntryByRequisitionIdProductId($requisition_id, $product->id);
-        if ($saldo->saldoFinal >= $stock->quantity && is_null($quantity)){
-            if ($product->prod_unmed== "bt"){
+        //quantidade se o produto for bt (unidade) ou cl/g...
+        $quantityCalc = $product->prod_unmed == "bt" ? $stock->quantity : $stock->quantity * $product->prod_contain;
+        if ($saldo->saldoFinal >= $quantityCalc && is_null($quantity)){
+            if ($product->prod_unmed == "bt"){
                 Saldo::where('productID', $product->id)
                     ->update([
                         'saldoFinal' => $saldo->saldoFinal - $stock->quantity,
@@ -288,12 +290,12 @@ class StockRepository implements StockRepositoryInterface
                 Saldo::where('productID', $product->id)
                     ->update([
                         'saldoFinal' => $saldo->saldoFinal - ($stock->quantity * $product->prod_contain),
-                        'saldoInicial' => $saldo->saldoInicial - ($stock->quantity * $product->prod_conatain),
+                        'saldoInicial' => $saldo->saldoInicial - ($stock->quantity * $product->prod_contain),
                     ]);
             }
             return true;
         }else {
-            if ($quantity <= $saldo->saldoFinal && $quantity > $stock->$quantity){
+            if ($quantityCalc <= $saldo->saldoFinal && $quantity > $stock->$quantity){
                 if ($product->prod_unmed == "bt"){
                     Saldo::where('productID', $product->id)
                         ->update([
@@ -328,13 +330,13 @@ class StockRepository implements StockRepositoryInterface
     }
     public function deleteProductFromDelivery($requisition_id ,$product_id, $request): bool
     {
-        // var_dump(StockEntry::where('requisition_id', $requisition_id)->count()); die;
         $product = $this->productRepositoryInterface->findById($product_id);
+        $req = PurchaseRequisition::find($requisition_id);
         $saldo = $this->findSaldoByProductId($product);
        if ($this->can_manage($request) || $this->can_create_product($request)){
             $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $requisition_id);
             if (StockEntry::where('requisition_id', $requisition_id)->count() > 1){
-                $this->deleteFromStockEntryByRequisitionId($requisition_id);
+                $this->deleteFromStockEntryByRequisitionId($requisition_id, $product->id);
                 $this->purchaseRequisitionRepositoryInterface
                     ->deleteByRequisitionIdProductId($requisition_id, $product_id);
             }else{
@@ -344,6 +346,7 @@ class StockRepository implements StockRepositoryInterface
                 $this->purchaseRequisitionRepositoryInterface
                     ->deleteByRequisitionId($requisition_id);
             }
+            event(new SendedDeliveryDevolutionEmail($req));
             return true;
        }
         throw new Exception(Util::PermisionExceptionMessage());

@@ -17,7 +17,7 @@ interface StockRepositoryInterface
     public function deleteDeliveryByRequisitionId($id, $request);
     public function reduceSaldo($id): void;
     public function deleteProductFromDelivery($requisition_id ,$product_id, $request): bool;
-    public function deleteFromStockEntryByRequisitionId($requisition_id);
+    public function deleteFromStockEntryByRequisitionId($requisition_id, $product_id = null);
     public function reduceFromSaldoAfterDeleteDelivery(Product $product, Saldo $saldo, $requisition_id, $quantity = null);
     public function findStockEntryByRequisitionIdProductId($requisition_id ,$product_id);
     public function findSaldoByProductId(Product $product);

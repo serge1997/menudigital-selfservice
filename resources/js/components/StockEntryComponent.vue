@@ -1,5 +1,10 @@
 <template>
     <div class="container">
+        <template id="swal-template">
+            <swal-html>
+                Loading
+            </swal-html>
+        </template>
         <Button label="Save a product delivery" icon="pi pi-external-link" @click="visibleStockEntryModal = true" />
         <Dialog v-model:visible="visibleStockEntryModal" maximizable modal header="Save product Delivery" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
@@ -108,6 +113,7 @@ export default{
                 rejected: "Recusado",
             },
             filtredSupplier: null,
+            swalLoad: false,
         }
     },
 
@@ -137,18 +143,40 @@ export default{
         },
 
         getRequisitionProduct(){
-            setTimeout(() => {
-                axios.post('/api/purchase-requisition/filter-item', this.stockEntry).then((response) => {
-                    this.requisitionProduct = response.data
-                    console.log(response.data);
-                    for (let req of response.data){
-                        if (req.requisition_id !== null){
-                            this.stockEntry.requisition_id = req.requisition_id;
-                            break;
+               setTimeout(() => {
+                    this.$swal.fire({
+                    template: "#swal-template",
+                    html:`
+                            <div id="swal-load" style="height: 6rem;">
+                                <div style="width: 3rem; height: 3rem; padding: 12px;" class="spinner-border" role="status">
+                                </div>
+                                <br>
+                                <span class="">Aguarde...</span>
+                            </div>
+                            `,
+                        showConfirmButton: false
+                    })
+                }, 1000)
+
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/purchase-requisition/filter-item', this.stockEntry).then((response) => {
+                        this.requisitionProduct = response.data
+                        this.products = response.data;
+                        let div = document.querySelector('.swal2-container');
+                        div.remove()
+                        resolve(true);
+                        for (let req of response.data){
+                            if (req.requisition_id !== null){
+                                this.stockEntry.requisition_id = req.requisition_id;
+                                break;
+                            }
                         }
-                    }
-                })
-            }, 500)
+                    })
+                    .catch(errors => console.log(errors))
+                    .finally(() => {  })
+                }, 2000)
+            })
 
         },
         loadProductSupplier(productID){
@@ -163,16 +191,35 @@ export default{
         async loadSuppliers(){
             let supplierResult = await axios.get('/api/supplier');
             this.suppliers = await supplierResult.data;
+        },
+
+        mountedLoadEffect(){
+            setTimeout(() => {
+                this.$swal.fire({
+                    template: "#swal-template",
+                        html:`
+                            <div id="swal-load" style="height: 6rem;">
+                                <div style="width: 3rem; height: 3rem; padding: 12px;" class="spinner-border" role="status">
+                                </div>
+                                <br>
+                                <span class="">Aguarde...</span>
+                            </div>
+                                `,
+                        showConfirmButton: false
+                    })
+                }, 800)
+            setTimeout(() => {
+                let div = document.querySelector('.swal2-container');
+                div.remove()
+            }, 1800)
         }
     },
 
     async mounted(){
-        await this.loadSuppliers();
+        this.mountedLoadEffect();
+        this.loadSuppliers();
         let productResponse = await axios.get('/api/products');
         this.products = await productResponse.data
-
-
-
     }
 }
 
