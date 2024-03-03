@@ -1,16 +1,10 @@
 <template>
     <div>
         <div class="col-md-10 m-auto d-flex justify-content-between p-3">
-            <span class="w-100 p-input-icon-left">
+            <InputText v-model="search" class="col-md-12" :placeholder="SearchPlaceholder" @keydown="this.isSpinner = !this.isSpinner"/>
+            <button class="btn border rounded-0 text-white" id="search-icon">
                 <i v-if="isSpinner" class="pi pi-search" />
                 <i v-else class="pi pi-spin pi-spinner" />
-                <InputText v-model="search" class="w-100" :placeholder="SearchPlaceholder" @keydown="this.isSpinner = !this.isSpinner"/>
-            </span>
-            <button class="btn border rounded-0" id="search-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
-                    <circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
             </button>
         </div>
         <div class="row p-4">

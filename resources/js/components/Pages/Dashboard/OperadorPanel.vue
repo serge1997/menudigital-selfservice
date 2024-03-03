@@ -1,18 +1,33 @@
 <template>
+     <SideBarComponent></SideBarComponent>
     <div class="col-lg-12 col-md-12">
-        <SideBarComponent></SideBarComponent>
+        <template id="swal-template">
+            <swal-html>
+                Loading
+            </swal-html>
+        </template>
         <div class="d-flex justify-content-between p-0 z-0">
             <div class="col-8 m-auto">
                 <h4 class="text-capitalize">Espaço operador</h4>
                 <div class="py-4">
                     <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
-                    <div class="d-flex justify-content-center flex-wrap p-2 mt-2">
-                        <div class="col-2 bg-success border p-2" v-for="tab in tables">
-                            <h6 class="text-white text-center fw-normal">Mesa {{ tab.table }}<br><small>livre</small></h6>
-                        </div>
-                        <div class="col-2 bg-danger border p-2" v-for="busy in busyTables">
-                            <h6 class="text-white text-center fw-normal">Mesa {{ busy.ped_tableNumber }}<br><small>ocupada</small><br><small>{{ busy.name }}</small></h6>
-                        </div>
+                    <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
+                        <button  v-for="tab in tables" class="btn border-0 col-lg-3 col-md-4">
+                            <div class="col-sm-10 d-flex flex-column border p-2">
+                                <img class="col-sm-5 img-thumbnail border-0" src="/img/free.png" />
+                                <Tag severity="success" :value ="`Mesa ${tab.table}`"/>
+                            </div>
+                        </button>
+                       <button v-for="busy in busyTables" class="col-lg-3 col-md-4 btn border-0">
+                             <div class="col-sm-10 d-flex flex-column border p-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <img class="col-sm-5 img-thumbnail border-0" src="/img/busy.png" />
+                                    <Badge severity="warning" :value="busy.customer " />
+                                </div>
+                                <small class="text-left">{{busy.name}}</small>
+                                <Tag severity="danger" :value ="`Mesa ${busy.ped_tableNumber} (${busy.timing})`"/>
+                            </div>
+                       </button>
                     </div>
                 </div>
                 <div class="w-100 py-2 d-flex">
@@ -308,6 +323,8 @@ import Toolbar from "primevue/toolbar";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Dialog from 'primevue/dialog';
+import Badge from 'primevue/badge';
+import Tag from 'primevue/tag';
 export default {
     name: 'OperadorPanel',
 
@@ -320,7 +337,9 @@ export default {
         Toolbar,
         Button,
         InputText,
-        Dialog
+        Dialog,
+        Badge,
+        Tag
     },
 
     data() {
@@ -510,6 +529,27 @@ export default {
             }
 
         },
+
+        mountedLoadEffect(){
+            setTimeout(() => {
+                this.$swal.fire({
+                    template: "#swal-template",
+                        html:`
+                            <div id="swal-load" style="height: 6rem;">
+                                <div style="width: 3rem; height: 3rem; padding: 12px;" class="spinner-border" role="status">
+                                </div>
+                                <br>
+                                <span class="">Aguarde...</span>
+                            </div>
+                                `,
+                        showConfirmButton: false
+                    })
+                }, 100)
+            setTimeout(() => {
+                let div = document.querySelector('.swal2-container');
+                div.remove()
+            }, 10800)
+        },
         setSeverity(id){
             switch(id) {
                 case 1 :
@@ -525,7 +565,7 @@ export default {
     },
 
     mounted(){
-
+        this.mountedLoadEffect();
 
     }
 }

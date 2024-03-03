@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class TableNumber extends Model
 {
@@ -12,8 +13,8 @@ class TableNumber extends Model
 
     protected $table = 'tablenumber';
 
-    public function pedido(): HasMany
+    public function pedido(): HasOne
     {
-        return $this->hasMany(Pedido::class, 'ped_tableNumber');
+        return $this->hasOne(Pedido::class, 'ped_tableNumber');
     }
 }

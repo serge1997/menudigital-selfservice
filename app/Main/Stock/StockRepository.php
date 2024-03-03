@@ -19,6 +19,11 @@ use App\Http\Services\Requisition\RequisitionRepository;
 use App\Models\Product;
 use App\Traits\Permission;
 use App\Events\SendedDeliveryDevolutionEmail;
+use App\Models\Department;
+use App\Models\MealType;
+use App\Models\Menuitems;
+use App\Models\RequisitionStatus;
+use App\Models\Technicalfiche;
 
 class StockRepository implements StockRepositoryInterface
 {
@@ -447,6 +452,26 @@ class StockRepository implements StockRepositoryInterface
 
     public function resetSaldo()
     {
+        $departments = [Department::BAR, Department::COZINHA];
+        $allSaldo = Saldo::all();
+        foreach ($allSaldo as $key => $saldo) {
+            $product = $this->productRepositoryInterface->findById($saldo->productID);
+            $fiche = Technicalfiche::find($product->id);
+            $item = Menuitems::find($fiche->itemID);
+            $quantityCal = $product->prod_unmed != "bt" ? $saldo->saldoFinal / $product->prod_contain : $saldo->saldoFinal;
+            $department_id = "";
+            if (array_search($item->type_id, $this->bar)){
+                $department_id = Department::BAR;
+            }else {
+
+            }
+
+            if ($quantityCal <= $saldo->saldoFinal) {
+                $requisition = new PurchaseRequisition();
+                $requisition->department_id = $department_id;
+                $requisition->status_id = PurchaseRequisition::REQUISITION_WAITING;
+            }
+        }
         $query = "UPDATE saldos SET saldoInicial = saldoFinal";
         DB::select($query);
     }

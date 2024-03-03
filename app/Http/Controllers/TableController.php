@@ -22,7 +22,7 @@ class TableController extends Controller
             return response()->json($this->tableNumberRepositoryInterface->getAllFreeTable());
 
         }catch(Exception $e){
-            return response()->json($e->getMessage());
+            return response()->json($e->getMessage(),500);
         }
 
     }
@@ -39,7 +39,7 @@ class TableController extends Controller
             ]);
 
         }catch(Exception $e){
-            return response()->json($e->getMessage());
+            return response()->json($e->getMessage(), 500);
         }
     }
 }

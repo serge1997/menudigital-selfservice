@@ -88,8 +88,8 @@ export default {
         ResetStockTable(){
 
             this.$swal.fire({
-                text: 'Do you want to reset inventory ?',
-                icon: true,
+                text: 'está sendo fechando a caixa e reniçializando o estoque. clique em ok para continuar',
+                icon: 'warning',
                 confirmButtonColor: '#e63958',
                 showCancelButton: true
             }).then((result) => {

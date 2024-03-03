@@ -1,5 +1,10 @@
 <template>
     <div class="col-12">
+        <template id="swal-template">
+            <swal-html>
+                Loading
+            </swal-html>
+        </template>
         <div class="p-1 col-12">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
@@ -9,16 +14,16 @@
         <div class="d-flex justify-content-between p-0">
             <div class="col-8 d-flex flex-column align-items-center m-auto">
                 <h4 class="text-capitalize">Espaço Garçom</h4>
-                <div class="w-100 d-flex justify-content-center p-2">
-                    <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Menu' }">
+                <div class="col-md-12 d-flex justify-content-center p-2">
+                    <router-link class="col-md-2 d-flex flex-column nav-link" :to="{ name: 'Menu' }">
                         <img class="w-25 m-auto" src="../../../../public/img/iconmenu.png" alt="">
                         <span class="text-center fw-medium text-capitalize">Menu</span>
                     </router-link>
-                    <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Home' }">
+                    <router-link class="col-md-2 d-flex flex-column nav-link" :to="{ name: 'Home' }">
                         <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
                         <span class="text-center fw-medium text-capitalize">Novo pedido</span>
                     </router-link>
-                    <router-link class="col-2 d-flex flex-column nav-link" :to="{ name: 'Reservation' }">
+                    <router-link class="col-md-2 d-flex flex-column nav-link" :to="{ name: 'Reservation' }">
                         <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
                         <span class="text-center fw-medium text-capitalize">Reservação</span>
                     </router-link>
@@ -26,14 +31,20 @@
                 <div class="py-4 col-lg-10 col-md-12 d-flex flex-column justify-content-center">
                     <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
                     <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
-                        <button  v-for="tab in tables" class="btn col-lg-4 col-md-5">
-                            <div class="bg-success border p-2">
-                                <h6 class="text-white text-center fw-normal">Mesa {{ tab.table }}<br><small>livre</small></h6>
+                        <button  v-for="tab in tables" class="col-lg-4 col-md-5 btn border-0 p-0">
+                            <div class="col-md-10 d-flex flex-column border">
+                                <img class="col-md-5 img-thumbnail border-0" src="/img/free.png" />
+                                <Tag severity="success" :value ="`Mesa ${tab.table}`"/>
                             </div>
                         </button>
-                       <button @click="visibleStockAddModal = true" data-bs-toggle="modal" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn" @click.prevent="getOrderItem(busy.id)">
-                            <div class="bg-danger border p-0">
-                                <h6 class="text-white text-center fw-normal">Mesa {{ busy.ped_tableNumber }}<br><small>ocupada</small><br><small>{{ busy.name }}</small></h6>
+                       <button @click="visibleStockAddModal = true" data-bs-toggle="modal" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn border-0 p-0" @click.prevent="getOrderItem(busy.id)">
+                             <div class="col-md-10 d-flex flex-column border mt-2">
+                                <div class="col-md-10 d-flex justify-content-between align-items-center">
+                                    <img class="col-md-5 img-thumbnail border-0" src="/img/busy.png" />
+                                    <Badge severity="warning" :value="busy.customer " />
+                                </div>
+                                <small class="text-left">{{busy.name}}</small>
+                                <Tag severity="danger" :value ="`Mesa ${busy.ped_tableNumber} (${busy.timing})`"/>
                             </div>
                        </button>
                     </div>
@@ -87,6 +98,9 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column";
+import Tag from 'primevue/tag';
+import Badge from 'primevue/badge';
+import Chip from 'primevue/chip';
 export default {
     name: 'OperadorPanel',
 
@@ -95,7 +109,10 @@ export default {
         Dialog,
         Button,
         DataTable,
-        Column
+        Column,
+        Tag,
+        Badge,
+        Chip
     },
 
     data() {
@@ -117,10 +134,9 @@ export default {
         }
     },
     watch:{
-        order: _.debounce(function(newOrder){
-            this.getOrder();
+        busyTables: _.debounce(function(newOrder){
             this.getTable()
-        }, 10000)
+        }, 20000)
     },
 
     async created() {
@@ -134,10 +150,6 @@ export default {
             const response = await  axios.get('/api/dashboard/order')
             this.order = await response.data.order
             this.status = await response.data.status
-
-            /*for(const a of this.order){
-                console.log(`valor of a is ${a.id}`)
-            }*/
         },
 
         async getOrderItem(id) {
@@ -164,11 +176,32 @@ export default {
             let response = await axios.get('/api/tablenumbers-orders')
             this.tables = await response.data.tables
             this.busyTables = await response.data.busyTables
+        },
+        mountedLoadEffect(){
+            setTimeout(() => {
+                this.$swal.fire({
+                    template: "#swal-template",
+                        html:`
+                            <div id="swal-load" style="height: 6rem;">
+                                <div style="width: 3rem; height: 3rem; padding: 12px;" class="spinner-border" role="status">
+                                </div>
+                                <br>
+                                <span class="">Aguarde...</span>
+                            </div>
+                                `,
+                        showConfirmButton: false
+                    })
+                }, 100)
+            setTimeout(() => {
+                let div = document.querySelector('.swal2-container');
+                div.remove()
+            }, 4000)
         }
 
     },
 
     mounted(){
+        this.mountedLoadEffect();
         window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
         getAuth().then(result => {
             this.username = result.name
