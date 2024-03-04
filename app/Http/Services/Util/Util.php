@@ -58,4 +58,11 @@ class Util
         return 'Vocês não tem permissão';
     }
 
+    public static function formatBdDate(): string
+    {
+        $set_date = new DateTime();
+        $date = $set_date->format('Y-m-d');
+        return $date;
+    }
+
 }

@@ -24,10 +24,11 @@ use App\Models\MealType;
 use App\Models\Menuitems;
 use App\Models\RequisitionStatus;
 use App\Models\Technicalfiche;
+use App\Traits\AuthSession;
 
 class StockRepository implements StockRepositoryInterface
 {
-    use Permission;
+    use Permission, AuthSession { AuthSession::autth insteadof Permission; }
     public $bar = [1, 5];
     public $kitchen = [2, 3, 4, 6];
     private ProductRepositoryInterface $productRepositoryInterface;
@@ -450,28 +451,84 @@ class StockRepository implements StockRepositoryInterface
         return DB::select($query);
     }
 
-    public function resetSaldo()
+    public function autoKitchenRequisition($request)
     {
-        $departments = [Department::BAR, Department::COZINHA];
-        $allSaldo = Saldo::all();
-        foreach ($allSaldo as $key => $saldo) {
-            $product = $this->productRepositoryInterface->findById($saldo->productID);
-            $fiche = Technicalfiche::find($product->id);
-            $item = Menuitems::find($fiche->itemID);
+        $items = MenuItems::whereIn('type_id', $this->kitchen)->pluck('id');
+        $fiches = Technicalfiche::whereIn('itemID', $items)->get();
+        $requisition = new PurchaseRequisition();
+        $requisition->user_id = $this->autth($request);
+        $requisition->status_id = PurchaseRequisition::REQUISITION_WAITING;
+        $requisition->department_id = Department::COZINHA;
+        $requisition->delivery_date = Util::formatBdDate();
+        $requisition->observation = "Gerado automaticamente";
+        $requisition->requisition_code = Util::randomString().Util::randomNumber().str_replace('-', '', date('m-d', strtotime(Util::formatBdDate())));
+        $requisition->save();
+        foreach($fiches as $item) {
+            $product = $this->productRepositoryInterface->findById($item->productID);
+            $saldo = Saldo::where('productID', $product->id)->first();
+            $lastEntry = $this->findLastProductEntry($product->id);
             $quantityCal = $product->prod_unmed != "bt" ? $saldo->saldoFinal / $product->prod_contain : $saldo->saldoFinal;
-            $department_id = "";
-            if (array_search($item->type_id, $this->bar)){
-                $department_id = Department::BAR;
-            }else {
-
-            }
-
-            if ($quantityCal <= $saldo->saldoFinal) {
-                $requisition = new PurchaseRequisition();
-                $requisition->department_id = $department_id;
-                $requisition->status_id = PurchaseRequisition::REQUISITION_WAITING;
+            if ($product->min_quantity > $quantityCal) {
+                $itensRequisition = new RequisitionItem();
+                $itensRequisition->requisition_id = $requisition->id;
+                $itensRequisition->product_id = $product->id;
+                $itensRequisition->status_id = $requisition->status_id;
+                $itensRequisition->quantity = $product->min_quantity - $quantityCal;
+                $itensRequisition->is_delete = false;
+                $itensRequisition->confirm_quantity = 0;
+                $itensRequisition->cost = $lastEntry->unitCost;
+                $itensRequisition->requisition_code = $requisition->requisition_code;
+                $itensRequisition->total = $lastEntry->unitCost * ($product->min_quantity - $saldo->saldoFinal);
+                $itensRequisition->is_delete = false;
+                $itensRequisition->save();
             }
         }
+        if (!RequisitionItem::where('requisition_id', $requisition->id)->exists()){
+            $requisition->delete();
+        }
+    }
+
+    public function autoBarRequisition($request)
+    {
+        $items = MenuItems::whereIn('type_id', $this->bar)->pluck('id');
+        $fiches = Technicalfiche::whereIn('itemID', $items)->get();
+        $requisition = new PurchaseRequisition();
+        $requisition->user_id = $this->autth($request);
+        $requisition->status_id = PurchaseRequisition::REQUISITION_WAITING;
+        $requisition->department_id = Department::BAR;
+        $requisition->delivery_date = Util::formatBdDate();
+        $requisition->requisition_code = Util::randomString().Util::randomNumber().str_replace('-', '', date('m-d', strtotime(Util::formatBdDate())));
+        $requisition->observation = "Gerado automaticamente";
+        $requisition->save();
+        foreach($fiches as $item) {
+            $product = $this->productRepositoryInterface->findById($item->productID);
+            $saldo = Saldo::where('productID', $product->id)->first();
+            $lastEntry = $this->findLastProductEntry($product->id);
+            $quantityCal = $product->prod_unmed != "bt" ? $saldo->saldoFinal / $product->prod_contain : $saldo->saldoFinal;
+            if ($product->min_quantity > $quantityCal) {
+                $itensRequisition = new RequisitionItem();
+                $itensRequisition->requisition_id = $requisition->id;
+                $itensRequisition->product_id = $product->id;
+                $itensRequisition->status_id = $requisition->status_id;
+                $itensRequisition->requisition_code = $requisition->requisition_code;
+                $itensRequisition->quantity = $product->min_quantity - $quantityCal;
+                $itensRequisition->is_delete = false;
+                $itensRequisition->confirm_quantity = 0;
+                $itensRequisition->cost = $lastEntry->unitCost;
+                $itensRequisition->total = $lastEntry->unitCost * ($product->min_quantity - $saldo->saldoFinal);
+                $itensRequisition->is_delete = false;
+                $itensRequisition->save();
+            }
+        }
+        if (!RequisitionItem::where('requisition_id', $requisition->id)->exists()){
+            $requisition->delete();
+         }
+    }
+
+    public function resetSaldo($request)
+    {
+        $this->autoBarRequisition($request);
+        $this->autoKitchenRequisition($request);
         $query = "UPDATE saldos SET saldoInicial = saldoFinal";
         DB::select($query);
     }

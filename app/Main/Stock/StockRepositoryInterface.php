@@ -25,6 +25,6 @@ interface StockRepositoryInterface
     public function findAllDevolution();
     public function findDevolutionItemsByRequisitionId($requisition_id);
     public function listStockProductStat();
-    public function resetSaldo();
+    public function resetSaldo($request);
     public function cureentSaldoCheck();
 }

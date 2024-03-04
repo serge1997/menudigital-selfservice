@@ -77,13 +77,16 @@ class StockController extends Controller
         }
     }
 
-    public function resetSaldoAction(): JsonResponse
+    public function resetSaldoAction(Request $request): JsonResponse
     {
         try{
             $message = "Journey reset successffully";
-            $this->stockRepositoryInterface->resetSaldo();
+            DB::beginTransaction();
+            $this->stockRepositoryInterface->resetSaldo($request);
+            DB::commit();
             return response()->json($message);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json($e->getMessage(), 500);
         }
     }
