@@ -370,8 +370,6 @@ export default {
             billTotalItem: null,
             visiblePaymentModal: false,
             severity_btn: null,
-
-
         }
     },
     watch:{
