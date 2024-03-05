@@ -1,4 +1,12 @@
 <template>
+     <Dialog v-model:visible="visibleClosingLoadModal" :closable="false" maximizable modal header="" :style="{ width: '50rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <div class="col-md-10 d-flex flex-column m-auto">
+            <span class="text-center text-warning"><i style="font-size: 2.3em;" class="pi pi-exclamation-triangle"></i></span>
+            <p class="fs-5 text-center">Essa Atividade não pode ser cancelada, aguarde até o final.</p>
+            <p v-if="visibleClosingLoadModal" class="text-center">{{ loadMessage }}</p>
+            <ProgressBar v-if="visibleClosingLoadModal" mode="indeterminate" style="height: 6px"></ProgressBar>
+        </div>
+    </Dialog>
     <div>
         <button type="button" class="btn fw-medium caixa-btn" data-bs-toggle="modal" data-bs-target="#report">
             Sell Report
@@ -61,14 +69,23 @@
 </template>
 
 <script>
+import Dialog from 'primevue/dialog';
+import ProgressBar from 'primevue/progressbar';
 export default {
     name: 'SellReportComponent',
+
+    components: {
+        Dialog,
+        ProgressBar
+    },
 
     data() {
         return {
             report: null,
             paiment_data: null,
-            valorCanceled: null
+            valorCanceled: null,
+            visibleClosingLoadModal: false,
+            loadMessage: 'Aguarde...'
         }
     },
 
@@ -94,14 +111,31 @@ export default {
                 showCancelButton: true
             }).then((result) => {
                 if (result.isConfirmed){
-                    axios.put('/api/reset-saldo').then((response) => {
-                        console.log(response.data)
-                    }).catch((errors) => {
-                        console.log(errors)
-                    })
-                    this.$swal.fire({
-                        text: 'Inventory reset successfully',
-                        confirmButtonColor: '#e63958'
+                    this.visibleClosingLoadModal = true;
+                    setTimeout(() => {this.loadMessage = "Verificando..."}, 1000);
+                    setTimeout(() => {this.loadMessage = "Atualizando o inventario..."}, 4000);
+                    setTimeout(() => {this.loadMessage = "Greando as requisições..."}, 9000);
+                    setTimeout(() => {this.loadMessage = "Feachando as vendas do dia..."}, 20000);
+                    setTimeout(() => {this.loadMessage = "Enviando e-mail..."}, 20000);
+                    return new Promise(resolve => {
+                        setTimeout(() => {
+                            axios.put('/api/reset-saldo')
+                            .then((response) => {
+                                this.$swal.fire({
+                                    text: response.data,
+                                    icon: 'success'
+                                });
+                            })
+                            .catch((errors) => {
+                                this.$swal.fire({
+                                    text: errors.response.data,
+                                    icon: 'success'
+                                });
+                            })
+                            .finally(() => {
+                                this.visibleClosingLoadModal = false;
+                            })
+                        }, 50000)
                     })
                 }
             })

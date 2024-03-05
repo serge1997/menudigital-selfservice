@@ -369,7 +369,7 @@ export default {
             billTotal: 0,
             billTotalItem: null,
             visiblePaymentModal: false,
-            severity_btn: null
+            severity_btn: null,
 
 
         }
