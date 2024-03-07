@@ -22,10 +22,13 @@ class Reservation extends Model
         'customer_email',
         'customer_tel',
         'reser_canal',
-        'observation'
+        'observation',
+        'status'
     ];
 
-    protected $dateFormat = 'd/m/y';
+    protected $attributes = [
+        'status' => 'W'
+    ];
 
     public function user(): BelongsTo
     {

@@ -9,10 +9,17 @@ use App\Http\Services\Util\Util;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Date;
 
 class ReservationRepository implements ReservationRepositoryInterface
 {
     use Permission;
+    protected Reservation $reservation;
+
+    public function __construct(Reservation $reservation)
+    {
+        $this->reservation = $reservation;
+    }
 
     public function create($request)
     {
@@ -21,6 +28,7 @@ class ReservationRepository implements ReservationRepositoryInterface
 
             $value = $request->all();
             $reservation = new Reservation($value);
+            $reservation->date_come_in = substr($request->date_come_in, 0, 10);
             $reservation->user_id = $this->autth($request);
             $reservation->save();
         else:
@@ -114,5 +122,26 @@ class ReservationRepository implements ReservationRepositoryInterface
                     ->get();
 
         return $query;
+    }
+    public function autoCancelReservationByDate()
+    {
+        $date = new DateTime();
+        $date = $date->format('Y-m-d');
+        //usar date_come_in
+        $this->reservation::where([["created_at", '<', $date], ['status', 'W']])
+            ->update([
+                'status' => 'N'
+            ]);
+    }
+    public function updateReservationStatus($id, $status, $request)
+    {
+        if ($this->can_manage($request) || $this->can_cashier($request)){
+            $this->reservation::where('id', $id)
+                ->update([
+                    'status' => $status
+                ]);
+            return true;
+        }
+        throw new Exception(Util::PermisionExceptionMessage());
     }
 }

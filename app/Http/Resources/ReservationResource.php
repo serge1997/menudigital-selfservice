@@ -17,7 +17,7 @@ class ReservationResource extends JsonResource
         return [
             'id' => $this->id,
             'person_quantity' => $this->person_quantity,
-            'date_come_in'   => $this->date_come_in,
+            'date_come_in'   => date('d/m/Y', strtotime($this->date_come_in)),
             'hour'           => $this->hour,
             'observation' => $this->observation,
             'customer_firstName' => $this->customer_firstName,
@@ -28,7 +28,8 @@ class ReservationResource extends JsonResource
             'reser_canal' => $this->reser_canal,
             'created_at' => $this->created_at,
             'user_id' => $this->user->id,
-            'user_name' => $this->user->name
+            'user_name' => $this->user->name,
+            'status' => $this->status
         ];
     }
 }
