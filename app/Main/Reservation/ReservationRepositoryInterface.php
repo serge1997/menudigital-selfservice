@@ -13,4 +13,6 @@ interface ReservationRepositoryInterface
     public function delete($request, $id);
     public function ressourceTeste();
     public function listByCanalAVG();
+    public function autoCancelReservationByDate();
+    public function updateReservationStatus($id, $status, $request);
 }

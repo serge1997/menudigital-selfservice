@@ -9,10 +9,17 @@ use App\Http\Services\Util\Util;
 use DateTime;
 use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\Date;
 
 class ReservationRepository implements ReservationRepositoryInterface
 {
     use Permission;
+    protected Reservation $reservation;
+
+    public function __construct(Reservation $reservation)
+    {
+        $this->reservation = $reservation;
+    }
 
     public function create($request)
     {
@@ -21,6 +28,7 @@ class ReservationRepository implements ReservationRepositoryInterface
 
             $value = $request->all();
             $reservation = new Reservation($value);
+            $reservation->date_come_in = substr($request->date_come_in, 0, 10);
             $reservation->user_id = $this->autth($request);
             $reservation->save();
         else:
@@ -42,20 +50,6 @@ class ReservationRepository implements ReservationRepositoryInterface
     {
         return new Collection(
             new ReservationResource(Reservation::find($id))
-            // Reservation::select(
-            //     'id',
-            //     'person_quantity',
-            //     'hour',
-            //     'customer_firstName',
-            //     'customer_lastName',
-            //     'customer_email',
-            //     'customer_tel',
-            //     'reser_canal',
-            //     'date_come_in',
-            //     'observation'
-            //     )
-            //         ->where('id', $id)
-            //             ->first()
         );
     }
 
@@ -114,5 +108,33 @@ class ReservationRepository implements ReservationRepositoryInterface
                     ->get();
 
         return $query;
+    }
+    public function autoCancelReservationByDate()
+    {
+        $date = new DateTime();
+        $date = $date->format('Y-m-d');
+        //usar date_come_in
+        $this->reservation::where([["date_come_in", '<', $date], ['status', 'W']])
+            ->update([
+                'status' => 'N'
+            ]);
+    }
+    public function updateReservationStatus($id, $status, $request)
+    {
+        $reservation = $this->reservation::find($id);
+        $date = new DateTime();
+        $date = $date->format('Y-m-d');
+        if ($this->can_manage($request) || $this->can_cashier($request)){
+           if ($status == 'Y' && $reservation->date_come_in <= $date){
+                $reservation->update(['status' => $status]);
+                return;
+           }else if ($status !== 'Y'){
+                $reservation->update(['status' => $status]);
+                return;
+           }else{
+                throw new Exception("estatus invalido");
+           }
+        }
+        throw new Exception(Util::PermisionExceptionMessage());
     }
 }

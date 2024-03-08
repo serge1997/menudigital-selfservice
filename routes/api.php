@@ -203,6 +203,8 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::put('reservation', 'updateAction');
         Route::get('resource-teste', 'teste');
         Route::get('reservation-bi', 'reservationBiData');
+        Route::put('reservation/auto-canceled', 'autoCancelReservationByDateAction');
+        Route::put('reservation/{id}/status/{status}', 'updateReservationStatusAction');
     });
 
     //role

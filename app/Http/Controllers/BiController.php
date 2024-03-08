@@ -265,7 +265,8 @@ class BiController extends Controller
 
             $condition_like = "st.is_delete = '0' AND ";
             if ($params->prodName) {
-                $condition_like .= "pr.prod_name LIKE '%".$params->prodName."%' AND ";
+                $condition_like .= "pr.prod_name LIKE '%".$params->prodName."%' OR ";
+                $condition_like .= "supp.sup_name LIKE '%".$params->prodName."%' AND ";
             }
             if ($params->year) {
                 $condition_like .= "SUBSTRING(st.emissao, 1, 4) LIKE '%".$params->year."%' AND ";

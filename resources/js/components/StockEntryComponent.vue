@@ -139,7 +139,6 @@ export default{
                 response.data.forEach(e => code.push(e.requisition_code));
                 this.requisitionCode = [...code];
             })
-            console.log(this.requisitionCode)
         },
 
         getRequisitionProduct(){

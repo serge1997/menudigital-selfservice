@@ -1,6 +1,6 @@
 <template>
+    <SideBarComponent />
     <div class="container-fluid">
-        <SideBarComponent />
         <div class="container">
             <div class="w-100 d-flex flex-column">
                 <Toolbar class="w-100">
@@ -24,8 +24,13 @@
                 </div>
             </div>
         </div>
-        <div class="container">
-            <ListReservationComponent :reservation-canal="reservationCanal" :reservations="reservations" @delete-reservation="deleteReservation"/>
+        <div class="container-fluid">
+            <ListReservationComponent
+                :reservation-canal="reservationCanal"
+                :reservations="reservations"
+                @delete-reservation="deleteReservation"
+                :saved-reservation-date="savedReservationDate"
+            />
         </div>
         <div class="container">
             <Dialog v-model:visible="visibleNewReservationModal" maximizable modal header="Nova reservação" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
@@ -39,7 +44,7 @@
                         <div class="col-lg-4 col-md-10 d-flex flex-column gap-2 align-items-start">
                             <div class="col-md-12 d-flex gap-3">
                                 <label class="fw-medium">N pessoa:  </label>
-                                <InputText type="number" :class="invalid" v-model="reservationData.person_quantity" class="w-25" placeholder="000"/>
+                                <InputText type="number" :class="invalid" min="1" v-model="reservationData.person_quantity" class="w-25" placeholder="000"/>
                             </div>
                             <small class="text-danger" v-if="formErrMessage" v-for="person in formErrMessage.person_quantity" v-text="person"></small>
                         </div>
@@ -180,6 +185,7 @@ export default {
                 name: null,
                 position_id: null,
             },
+            savedReservationDate: [],
             administrativeAccess: localStorage.getItem('administrativeAccess').split(',')
         }
     },
@@ -192,6 +198,9 @@ export default {
         async listAllReservation(){
             const reservationRespone = await axios.get('/api/reservation');
             this.reservations = await reservationRespone.data;
+            for (let reser of this.reservations){
+                this.savedReservationDate.push(reser.date_come_in)
+            }
 
         },
 
@@ -211,7 +220,7 @@ export default {
             });
             const data = {
                 person_quantity: this.reservationData.person_quantity,
-                date_come_in: dateFormat.substr(0, 10),
+                date_come_in: this.reservationData.date_come_in,
                 hour: formatHour.substr(12, 17),
                 customer_firstName: this.reservationData.customer_firstName,
                 customer_lastName: this.reservationData.customer_lastName,
@@ -300,7 +309,7 @@ export default {
             }
             localStorage.setItem('meter_data', JSON.stringify( await biResponse.data));
             console.log(await biResponse.data)
-        }
+        },
     },
 
     mounted(){
@@ -309,6 +318,6 @@ export default {
         getAuth().then(result => {
             this.user.position_id = result.position_id;
         })
-    }
+    },
 }
 </script>

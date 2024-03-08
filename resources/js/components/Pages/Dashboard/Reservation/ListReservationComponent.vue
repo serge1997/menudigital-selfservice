@@ -1,6 +1,45 @@
 <template>
-    <div class="container mt-4">
-        <div v-for="reservation in reservations" class="row d-flex justify-content-center shadow-sm p-1 mb-3 rounded border">
+    <div class="container-fluid mt-4">
+        <div class="w-100 card">
+            <div class="card-header">
+                <div class="w-100 d-flex justify-content-between">
+                    <div class="btn-next">
+                        <Button @click="previousMonth" icon="pi pi-angle-left" text/>
+                    </div>
+                    <div class="month-name">
+                        <p class="fw-medium text-uppercase text-secondary">{{ showMonth }}</p>
+                    </div>
+                    <div class="btn-back">
+                        <Button @click="nextMonth" icon="pi pi-angle-right" text/>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body col-md-12 m-auto d-flex flex-wrap" id="scheduler">
+                <div v-for="date in scheduleDate" class="p-4 col-md-2 border d-flex justify-content-center schedule-da">
+                    <div v-if="!this.savedReservationDate.includes(date)" class="d-flex flex-column">
+                        <div><Button v-if="!this.savedReservationDate.includes(date)" class="text-center text-secondary" :label="date.substr(0, 5)" text/></div>
+                    </div>
+                    <div v-else class="col-sm-12 d-flex flex-column">
+                        <div class="" v-for="reservation in reservations">
+                            <div v-if="reservation.date_come_in == date" class="col-sm-12 d-flex mb-2 border shadow">
+                                <button @click="showReservation(reservation.id)" class="col-sm-10 btn d-flex gap-1" :class="setBgColor(reservation.status)" style="font-size: .8em;" icon="pi pi-user">
+                                    <i class="pi pi-user"></i>
+                                    <span>{{ reservation.customer_fullname }}</span>
+                                </button>
+                                <div class="d-flex flex-column col-sm-2">
+                                    <Button @click="getReservation(reservation.id)" style="font-size: 0.1rem" icon="pi pi-pencil" text/>
+                                    <Button @click="$emit('deleteReservation', reservation.id)" style="font-size: 0.1rem" icon="pi pi-trash" text class="text-danger"/>
+                                </div>
+                            </div>
+                        </div>
+                            <!-- <span v-if="reservation.date_come_in == date"><Tag :value="reservation.customer_fullname" /></span> -->
+
+                    </div>
+                    <!-- <Button v-if="!this.savedReservationDate.includes(date)" class="text-center" :label="date.substr(0, 5)" text/> -->
+                </div>
+            </div>
+        </div>
+        <!-- <div v-for="reservation in reservations" class="row d-flex justify-content-center shadow-sm p-1 mb-3 rounded border">
             <div class="col-md-4 d-flex flex-column customer-info">
                 <h6>{{ reservation.customer_firstName }} {{ reservation.customer_lastName }}</h6>
                 <div class="d-flex gap-2">
@@ -27,7 +66,7 @@
                     <Button @click="$emit('deleteReservation', reservation.id)" icon="pi pi-trash" text class="text-danger"/>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="row">
             <Dialog v-model:visible="visibleShowReservationModal" maximizable modal header="Detalhes da reservação" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="col-md-12 mt-3">
@@ -71,6 +110,9 @@
         </div>
         <div class="container">
             <Dialog v-if="reservation" v-model:visible="visibleEditionReservationModal" maximizable modal header="Editar reservação" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                <div class="row d-flex justify-content-end">
+                    <Button @click="updateStatus" class="col-md-2" label="Editar status" text />
+                </div>
                 <div class="col-md-12 mt-3">
                     <ProgressBar v-if="savingLoad" mode="indeterminate" style="height: 6px"></ProgressBar>
                     <div class="d-flex align-items-center gap-2 mb-3 p-2">
@@ -81,10 +123,10 @@
                         <div class="col-lg-4 col-md-10 d-flex flex-column gap-2 align-items-start">
                             <div class="col-md-12 d-flex">
                                 <label class="fw-medium">N pessoa:  </label>
-                                <Button icon="pi pi-plus" severity="success"/>
+
                                 <input type="hidden" id="res-id" :value="reservation.id" />
                                 <InputText type="number" :class="invalid" :value="reservation.person_quantity" id="res-person" class="w-25" placeholder="000"/>
-                                <Button icon="pi pi-minus" severity="primary" />
+
                             </div>
                             <small class="text-danger" v-if="formErrMessage" v-for="person in formErrMessage.person_quantity" v-text="person"></small>
                         </div>
@@ -160,7 +202,7 @@ import Tag from "primevue/tag";
 export default {
     name: 'ListReservationComponent',
 
-    props: ['reservationCanal', 'reservations'],
+    props: ['reservationCanal', 'reservations', 'savedReservationDate'],
 
     components: {
         Button,
@@ -183,7 +225,11 @@ export default {
         deep: true
       }
     },
-
+    watch: {
+        navMonthIndex(newVal, oldVal){
+            newVal === 11 ? this.navMonthIndex = -1 : this.navMonthIndex
+        }
+    },
     data(){
         return {
             visibleShowReservationModal: false,
@@ -212,7 +258,25 @@ export default {
             formErrMessage: null,
             administrativeAccess: localStorage.getItem('administrativeAccess').split(','),
             dateInvalidClass: null,
-            dataInvalid: null
+            dataInvalid: null,
+            scheduleDate: [],
+            showMonth: 'Janeiro',
+            navMonthIndex: 0,
+            scheduleMonth:[
+                'Janeiro',
+                'Fevereiro',
+                'Março',
+                'Abril',
+                'Maio',
+                'Junho',
+                'Julho',
+                'Agosto',
+                'Setembro',
+                'Outubro',
+                'Novembro',
+                'Dezembro'
+            ],
+            reser_bgColor: null
         }
     },
 
@@ -307,11 +371,178 @@ export default {
                 this.dateInvalidClass = null
             };
         },
+        setPeriod(){
+            let month = null;
+            let endDay = null;
+            switch(this.showMonth) {
+                case "Janeiro":
+                    month = 0;
+                    endDay = 31;
+                    break;
+                case "Fevereiro":
+                    month = 1;
+                    endDay = 29;
+                    break;
+                case "Março":
+                    month = 2;
+                    endDay = 31;
+                    break;
+                case "Abril":
+                    month = 3;
+                    endDay = 30;
+                    break;
+                case "Maio":
+                    month = 4;
+                    endDay = 31;
+                    break;
+                case "Junho":
+                    month = 5;
+                    endDay = 30;
+                    break;
+                case "Julho":
+                    month = 6;
+                    endDay = 31;
+                    break;
+                case "Agosto":
+                    month = 7;
+                    endDay = 31;
+                    break;
+                case "Setembro":
+                    month = 8;
+                    endDay = 30;
+                    break;
+                case "Outubro":
+                    month = 9;
+                    endDay = 31;
+                    break;
+                case "Novembro":
+                    month = 10;
+                    endDay = 30;
+                    break;
+                case "Dezembro":
+                    month = 11;
+                    endDay = 31;
+                    break;
+            }
+            return [month, endDay];
+
+        },
+        loadCalendar(month = 0, endDay = 31){
+            const start = new Date(2024, month , 0);
+            const end = new Date(2024, month , endDay);
+            let step = 1;
+            while (start <= end){
+                let dt = new Date(start.setDate(start.getDate() + step));
+                this.scheduleDate.push(dt.toLocaleString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }))
+            }
+            return this.scheduleDate;
+        },
+        nextMonth(){
+           this.scheduleDate.length = 0;
+           this.navMonthIndex++;
+           this.showMonth = this.scheduleMonth[this.navMonthIndex];
+           const [month, endDay] = this.setPeriod();
+           return this.loadCalendar(month, endDay);
+
+        },
+        previousMonth(){
+           this.scheduleDate.length = 0;
+           if (this.navMonthIndex === 0) {
+                this.navMonthIndex = 0 ;
+                return;
+           }
+           this.navMonthIndex--;
+           this.showMonth = this.scheduleMonth[this.navMonthIndex];
+           const [month, endDay] = this.setPeriod();
+           return this.loadCalendar(month, endDay);
+        },
+        setBgColor(status){
+            switch(status) {
+                case "Y":
+                    return "bg-success text-white";
+                case "N":
+                    return "bg-danger text-white";
+                case "C":
+                    return "bg-primary text-white";
+                case "W":
+                    return "bg-warning text-dark";
+            }
+        },
+        autoCancelReservation(){
+            axios.put('/api/reservation/auto-canceled')
+            .then((response) => {
+
+            })
+            .catch(errors => console.log(errors))
+        },
+        updateStatus(){
+            const Toast = this.$swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            this.$swal.fire({
+                showCancelButton: true,
+                html: `
+                    <div class="d-flex flex-column align-items-center p-2">
+                        <p>Editar status da reserva</p>
+                        <select class="form-select" id="reser-status">
+                            <option value="Y">Chegou</option>
+                            <option value="C">Canelado</option>
+                            <option value="N">Não chegou / não avisou</option>
+                        </select>
+                    </div>
+                `
+            })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    let reservation_id = document.getElementById('res-id').value;
+                    let status = document.getElementById('reser-status').value;
+                    return new Promise(resolve => {
+                        axios.put(`/api/reservation/${reservation_id}/status/${status}`)
+                        .then((response) => {
+                            Toast.fire({
+                            icon: "success",
+                            title: response.data
+                            });
+                        })
+                        .catch((errors) => {
+                            Toast.fire({
+                            icon: "error",
+                            title: errors.response.data
+                            });
+                        })
+                        .finally(() => {
+
+                        })
+                    })
+                }
+            })
+        }
     },
     mounted(){
+        this.loadCalendar();
+        this.autoCancelReservation()
         getAuth().then(result => {
             this.auth.position_id = result.position_id;
         })
     }
 }
 </script>
+<style scoped>
+.schedule-day:hover {
+    background-color: #e2e3e5;
+    transition: .3s ease-in;
+    padding: 12px;
+}
+</style>

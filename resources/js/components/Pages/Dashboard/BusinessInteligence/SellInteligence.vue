@@ -145,7 +145,7 @@
                     <div class="position-absolute" :class="{ 'place': placeh}"></div>
                     <template #header>
                         <div style="text-align: left">
-                            <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                            <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
                         </div>
                     </template>
                     <Column field="item_emissao" sortable style="width: 25%" exportHeader="Product Code" header="Date"></Column>
@@ -167,6 +167,7 @@ import Column from 'primevue/column';
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import Calendar from "primevue/calendar";
+import { exportCSV } from './../csv.js';
 
 export default {
     name: 'SellInteligence',
@@ -392,6 +393,9 @@ export default {
         this.type.principal = null;
         this.type.wine = null;
         this.type.starter = null;
+       },
+       downloadCsv(){
+        exportCSV(this.dataTable);
        }
     },
 

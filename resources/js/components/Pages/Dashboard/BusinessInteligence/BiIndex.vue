@@ -1,6 +1,6 @@
 <template>
+    <SideBarComponent />
     <div class="container-fluid">
-        <SideBarComponent />
         <TabView :scrollable="true">
             <TabPanel header="ANALISE DE VENDA">
                 <SellInteligence />

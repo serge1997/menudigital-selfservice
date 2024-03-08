@@ -91,4 +91,24 @@ class ReservationController extends Controller
             return response()->json($e->getMessage(), 500);
         }
     }
+
+    public function autoCancelReservationByDateAction(){
+        try{
+            $this->reservationRepositoryInterface->autoCancelReservationByDate();
+            return response()->json("Reservas atualizadas");
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function updateReservationStatusAction($id, $status, Request $request)
+    {
+        try{
+            $message = "Reserva atualizada com success";
+            $this->reservationRepositoryInterface->updateReservationStatus($id, $status, $request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }
