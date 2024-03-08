@@ -1,6 +1,6 @@
 <template>
+    <SideBarComponent />
     <div class="container-fluid">
-        <SideBarComponent />
         <div class="container">
             <div class="w-100 d-flex flex-column">
                 <Toolbar class="w-100">

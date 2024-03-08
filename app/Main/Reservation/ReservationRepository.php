@@ -50,20 +50,6 @@ class ReservationRepository implements ReservationRepositoryInterface
     {
         return new Collection(
             new ReservationResource(Reservation::find($id))
-            // Reservation::select(
-            //     'id',
-            //     'person_quantity',
-            //     'hour',
-            //     'customer_firstName',
-            //     'customer_lastName',
-            //     'customer_email',
-            //     'customer_tel',
-            //     'reser_canal',
-            //     'date_come_in',
-            //     'observation'
-            //     )
-            //         ->where('id', $id)
-            //             ->first()
         );
     }
 
@@ -128,19 +114,26 @@ class ReservationRepository implements ReservationRepositoryInterface
         $date = new DateTime();
         $date = $date->format('Y-m-d');
         //usar date_come_in
-        $this->reservation::where([["created_at", '<', $date], ['status', 'W']])
+        $this->reservation::where([["date_come_in", '<', $date], ['status', 'W']])
             ->update([
                 'status' => 'N'
             ]);
     }
     public function updateReservationStatus($id, $status, $request)
     {
+        $reservation = $this->reservation::find($id);
+        $date = new DateTime();
+        $date = $date->format('Y-m-d');
         if ($this->can_manage($request) || $this->can_cashier($request)){
-            $this->reservation::where('id', $id)
-                ->update([
-                    'status' => $status
-                ]);
-            return true;
+           if ($status == 'Y' && $reservation->date_come_in <= $date){
+                $reservation->update(['status' => $status]);
+                return;
+           }else if ($status !== 'Y'){
+                $reservation->update(['status' => $status]);
+                return;
+           }else{
+                throw new Exception("estatus invalido");
+           }
         }
         throw new Exception(Util::PermisionExceptionMessage());
     }

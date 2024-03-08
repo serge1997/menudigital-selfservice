@@ -1,4 +1,4 @@
-function convertToCSV(objArray) {
+export function exportCSV(objArray){
     const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
     let csv = '';
     const headers = Object.keys(array[0]).join(',') + '\n';
@@ -12,17 +12,6 @@ function convertToCSV(objArray) {
         });
         csv += row + '\n';
     });
-
-    return csv;
-}
-
-function exportCSV(products){
-    const fields = ['Product code', 'Product name', 'Cost', 'Supplier name', 'Saldo', 'Medida'];
-    const header = { fields };
-
-    try{
-        const csv = this.convertToCSV(products);
-
         const blob = new Blob([csv], {type: '\'text/csv;charset=utf-8;\';'});
         const link = document.createElement('a');
 
@@ -35,8 +24,4 @@ function exportCSV(products){
             link.click();
             document.body.removeChild(link);
         }
-
-    }catch (error) {
-        console.error(error);
-    }
 }

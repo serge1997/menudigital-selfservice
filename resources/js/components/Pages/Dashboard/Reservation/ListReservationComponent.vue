@@ -225,7 +225,11 @@ export default {
         deep: true
       }
     },
-
+    watch: {
+        navMonthIndex(newVal, oldVal){
+            newVal === 11 ? this.navMonthIndex = -1 : this.navMonthIndex
+        }
+    },
     data(){
         return {
             visibleShowReservationModal: false,
@@ -447,6 +451,10 @@ export default {
         },
         previousMonth(){
            this.scheduleDate.length = 0;
+           if (this.navMonthIndex === 0) {
+                this.navMonthIndex = 0 ;
+                return;
+           }
            this.navMonthIndex--;
            this.showMonth = this.scheduleMonth[this.navMonthIndex];
            const [month, endDay] = this.setPeriod();
@@ -472,6 +480,17 @@ export default {
             .catch(errors => console.log(errors))
         },
         updateStatus(){
+            const Toast = this.$swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
             this.$swal.fire({
                 showCancelButton: true,
                 html: `
@@ -492,24 +511,16 @@ export default {
                     return new Promise(resolve => {
                         axios.put(`/api/reservation/${reservation_id}/status/${status}`)
                         .then((response) => {
-                            const Toast = this.$swal.mixin({
-                            toast: true,
-                            position: "top-end",
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.onmouseenter = Swal.stopTimer;
-                                toast.onmouseleave = Swal.resumeTimer;
-                            }
-                            });
                             Toast.fire({
                             icon: "success",
                             title: response.data
                             });
                         })
                         .catch((errors) => {
-                            errors.response.status === 500 && this.$toast.error(errors.response.data)
+                            Toast.fire({
+                            icon: "error",
+                            title: errors.response.data
+                            });
                         })
                         .finally(() => {
 

@@ -20,13 +20,13 @@
                     <template #header>
                         <div class="d-flex justify-content-between">
                             <div style="text-align: left">
-                                <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                                <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
                             </div>
                             <div class="col-md-10 d-flex justify-content-end gap-3">
                                 <div class="d-flex flex-column gap-2 col-md-3">
                                     <label>Produto | Fornecedor</label>
                                     <span class="p-input-icon-left">
-                                        <i class="pi pi-search" />
+
                                         <InputText @change="getFiltersData" class="w-100" v-model="filtreParam.prodName" placeholder="produto, fornecedor" @input="filterDataTable" />
                                     </span>
                                 </div>
@@ -80,6 +80,7 @@ import Dropdown from 'primevue/dropdown';
 import ProgressBar from 'primevue/progressbar';
 import ShowCostDetailsComponents from './ShowCostDetailsComponents.vue';
 import { randTime } from './../../../../rand';
+import { exportCSV } from './../csv.js';
 
 export default {
     name: 'CostIntelligence',
@@ -185,6 +186,9 @@ export default {
                }, randTime())
 
             })
+        },
+        downloadCsv(){
+            exportCSV(this.costData)
         }
     },
 
