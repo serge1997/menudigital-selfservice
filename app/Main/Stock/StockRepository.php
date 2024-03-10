@@ -20,11 +20,11 @@ use App\Models\Product;
 use App\Traits\Permission;
 use App\Events\SendedDeliveryDevolutionEmail;
 use App\Models\Department;
-use App\Models\MealType;
 use App\Models\Menuitems;
-use App\Models\RequisitionStatus;
 use App\Models\Technicalfiche;
 use App\Traits\AuthSession;
+use App\Events\ClosingNotified;
+use App\Models\Pedido;
 
 class StockRepository implements StockRepositoryInterface
 {
@@ -537,10 +537,12 @@ class StockRepository implements StockRepositoryInterface
 
     public function resetSaldo($request)
     {
+        $order = new Pedido();
         $this->autoBarRequisition($request);
         $this->autoKitchenRequisition($request);
         $query = "UPDATE saldos SET saldoInicial = saldoFinal";
         DB::select($query);
+        event(new ClosingNotified($order));
     }
 
     public function cureentSaldoCheck()

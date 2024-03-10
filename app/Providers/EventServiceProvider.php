@@ -16,6 +16,8 @@ use App\Events\RequisitionSended;
 use App\Listeners\SendEmailRequistion;
 use App\Listeners\DeliveryDevolutionEmail;
 use App\Events\SendedDeliveryDevolutionEmail;
+use App\Events\ClosingNotified;
+use App\Listeners\SendClosingNotification;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -46,6 +48,10 @@ class EventServiceProvider extends ServiceProvider
 
         SendedDeliveryDevolutionEmail::class => [
             DeliveryDevolutionEmail::class
+        ],
+
+        ClosingNotified::class => [
+            SendClosingNotification::class
         ]
 
     ];
