@@ -115,7 +115,7 @@ class PurchaseRequisitionController extends Controller
             ->select(
                 DB::raw('MAX(stock_entries.emissao) as emissao'),
                 DB::raw('MAX(stock_entries.unitCost) as unitCost'),
-                'itens_requisitions.product_id',
+                'itens_requisitions.product_id as id',
                 'suppliers.sup_name',
                 'itens_requisitions.requisition_id',
                 'itens_requisitions.quantity',

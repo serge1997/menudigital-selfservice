@@ -60,7 +60,8 @@
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
-                                <Button icon="pi pi-cart-plus" @click="addToCart(item.id)" />
+                                <Button v-if="item.item_rupture" icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
+                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" />
                                 <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
                             </div>
                         </div>
@@ -80,7 +81,8 @@
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="mt-2 d-flex justify-content-center gap-1">
-                                <Button icon="pi pi-cart-plus" @click="addToCart(item.id)" />
+                                <Button v-if="item.item_rupture" icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
+                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" />
                                 <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
                             </div>
                         </div>

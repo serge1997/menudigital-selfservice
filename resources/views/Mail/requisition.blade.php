@@ -13,22 +13,22 @@
         padding: 4px;
     }
 </style>
-<body>
-    <div class="row">
+<body style="font-family: 'Segoe UI'; display: flex; align-items:center; justify-content: center; padding: 12px; background-color: #f4f4f5;">
+    <div style="width: 90%; margin: auto; background-color: #f8fafc;">
         @php
             $date = new DateTime();
             $date = $date->format('d/m/Y');
         @endphp
-        <div class="col-md-8">
-            <h3>Óla, uma nova requisição foi enviada</h3>
-            <ul class="list-group">
-                <li class="list-group-item">Data: {{ $date }}</li>
+        <div style="width: 70%; height: 340px; margin: auto;" class="col-md-8">
+            <h3 style="color: #ef4444; text-decoration: underline; text-align: center;">Óla, uma nova requisição foi enviada</h3>
+            <ul style="list-style: none; font-size: 1.3em; color: #71717a;" class="list-group">
+                <li style="padding: 3px;">#Data: {{ $date }}</li>
                 @if (isset($user))
-                    <li class="list-group-item">Requerente: {{ $user->name }}</li>
+                    <li style="padding: 3px;">#Requerente: {{ $user->name }}</li>
                 @endif
                 @if (isset($requisition))
-                    <li class="list-group-item">Data de entrega (expetativa do requerente): {{ date('d/m/Y', strtotime($requisition->delivery_date)) }}</li>
-                    <li class="list-group-item">Código da requisição: {{ $requisition->requisition_code }}</li>
+                    <li style="padding: 3px;">#Data de entrega (expetativa do requerente): {{ date('d/m/Y', strtotime($requisition->delivery_date)) }}</li>
+                    <li style="padding: 3px;">#Código da requisição: {{ $requisition->requisition_code }}</li>
                 @endif
             </ul>
         </div>

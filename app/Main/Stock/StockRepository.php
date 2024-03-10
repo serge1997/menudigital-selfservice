@@ -112,7 +112,8 @@ class StockRepository implements StockRepositoryInterface
                     $query->select('requisition_id')
                         ->from('stock_entries')
                             ->where('is_delete', false);
-                })->get()
+                })->orderBy('created_at', 'DESC')
+                    ->get()
         );
     }
     public function findLastProductEntry($id)
@@ -248,11 +249,19 @@ class StockRepository implements StockRepositoryInterface
     }
     public function deleteFromStockEntryByRequisitionId($requisition_id, $product_id = null)
     {
-        StockEntry::where([['requisition_id', $requisition_id], ['productID', $product_id]])
-            ->update([
-                'is_delete' => true,
-                'emissao' => Util::Today()
-            ]);
+        if (!is_null($product_id)){
+            StockEntry::where([['requisition_id', $requisition_id], ['productID', $product_id]])
+                ->update([
+                    'is_delete' => true,
+                    'emissao' => Util::Today()
+                ]);
+        }else{
+            StockEntry::where([['requisition_id', $requisition_id]])
+                ->update([
+                    'is_delete' => true,
+                    'emissao' => Util::Today()
+                ]);
+        }
     }
     /**
      * delete all elemente delivery products
@@ -402,7 +411,8 @@ class StockRepository implements StockRepositoryInterface
                     $query->select('requisition_id')
                         ->from('stock_entries')
                             ->where('is_delete', true);
-                })->get()
+                })->orderBy('created_at', 'DESC')
+                    ->get()
         );
     }
 
