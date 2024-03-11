@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Traits\Permission;
 use App\Traits\AuthSession;
 use App\Models\Restaurant;
+use DateTime;
 
 
 class OrderRepository implements OrderRepositoryInterface
@@ -340,13 +341,19 @@ class OrderRepository implements OrderRepositoryInterface
     {
         //beugs quando 00h chega sobre o primeiro pedido do dia, caso não tiver pedido as 00h
         //fazer um new date -1
-        $today = Util::Today();
-        $today = date('Y-m-d', strtotime("{$today}"));
-        $order = Pedido::where('ped_emissao', $today)->orderBy('created_at', 'ASC')->first();
-        $close_date = date('Y-m-d', strtotime("{$order->ped_emissao} +1 day"));
-        // var_dump($close_date); die;
+        $open = "";
+        $today = new DateTime();
+        $today = $today->format('Y-m-d');
         $restaurant = Restaurant::find(Restaurant::RESTAURANT_KEY);
+        $latestOrder = Pedido::select('*')->latest()->first();
+        $latestOrderDate = date('Y-m-d', strtotime("$latestOrder->created_at"));
+        $latesTime = substr($latestOrder->created_at, 11, 2);
 
+        if (in_array($latesTime, ['00', '01', '02', '03', '04', '05', '06'])){
+            $open .= strtotime("{$latestOrderDate} - 1 day");
+        }else{
+            $open .= $today. ' '. $restaurant->res_open;
+        }
         $report = DB::table('itens_pedido')
             ->select(
                 'menuitems.item_name',
@@ -358,12 +365,11 @@ class OrderRepository implements OrderRepositoryInterface
                         ->where([
                                 ['itens_pedido.item_delete', false],
                                 ['pedidos.status_id', '<>', 6],
-                                ['pedidos.created_at', '>=', $order->ped_emissao." ".$restaurant->res_open],
-                                ['pedidos.created_at', '<=',  $close_date." ".$restaurant->res_close]
                             ])
-                                ->groupby(
-                                    'menuitems.item_name'
-                                )->get();
+                                ->whereBetween('pedidos.created_at', [$open, $latestOrder->created_at])
+                                    ->groupby(
+                                        'menuitems.item_name'
+                                    )->get();
 
         $paiement_data = DB::table('pedidos')
             ->select(DB::raw('SUM(itens_pedido.item_total) cash'), 'status.stat_desc')
@@ -371,24 +377,19 @@ class OrderRepository implements OrderRepositoryInterface
                     ->rightJoin('status', 'pedidos.status_id', '=', 'status.id')
                         ->where([
                             ['itens_pedido.item_delete', false],
-                            ['pedidos.created_at', '>=', $order->ped_emissao." ".$restaurant->res_open],
-                            ['pedidos.created_at', '<=',  $close_date." ".$restaurant->res_close]
                         ])
-                            ->groupBy([
-                                'status.stat_desc'
-                            ])->get();
+                            ->whereBetween('pedidos.created_at', [$open, $latestOrder->created_at])
+                                ->groupBy([
+                                    'status.stat_desc'
+                                ])->get();
 
         $itemCanceled = DB::table('itens_pedido')
                 ->select(DB::raw(' SUM(item_price * item_quantidade) valor'))
                     ->where([
                         ['item_delete', 1],
-                        ['itens_pedido.created_at', '>=', $order->ped_emissao." ".$restaurant->res_open],
-                        ['itens_pedido.created_at', '<=',  $close_date." ".$restaurant->res_close]
-                    ])->get();
-
-
-
-
+                    ])
+                        ->whereBetween('itens_pedido.created_at', [$open, $latestOrder->created_at])
+                            ->get();
         return [
             'report' => $report,
             'paiment' => $paiement_data,

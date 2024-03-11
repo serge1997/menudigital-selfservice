@@ -29,21 +29,15 @@ class SendClosingNotification
         $pedido = $event->pedido;
         $restuarant = Restaurant::find(1)->first();
         $latestOrder = $pedido->latest()->first();
+        $latestOrderDate = date('Y-m-d', strtotime("{$latestOrder->created_at}"));
         $today = new DateTime();
         $today = $today->format('Y-m-d');
-        $start = "";
-        $close = "";
+        $open = "";
         $latestTime = substr($latestOrder->created_at, 11, 2);
         if (in_array($latestTime, ['00', '01', '02', '03', '04', '05', '06'])){
-            $start .= date('Y-m-d', strtotime("{$today} - 1 day")). $restuarant->res_open;
+            $open .= date('Y-m-d', strtotime("{$latestOrderDate} - 1 day")). $restuarant->res_open;
         }else{
-            $start .= $today .' '.$restuarant->res_open;
-        }
-        $timeArray = ['00:00:00', '01:00:00', '02:00:00', '03:00:00', '04:00:00'];
-        if (in_array($restuarant->res_close, $timeArray)){
-            $close .= date('Y-m-d', strtotime("{$today} + 1 day")). ' ' .$restuarant->res_close;
-        }else{
-            $close  .= date('Y-m-d', strtotime("{$today}")). ' ' .$restuarant->res_close;
+            $open .= $today .' '. $restuarant->res_open;
         }
         $manager = User::find(User::GERENTE);
         $order = $pedido::select(
@@ -57,7 +51,7 @@ class SendClosingNotification
                         ['pedidos.ped_delete', 0],
                         ['it.item_delete', 0],
                     ])
-                        ->whereBetween('pedidos.created_at' , [$start, $close])
+                        ->whereBetween('pedidos.created_at' , [$open, $latestOrder->created_at])
                             ->groupBy('st.stat_desc')
                                 ->get();
         Mail::send('Mail.closingNotification', ['data' => $order, 'restaurant' => $restuarant], function($header) use($manager) {
