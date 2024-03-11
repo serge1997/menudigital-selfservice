@@ -421,6 +421,7 @@ export default {
                if (result.isConfirmed){
                    axios.put('/api/order-payment', data).then((response) => {
                        this.$toast.success(response.data)
+                       this.visiblePaymentModal = !this.visiblePaymentModal;
                        return this.getOrder()
                    }).catch((errors) => {
                        console.log(errors.response.data.message)

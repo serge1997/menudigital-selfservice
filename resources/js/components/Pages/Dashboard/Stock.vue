@@ -17,7 +17,7 @@
             <StockEntryComponent />
             <SupplierComponent />
         </div>
-        <DataTable ref="dt" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row" :globalFilterFields="['prod_name',]">
+        <DataTable id="stock-table" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
             <div class="position-absolute" :class="{ 'place': placeh}"></div>
             <template #header>
                 <div class="d-flex justify-content-between">
@@ -305,7 +305,8 @@ export default {
 }
 
 #stock-table {
-    height: 400px;
+    min-height: 600px;
+    height: 700px;
     overflow: scroll;
 }
 </style>
