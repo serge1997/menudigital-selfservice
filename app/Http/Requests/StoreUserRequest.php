@@ -28,7 +28,8 @@ class StoreUserRequest extends FormRequest
             'password'      => ['required'],
             'department_id' => ['required'],
             'position_id'   => ['required'],
-            'username'      => ['required']
+            'username'      => ['required'],
+            'is_full_time' => ['required']
         ];
     }
 
@@ -41,7 +42,8 @@ class StoreUserRequest extends FormRequest
             'password.required'          => 'senha obrigatório',
             'department_id.required'     => 'departamento é obrigatório',
             'position_id.required'       => 'cargo é obrigatório',
-            'username.required'          => 'nome de usuário é obrigatório'
+            'username.required'          => 'nome de usuário é obrigatório',
+            'is_full_time.required'      => 'o campo taxa ou pleno é obrigatório'
         ];
     }
 }

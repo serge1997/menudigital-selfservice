@@ -33,12 +33,12 @@ class UserRepository implements UserRepositoryInterface
 
     public function create($request)
     {
-
         if ($this->can_manage($request) || $this->can_cashier($request))
         {
             $values = $request->all();
             $user = new User($values);
             $user->password = Hash::make($request->password);
+            $user->is_full_time = (int)$request->is_full_time;
             $user->save();
             return;
         }

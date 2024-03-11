@@ -52,13 +52,31 @@
                             </div>
                             <div class="col-md-12 d-flex mt-3 gap-1">
                                 <div class="col-md-6">
-                                    <Dropdown v-model="user.department_id" option-value="id" :options="departments" optionLabel="name" placeholder="Departamento.." class="w-100 md:w-14rem" />
+                                    <Dropdown :class="invalid" v-model="user.department_id" option-value="id" :options="departments" optionLabel="name" placeholder="Departamento.." class="w-100 md:w-14rem" />
                                     <small class="text-danger" v-if="errMsg" v-for="errdepartment in errMsg.department_id" id="user-department-err"  v-text="errdepartment"></small>
                                 </div>
                                 <div class="col-md-6">
-                                    <Dropdown v-model="user.position_id" option-value="id" :options="positions" optionLabel="name" placeholder="Cargo.." class="w-100 md:w-14rem" />
+                                    <Dropdown :class="invalid" v-model="user.position_id" option-value="id" :options="positions" optionLabel="name" placeholder="Cargo.." class="w-100 md:w-14rem" />
                                     <small class="text-danger" v-if="errMsg" v-for="errposition in errMsg.position_id" id="user-password-err"  v-text="errposition"></small>
                                 </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="col-md-12">
+                                    <InputText v-model="user.salary" class="w-100" type="number" placeholder="salario / pagamento" />
+                                </div>
+                            </div>
+                            <div class="col-md-12 d-flex flex-column mt-3 gap-1">
+                                <div class="col-md-12 d-flex gap-3">
+                                    <div class="form-check form-switch">
+                                        <input v-model="user.is_full_time" value="1" class="form-check-input" type="radio" name="tipo-colaborador" id="pleno">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">Pleno</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input v-model="user.is_full_time" value="0" class="form-check-input" type="radio" name="tipo-colaborador" id="taxa">
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">Taxa</label>
+                                    </div>
+                                </div>
+                                <small class="text-danger" v-if="errMsg" v-for="is_full_time in errMsg.is_full_time" id="user-is-full-time"  v-text="is_full_time"></small>
                             </div>
                         </div>
                         <div class="mt-3">
@@ -100,7 +118,9 @@ export default {
                 password: null,
                 department_id: null,
                 position_id: null,
-                email: null
+                email: null,
+                is_full_time: null,
+                salary: null
             },
             errMsg: null,
             invalid: null,
@@ -140,6 +160,8 @@ export default {
                         this.user.group_id = "";
                         this.user.password = "";
                         this.invalid = '';
+                        this.user.is_full_time = null;
+                        this.user.salary = null;
                         this.errMsg = null;
                         this.$swal.fire({
                             text: response.data,

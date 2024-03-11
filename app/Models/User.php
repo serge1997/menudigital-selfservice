@@ -34,7 +34,9 @@ class User extends Authenticatable
         'password',
         'department_id',
         'position_id',
-        'email'
+        'email',
+        'is_full_time',
+        'salary'
     ];
 
     /**
