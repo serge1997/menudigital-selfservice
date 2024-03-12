@@ -127,4 +127,14 @@ class ProductController extends Controller
         }
     }
 
+    public function expenseProductAction(Request $request): JsonResponse
+    {
+        try{
+            $message = "Despesa salvou com successo";
+            $this->productRepositoryInterface->expenseProduct($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }

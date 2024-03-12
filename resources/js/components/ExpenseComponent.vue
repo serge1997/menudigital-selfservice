@@ -25,7 +25,7 @@
                     </div>
                     <div class="w-100 d-flex mt-2">
                         <Button v-if="showItemForm" disabled label="Salvar" />
-                        <Button v-else label="Salvar" />
+                        <Button @click="createProductExpense" v-else label="Salvar" />
                     </div>
                 </div>
             </div>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="w-100 d-flex mt-2">
                         <Button v-if="showProductForm" disabled label="Salvar" />
-                        <Button v-else label="Salvar" />
+                        <Button @click="createMenuItemExpense" v-else label="Salvar" />
                     </div>
                 </div>
             </div>
@@ -79,6 +79,20 @@ export default {
     },
 
     methods: {
+        toaster(){
+            const Toast = this.$swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            return Toast
+        },
         async loadMenuItems(){
             const menuResponse = await axios.get('/api/menu-items');
             this.items = await menuResponse.data;
@@ -87,6 +101,39 @@ export default {
         async loadProducts(){
             const productResponse = await axios.get('/api/products');
             this.products = await productResponse.data;
+        },
+        createProductExpense(){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/product-expense', this.expenseData)
+                    .then((response) => {
+                        this.toaster().fire({
+                            text: response.data,
+                            icon: 'success'
+                        })
+                    })
+                    .catch((errors) => {
+                        errors.response.status === 500 ?? this.$swal.fire({text: errors.response.data, icon: 'error'});
+                    })
+                })
+            })
+        },
+
+        createMenuItemExpense(){
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    axios.post('/api/menu-item/expense', this.expenseData)
+                    .then((response) => {
+                        this.toaster().fire({
+                            text: response.data,
+                            icon: 'success'
+                        })
+                    })
+                    .catch((errors) => {
+                        errors.response.status === 500 ?? this.$swal.fire({text: errors.response.data, icon: 'error'});
+                    })
+                })
+            })
         }
     },
     mounted(){

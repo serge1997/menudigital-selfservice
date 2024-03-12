@@ -170,4 +170,15 @@ class MenuItemController extends Controller
     {
         return response()->json(Cart::where('tableNumber', $table)->get());
     }
+
+    public function expenseAction(Request $request)
+    {
+        try{
+            $message = "Despesa salvou com sucesso";
+            $this->menuItemRepositoryInterface->expense($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }

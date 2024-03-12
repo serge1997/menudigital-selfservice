@@ -3,13 +3,18 @@ namespace App\Main\MenuItem;
 
 use App\Models\Menuitems;
 use App\Http\Services\UserInstance;
+use App\Http\Services\Util\Util;
 use Illuminate\Support\Facades\DB;
 use App\Models\Role;
+use App\Models\Saldo;
+use App\Models\Technicalfiche;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use App\Traits\Permission;
 
 class MenuItemRepository implements MenuItemRepositoryInterface
 {
+    use Permission;
 
     public function create($request)
     {
@@ -97,5 +102,21 @@ class MenuItemRepository implements MenuItemRepositoryInterface
                 "item_desc"  => $item_desc,
                 "item_price" => $item_price
             ]);
+    }
+
+    public function expense($request): void
+    {
+        if ($this->can_manage($request) || $this->can_create_product($request)){
+            $item = $this->find($request->item_id);
+            $fiches = Technicalfiche::where('id', $item->id)->get();
+            foreach ($fiches as $fiche) {
+                $saldo = Saldo::find($fiche->productID);
+                $saldo->update([
+                    'saldoFinal' => $saldo->saldoFinal - $request->quantity
+                ]);
+            }
+        }else {
+            throw new Exception(Util::PermisionExceptionMessage());
+        }
     }
 }
