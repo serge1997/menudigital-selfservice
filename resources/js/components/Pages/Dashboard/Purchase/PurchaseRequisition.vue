@@ -11,6 +11,7 @@
                 <template #end>
                     <div>
                         <Button @click="this.$router.push({name: 'Stock'})" label="Consultar estoque" icon="pi pi-database" text/>
+                        <expense-component></expense-component>
                         <Button @click="visibleNewPurchaseModal= true" label="Nova requisição" icon="pi pi-plus"/>
                     </div>
                 </template>
@@ -105,6 +106,7 @@ import Calendar from "primevue/calendar";
 import Tag from "primevue/tag";
 import _ from "lodash";
 import ProgressBar from "primevue/progressbar";
+import ExpenseComponent from "../../../ExpenseComponent.vue";
 
 export default {
     name: 'PurchaseRequisition',
@@ -122,7 +124,8 @@ export default {
         Dropdown,
         Calendar,
         Tag,
-        ProgressBar
+        ProgressBar,
+        ExpenseComponent
     },
     watch: {
         requisitions: _.debounce(function(newRequisition){

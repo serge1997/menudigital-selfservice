@@ -24,13 +24,13 @@ class TableNumberRepository implements TableNumberRepositoryInterface
     public function getAllBusyTable(): Collection
     {
         $now = new DateTime();
-        $now = $now->format('H:i');
+        $now = $now->format('Y-m-d h:i');
         $busyTables = DB::table('pedidos')
         ->select(
             'pedidos.ped_tableNumber',
             'pedidos.id', 'users.name',
             'pedidos.ped_customer_quantity as customer',
-            DB::raw("CONCAT(DATE_FORMAT(TIMEDIFF('$now', DATE_FORMAT(pedidos.created_at, '%H:%i')), '%i'), ' min') as timing")
+            DB::raw("CONCAT(DATE_FORMAT(TIMEDIFF(DATE_FORMAT(pedidos.created_at, '%Y-%m-%d %H:%i'), '$now'), '%i'), ' min') as timing")
             )
             ->join('users', 'pedidos.user_id', '=', 'users.id')
                 ->where([['pedidos.status_id', '=', 6], ['pedidos.ped_delete', 0]])
