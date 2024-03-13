@@ -17,11 +17,15 @@
                 <div v-if="showProductForm" class="col-md-12 d-flex flex-column justify-content-center align-items-center">
                     <div class="col-md-12 d-flex flex-column">
                         <label for="producto">Selecione o produto</label>
-                        <Dropdown v-model="expenseData.produto_id" :options="products" option-value="id" option-label="prod_name" class="w-100 md:w-14rem" />
+                        <Dropdown v-model="expenseData.product_id" :options="products" option-value="id" option-label="prod_name" class="w-100 md:w-14rem" />
                     </div>
                     <div class="col-md-12 d-flex flex-column mt-2">
                         <label for="producto">Quantidade despesa</label>
                         <InputText type="number" class="col-md-12" v-model="expenseData.quantity" />
+                    </div>
+                    <div class="col-md-12 d-flex flex-column mt-2">
+                        <label for="observation">Observação</label>
+                        <Textarea type="number" class="col-md-12" v-model="expenseData.observation" />
                     </div>
                     <div class="w-100 d-flex mt-2">
                         <Button v-if="showItemForm" disabled label="Salvar" />
@@ -39,6 +43,10 @@
                         <label for="producto">Quantidade despesa</label>
                         <InputText type="number" class="col-md-12" v-model="expenseData.quantity" />
                     </div>
+                    <div class="col-md-12 d-flex flex-column mt-2">
+                        <label for="observation">Observação</label>
+                        <Textarea type="number" class="col-md-12" v-model="expenseData.observation" />
+                    </div>
                     <div class="w-100 d-flex mt-2">
                         <Button v-if="showProductForm" disabled label="Salvar" />
                         <Button @click="createMenuItemExpense" v-else label="Salvar" />
@@ -53,6 +61,7 @@ import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 export default {
     name: 'ExpenseComponent',
 
@@ -60,7 +69,8 @@ export default {
         Button,
         Dropdown,
         Dialog,
-        InputText
+        InputText,
+        Textarea
     },
 
     data(){
@@ -71,7 +81,8 @@ export default {
             expenseData: {
                 product_id: null,
                 item_id : null,
-                quantity: null
+                quantity: null,
+                observation: null
             },
             showItemForm: false,
             showProductForm: false
@@ -111,6 +122,9 @@ export default {
                             text: response.data,
                             icon: 'success'
                         })
+                        this.expenseData.product_id = "";
+                        this.expenseData.observation = "";
+                        this.expenseData.quantity = "";
                     })
                     .catch((errors) => {
                         errors.response.status === 500 ?? this.$swal.fire({text: errors.response.data, icon: 'error'});
@@ -128,9 +142,12 @@ export default {
                             text: response.data,
                             icon: 'success'
                         })
+                        this.expenseData.observation = "";
+                        this.expenseData.item_id = "";
+                        this.expenseData.quantity = "";
                     })
                     .catch((errors) => {
-                        errors.response.status === 500 ?? this.$swal.fire({text: errors.response.data, icon: 'error'});
+                        errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'error'});
                     })
                 })
             })

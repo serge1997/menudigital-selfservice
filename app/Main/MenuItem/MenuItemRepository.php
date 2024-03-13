@@ -11,10 +11,12 @@ use App\Models\Technicalfiche;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use App\Traits\Permission;
+use App\Models\Expense;
+use App\Traits\AuthSession;
 
 class MenuItemRepository implements MenuItemRepositoryInterface
 {
-    use Permission;
+    use Permission, AuthSession { AuthSession::autth insteadof Permission; }
 
     public function create($request)
     {
@@ -108,12 +110,27 @@ class MenuItemRepository implements MenuItemRepositoryInterface
     {
         if ($this->can_manage($request) || $this->can_create_product($request)){
             $item = $this->find($request->item_id);
-            $fiches = Technicalfiche::where('id', $item->id)->get();
+            $fiches = Technicalfiche::where('itemID', $item->id)->get();
             foreach ($fiches as $fiche) {
-                $saldo = Saldo::find($fiche->productID);
-                $saldo->update([
-                    'saldoFinal' => $saldo->saldoFinal - $request->quantity
-                ]);
+                $saldo = Saldo::where('productID', $fiche->productID)->first();
+                $ficheQuantity = Technicalfiche::where([
+                    ['productID', $saldo->productID],
+                    ['itemID', $request->item_id]
+                ])->first();
+                if ($saldo->saldoFinal > ($request->quantity * $ficheQuantity->quantity)){
+                    $saldo::where('productID', $saldo->productID)->update([
+                        'saldoFinal' => $saldo->saldoFinal - ($request->quantity * $ficheQuantity->quantity)
+                    ]);
+                    $expense = new Expense();
+                    $expense->product_id = $saldo->productID;
+                    $expense->user_id = $this->autth($request);
+                    $expense->quantity =  $request->quantity * $ficheQuantity->quantity;
+                    $expense->item_id = $request->item_id;
+                    $expense->observation = $request->observation;
+                    $expense->save();
+                }else{
+                    throw new Exception("Quantidade entrada está superior ao saldo do produto");
+                }
             }
         }else {
             throw new Exception(Util::PermisionExceptionMessage());

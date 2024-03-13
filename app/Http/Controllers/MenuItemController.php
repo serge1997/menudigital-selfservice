@@ -175,9 +175,12 @@ class MenuItemController extends Controller
     {
         try{
             $message = "Despesa salvou com sucesso";
+            DB::beginTransaction();
             $this->menuItemRepositoryInterface->expense($request);
+            DB::commit();
             return response()->json($message);
         }catch(Exception $e){
+            DB::rollBack();
             return response()->json($e->getMessage(), 500);
         }
     }
