@@ -12,6 +12,7 @@ use App\Http\Services\UserInstance;
 use App\Http\Services\Product\ProductRepositoty;
 use App\Main\Product\ProductRepositoryInterface;
 use Exception;
+use App\Http\Requests\StoreExpense;
 
 class ProductController extends Controller
 {
@@ -127,7 +128,7 @@ class ProductController extends Controller
         }
     }
 
-    public function expenseProductAction(Request $request): JsonResponse
+    public function expenseProductAction(StoreExpense $request): JsonResponse
     {
         try{
             $message = "Despesa salvou com successo";

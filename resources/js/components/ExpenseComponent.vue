@@ -18,14 +18,17 @@
                     <div class="col-md-12 d-flex flex-column">
                         <label for="producto">Selecione o produto</label>
                         <Dropdown v-model="expenseData.product_id" :options="products" option-value="id" option-label="prod_name" class="w-100 md:w-14rem" />
+                        <small class="text-danger" v-if="errMessageBag" v-for="errProduct in errMessageBag.product_id" v-text="errProduct"></small>
                     </div>
                     <div class="col-md-12 d-flex flex-column mt-2">
                         <label for="producto">Quantidade despesa</label>
                         <InputText type="number" class="col-md-12" v-model="expenseData.quantity" />
+                        <small class="text-danger" v-if="errMessageBag && expenseData.item_id == null" v-for="errQuantity in errMessageBag.quantity" v-text="errQuantity"></small>
                     </div>
                     <div class="col-md-12 d-flex flex-column mt-2">
                         <label for="observation">Observação</label>
                         <Textarea type="number" class="col-md-12" v-model="expenseData.observation" />
+                        <small class="text-danger" v-if="errMessageBag && expenseData.item_id == null" v-for="errObservation in errMessageBag.observation" v-text="errObservation"></small>
                     </div>
                     <div class="w-100 d-flex mt-2">
                         <Button v-if="showItemForm" disabled label="Salvar" />
@@ -38,14 +41,17 @@
                     <div class="col-md-12 d-flex flex-column">
                         <label for="producto">Selecione o item</label>
                         <Dropdown v-model="expenseData.item_id" :options="items" option-value="id" option-label="item_name" class="w-100 md:w-14rem" />
+                        <small class="text-danger" v-if="errMessageBag" v-for="errItem in errMessageBag.item_id" v-text="errItem"></small>
                     </div>
                     <div class="col-md-12 d-flex flex-column mt-2">
                         <label for="producto">Quantidade despesa</label>
                         <InputText type="number" class="col-md-12" v-model="expenseData.quantity" />
+                        <small class="text-danger" v-if="errMessageBag && expenseData.product_id == null" v-for="errQuantity in errMessageBag.quantity" v-text="errQuantity"></small>
                     </div>
                     <div class="col-md-12 d-flex flex-column mt-2">
                         <label for="observation">Observação</label>
                         <Textarea type="number" class="col-md-12" v-model="expenseData.observation" />
+                        <small class="text-danger" v-if="errMessageBag && expenseData.product_id == null" v-for="errObservation in errMessageBag.observation" v-text="errObservation"></small>
                     </div>
                     <div class="w-100 d-flex mt-2">
                         <Button v-if="showProductForm" disabled label="Salvar" />
@@ -85,7 +91,8 @@ export default {
                 observation: null
             },
             showItemForm: false,
-            showProductForm: false
+            showProductForm: false,
+            errMessageBag: null
         }
     },
 
@@ -127,6 +134,9 @@ export default {
                         this.expenseData.quantity = "";
                     })
                     .catch((errors) => {
+                        this.errMessageBag = errors.response.data.errors
+                        //errors.response.status === 422 ? this.errMessageBag = errors.response.data.errors : null;
+                        console.log(this.errMessageBag)
                         errors.response.status === 500 ?? this.$swal.fire({text: errors.response.data, icon: 'error'});
                     })
                 })

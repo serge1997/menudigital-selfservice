@@ -195,6 +195,14 @@ const routes = [
         path: '/dashboard/purchase/',
         name: 'PurchaseRequisition',
         component: PurchaseRequisition,
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+               if (administrativeAccess){
+                   administrativeAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
+               }
+           })
+       },
         meta: {requiresAuth: true}
     },
     {
