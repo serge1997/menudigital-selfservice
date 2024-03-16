@@ -46,9 +46,12 @@ class OrderController extends Controller
                 'ped_customerName.required' => "customer name is required"
             ]);
             $message = "Pedido salvou com sucesso";
+            DB::beginTransaction();
             $this->orderRepositotyInterface->createOrder($request);
+            DB::commit();
             return response()->json($message);
         }catch (Exception $e){
+            DB::rollBack();
             Cart::where('tableNumber', $request->tableNumber)->delete();
             return \response()->json($e->getMessage(), 500);
         }

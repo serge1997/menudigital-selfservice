@@ -98,18 +98,18 @@ class StockServiceRepository implements StockServiceInterFace
         foreach ($item_ids as $key => $itemID)
         {
             $item_fiche = Technicalfiche::where('itemID', $itemID)->get();
-
             foreach ($item_fiche as $item):
                 $old_saldo = DB::table('saldos')
-                    ->select(DB::raw('CAST(saldoFinal AS DECIMAL(6, 2)) AS saldoFinal'), 'emissao')
+                    ->select(DB::raw('CAST(saldoFinal AS DECIMAL(6, 2)) AS saldoFinal'), 'emissao', 'productID')
                         ->where('productID', $item->productID)->first();
                 $itemProductInFiche = Technicalfiche::where([['itemID', $itemID], ['productID', $item->productID]])->first();
+                $productName = Product::where('id', $item->productID)->first()->prod_name;
                 $date = $old_saldo->emissao ?? $hoje;
                 //var_dump($item_ids);die;
                 $beforeQuantity = $old_saldo->saldoFinal - ($product_quantitys[$key] * $itemProductInFiche->quantity);
                 //var_dump($beforeQuantity); die;
                 if ($old_saldo->saldoFinal < ($product_quantitys[$key] * $itemProductInFiche->quantity) || $beforeQuantity < 0 ){
-                    throw new Exception("Quantidade em estoque insuficiante ");
+                    throw new Exception("Quantidade em estoque insuficiante. Item ({$productName})");
                 }
                 if ($date == $hoje):
                     DB::table('saldos')

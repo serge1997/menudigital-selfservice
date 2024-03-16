@@ -1,6 +1,6 @@
 <template>
+    <SideBarComponent />
     <div class="container-fluid">
-        <SideBarComponent />
         <div class="col-md-2 d-flex justify-content-between">
             <h6 class="mt-5 p-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -21,8 +21,9 @@
             <div class="position-absolute" :class="{ 'place': placeh}"></div>
             <template #header>
                 <div class="d-flex justify-content-between">
-                    <div style="text-align: left">
+                    <div class="d-flex gap-4" style="text-align: left">
                         <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
+                        <ExpenseComponent />
                     </div>
                     <div class="d-flex gap-2">
                         <span class="p-input-icon-left">
@@ -108,6 +109,7 @@ import Tag from "primevue/tag";
 import InputText from "primevue/inputtext";
 import { getAuth } from '../auth';
 import { randTime } from '../../../rand';
+import ExpenseComponent from '../../ExpenseComponent.vue';
 import _ from "lodash";
 
 export default {
@@ -119,6 +121,7 @@ export default {
         StockEntryComponent,
         SupplierComponent,
         SideBarComponent,
+        ExpenseComponent,
         DataTable,
         Column,
         Dialog,

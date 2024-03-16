@@ -8,6 +8,9 @@
             <TabPanel header="ANALISE DE CUSTO">
                 <CostIntelligence />
             </TabPanel>
+            <TabPanel header="ANALISE DE DESPESAS">
+                <ExpenseIntelligence />
+            </TabPanel>
         </TabView>
     </div>
 </template>
@@ -15,6 +18,7 @@
 import SellInteligence from './SellInteligence.vue';
 import SideBarComponent from "../SideBarComponent.vue";
 import CostIntelligence from './CostIntelligence.vue';
+import ExpenseIntelligence from './ExpenseIntelligence.vue';
 import TabView from 'primevue/tabview';
 import TabPanel from 'primevue/tabpanel';
 export default {
@@ -23,6 +27,7 @@ export default {
     components: {
         SellInteligence,
         CostIntelligence,
+        ExpenseIntelligence,
         TabPanel,
         TabView,
         SideBarComponent

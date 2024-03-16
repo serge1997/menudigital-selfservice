@@ -35,4 +35,9 @@ class Menuitems extends Model
     {
         return $this->belongsTo(Cart::class, 'item_id');
     }
+
+    public function expense(): HasMany
+    {
+        return $this->hasMany(Expense::class, 'item_id');
+    }
 }

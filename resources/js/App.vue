@@ -9,9 +9,9 @@ export default {
     name: 'App',
 
     mounted(){
-        // localStorage.removeItem('token')
-        // localStorage.removeItem('stockAccess');
-        // localStorage.removeItem('managerAccess');
+        //  localStorage.removeItem('token')
+        //  localStorage.removeItem('stockAccess');
+        //  localStorage.removeItem('managerAccess');
     },
 
 }

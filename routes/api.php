@@ -22,6 +22,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\PositionController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PlanningController;
+use App\Http\Controllers\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -234,6 +235,11 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::delete('planning-user/{id}', 'deleteAction');
         Route::delete('planning', 'clearAction');
         Route::put('planning/{id}', 'updateAction');
+    });
+
+    //expense
+    Route::controller(ExpenseController::class)->group(function() {
+        Route::get('expense', 'listAllAction');
     });
 });
 
