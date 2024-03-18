@@ -26,4 +26,15 @@ class ExpenseController extends Controller
             return response()->json($e->getMessage());
         }
     }
+
+    public function listFilterAction(Request $request): JsonResponse
+    {
+        try{
+            $filterData = $this->expenseRepositoryInterface->listFilterData($request);
+            return response()
+                ->json($filterData);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
 }

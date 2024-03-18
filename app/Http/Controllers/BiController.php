@@ -44,14 +44,14 @@ class BiController extends Controller
         $couverts = "";
 
         if ($user){
-            $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' AND pedidos.user_id = '{$user}' ";
+            $user_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $mealType_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
             $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
             $couverts_where .= "AND user_id = '{$user}' ";
         }else{
-            $user_where .= "pedidos.status_id <> '6' AND pedidos.ped_emissao = '{$today}' ";
+            $user_where .= "pedidos.status_id <> '6' ";
             $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' ";
             $mealType_where .= "pedidos.status_id <> '6' ";
             $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' ";
@@ -75,8 +75,9 @@ class BiController extends Controller
                         ->sum('pedidos.ped_customer_quantity');
         }else {
             $couverts .= Pedido::whereRaw($couverts_where)
-                ->whereBetween('pedidos.ped_emissao', [$startDate, $endDate])
-                    ->sum('pedidos.ped_customer_quantity');
+                ->where('pedidos.status_id', '<>', '6')
+                    ->whereBetween('pedidos.ped_emissao', [$startDate, $endDate])
+                        ->sum('pedidos.ped_customer_quantity');
         }
 
         //last month sell
@@ -95,22 +96,23 @@ class BiController extends Controller
         $sellingToday = DB::table('itens_pedido')
             ->select(DB::raw('SUM(itens_pedido.item_total) AS totalDay'))
                 ->join('pedidos', 'itens_pedido.item_pedido', '=', 'pedidos.id')
-                    ->whereRaw($user_where)
-                        ->get();
+                    ->where('pedidos.ped_emissao', $today)
+                        ->whereRaw($user_where)
+                            ->get();
 
         $waiter = DB::table("pedidos")
             ->select(
                 'users.name',
                 DB::raw('SUM(itens_pedido.item_total) AS venda'),
-                DB::raw('AVG(itens_pedido.item_total) AS mediaVenda'),
             )
                 ->join("users","pedidos.user_id","=","users.id")
                     ->join("itens_pedido","pedidos.id","=","itens_pedido.item_pedido")
-                        ->whereBetween('itens_pedido.item_emissao', [$startDate, $endDate])
-                            ->groupBy(
-                                'users.name',
-                                )
-                                ->get();
+                        ->whereBetween('pedidos.ped_emissao', [$startDate, $endDate])
+                            ->whereRaw($user_where)
+                                ->groupBy(
+                                    'users.name',
+                                    )
+                                    ->get();
 
         $mealType = DB::table('itens_pedido')
                 ->select(

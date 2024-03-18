@@ -140,8 +140,13 @@
                     <div id="charDonut"></div>
                 </div>
             </div>
+        </div>
+        <div class="row mt-2">
+            <div class="col-lg-7 col-md-10 shadow" id="waiterChart"></div>
+        </div>
+        <div class="row mt-3">
             <div class="col-md-12">
-                <DataTable v-model:filters="filters" ref="dt" :value="dataTable" selectionMode="single" dataKey="id" editMode="cell" @cell-edit-complete="onCellEditComplete"  filterDisplay="row"  paginator :rows="40" tableStyle="min-width: 50rem">
+                <DataTable v-model:filters="filters" ref="dt" :value="dataTable" selectionMode="single" dataKey="id" editMode="cell" @cell-edit-complete="onCellEditComplete"  filterDisplay="row"  paginator :rows="10" tableStyle="min-width: 50rem">
                     <div class="position-absolute" :class="{ 'place': placeh}"></div>
                     <template #header>
                         <div style="text-align: left">
@@ -224,6 +229,9 @@ export default {
             },
             users: null,
             menuItems: null,
+            chart: {
+                waiterSell: null,
+            }
         }
     },
 
@@ -249,6 +257,7 @@ export default {
 
                 this.SetDoubleBarChart();
                 this.get_type_waiter_dash()
+                this.waiterChart()
             })
         },
 
@@ -265,11 +274,11 @@ export default {
                 this.monthlySell.totalDay = response.data.totalDay;
                 this.dataTable = response.data.itemsCollection;
                 this.couverts = response.data.couverts;
+                this.chart.waiterSell = response.data.waiter;
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
                          this.typesCollection.push(typename.type)
                     }
-                    console.log(typename)
                     switch(typename.type) {
                         case "ENTRADA":
                             this.type.starter += Number(typename.typevenda);
@@ -293,6 +302,7 @@ export default {
                             this.type.def += typename.typevenda;
                     }
                 }
+                this.waiterChart()
                 this.donut()
                 this.monthCompare(response.data)
             }).catch((errors) => {
@@ -302,46 +312,49 @@ export default {
 
         //double bar chart
         SetDoubleBarChart(){
-            var chart = bb.generate({
-                data: {
-                    x: "x",
-                    columns: [
-                        ["x", ...this.barchart.date],
-                        ["sample", ...this.barchart.sell],
-                    ],
-                    type: bar(), // for ESM specify as: line()
-                },
-                axis: {
-                    x: {
-                        type: "timeseries",
-                        tick: {
-                            count: 4,
-                            format: "%Y-%m-%d"
-                        }
-                    }
-                },
-                bindto: "#Chart"
-            });
+            const data = [{
+                x: this.barchart.date,
+                y: this.barchart.sell,
+                type: "bar",
+                orientation:"v",
+                marker: {color:"rgba(0,0,255)"}
+            }];
+            const layout = {title: "Venda por dia"};
+            Plotly.newPlot('Chart', data, layout)
         },
-
         //donut chart
         donut(){
-            var chart = bb.generate({
-                data: {
-                    columns: [
-                        ["DRINKS", this.type.drinks],
-                        ["PRINCIPAL", this.type.principal],
-                        ["VINHO", this.type.wine],
-                        ["FASTFOOD", this.type.fastFood]
-                    ],
-                    type: donut(), // for ESM specify as: donut()
 
-                },
-                donut: {
-                    title: "Food group KPI"
-                },
-                bindto: "#charDonut"
-            })
+            const data = [{
+                values: [this.type.drinks, this.type.principal, this.type.wine, this.type.fastFood],
+                labels: ["DRINKS", "PRINCIPAL", "VINHO", "FASTFOOD"],
+                hole: .4,
+                hoverinfo: 'label+percent',
+                textinfo: 'label+percent',
+                type: 'pie'
+            }]
+            const layout = {title: "Venda por tipo", annotations: [{showarrow: false, text: 'TP'}]}
+            Plotly.newPlot('charDonut', data, layout)
+        },
+        waiterChart(){
+            if (this.chart.waiterSell !== null){
+                var waiter = [];
+                var sell = [];
+                for (let obj of this.chart.waiterSell){
+                    waiter.push(obj.name);
+                    sell.push(Number(obj.venda))
+                }
+
+                const data = [{
+                    x: sell,
+                    y: waiter,
+                    type: "bar",
+                    orientation:"h",
+                    marker: {color:"rgba(0,0,255)"}
+                }];
+            const layout = {title: "Venda por Garçom"};
+            Plotly.newPlot('waiterChart', data, layout);
+            }
         },
        monthCompare(data){
             for (let i = 0; i <= data.lastMonth.length; i++){

@@ -1,6 +1,7 @@
 <template>
     <div class="container-fluid">
         <h5 class="text-center text-capitalize">Analise de custo e fornecedore</h5>
+        <div id="suppChart"></div>
         <div class="row d-flex justify-content-center mb-4 p-2 mt-3 gap-3">
             <div class="col-md-3 d-flex align-items-center justify-content-flex gap-3 border rounded-2 p-2 shadow-sm" v-for="sup in supplierCostData">
                 <Knob class="m-auto" v-model="sup.percent" readonly :size="100"/>
@@ -132,6 +133,7 @@ export default {
                 {year: "2027"},
                 {year: "2028"},
                 {year: "2029"},
+                {year: "2030"}
             ],
             costshow: null,
             requerName: null,
@@ -151,6 +153,7 @@ export default {
                 this.costData = await apiResponse.data.cost;
                 this.supplierCostData = await apiResponse.data.supCost
                 this.is_skeleton = false
+                this.mountSuppChart()
                 resolve(true)
                }, randTime())
             })
@@ -162,6 +165,7 @@ export default {
                     axios.post('/api/cost-analyse-filter', this.filtreParam).then( async (filterResponse) => {
                         this.costData = await filterResponse.data.cost;
                         this.supplierCostData = await filterResponse.data.supCost
+                        this.mountSuppChart()
                         resole(true);
                     })
                     .catch(errors => console.log(errors))
@@ -189,6 +193,27 @@ export default {
         },
         downloadCsv(){
             exportCSV(this.costData)
+        },
+        mountSuppChart(){
+
+            if (this.supplierCostData !== null){
+                var supplier = [];
+                var sell = [];
+                for (let obj of this.supplierCostData){
+                    supplier.push(obj.sup_name);
+                    sell.push(Number(obj.totalCost))
+                }
+                const data = [{
+                    x: sell,
+                    y: supplier,
+                    width: 0.6,
+                    type: "bar",
+                    orientation:"h",
+                    marker: {color:"rgba(0,0,255)"}
+                }];
+                const layout = {title: "Custo por fornecedore"};
+                Plotly.newPlot('suppChart', data, layout);
+            }
         }
     },
 
