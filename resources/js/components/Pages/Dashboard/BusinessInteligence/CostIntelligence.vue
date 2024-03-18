@@ -1,45 +1,64 @@
 <template>
     <div class="container-fluid">
         <h5 class="text-center text-capitalize">Analise de custo e fornecedore</h5>
-        <div id="suppChart"></div>
-        <div class="row d-flex justify-content-center mb-4 p-2 mt-3 gap-3">
-            <div class="col-md-3 d-flex align-items-center justify-content-flex gap-3 border rounded-2 p-2 shadow-sm" v-for="sup in supplierCostData">
-                <Knob class="m-auto" v-model="sup.percent" readonly :size="100"/>
-                <div class="w-100 d-flex flex-column">
-                    <small class="fw-medium">{{ sup.sup_name }}</small>
-                    <small>Total: <span class="fw-medium text-danger">{{ sup.totalCost }} R$</span></small>
-                    <small>Quantidade: <span class="fw-medium text-primary">{{ sup.quantity }}</span></small>
+        <div class="row d-flex flex-column">
+            <div class="col-md-8 m-auto mt-3 p-2">
+                <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
+            </div>
+            <Toolbar>
+                <template #center>
+                    <div style="width: 100%;" class="d-flex justify-content-between">
+                        <div class="col-md-12 d-flex justify-content-end gap-3">
+                            <div class="d-flex flex-column gap-2 col-md-5">
+                                <label>
+                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash"></i></span>
+                                    Produto | Fornecedor
+                                </label>
+                                <span class="p-input-icon-left">
+                                    <InputText @change="getFiltersData" v-model="filtreParam.prodName" class="w-100" placeholder="produto, fornecedor" @input="filterDataTable" />
+                                </span>
+                            </div>
+                            <div class="d-flex flex-column gap-2 col-md-4">
+                                <label>
+                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash"></i></span>
+                                    Ano 
+                                </label>
+                                <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
+                            </div>
+                            <div class="d-flex flex-column gap-2 col-md-4">
+                                <label>
+                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash"></i></span>
+                                    Mês 
+                                </label>
+                                <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </Toolbar>
+        </div>
+        <div class="row d-flex justify-content-between mb-4 p-2 mt-3 gap-3">
+            <div class="col-lg-6 col-md-10 shadow">
+                <div class="w-100" id="suppChart"></div>
+            </div>
+            <div class="col-lg-5 d-flex flex-wrap col-md-10 shadow">
+                <div class="col-md-3 d-flex flex-column align-items-center" v-for="sup in supplierCostData">
+                    <div>
+                        <Knob class="m-auto" :valueColor=" sup.percent > 50 ? '#dc2626' : '#94a3b8'" v-model="sup.percent" readonly :size="100"/>
+                    </div>
+                    <div class="w-100 d-flex flex-column">
+                        <small class="fw-medium">{{ sup.sup_name }}</small>
+                        <small>Quantidade: <span class="fw-medium text-primary">{{ sup.quantity }}</span></small>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-md-8 m-auto mt-3 p-2">
-                <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
-            </div>
             <div class="col-md-12">
                 <DataTable :value="costData" scrollable scrollHeight="flex" paginator :rows="10">
                     <template #header>
-                        <div class="d-flex justify-content-between">
-                            <div style="text-align: left">
-                                <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
-                            </div>
-                            <div class="col-md-10 d-flex justify-content-end gap-3">
-                                <div class="d-flex flex-column gap-2 col-md-3">
-                                    <label>Produto | Fornecedor</label>
-                                    <span class="p-input-icon-left">
-
-                                        <InputText @change="getFiltersData" class="w-100" v-model="filtreParam.prodName" placeholder="produto, fornecedor" @input="filterDataTable" />
-                                    </span>
-                                </div>
-                                <div class="d-flex flex-column gap-2 col-md-3">
-                                    <label>Ano </label>
-                                    <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
-                                </div>
-                                <div class="d-flex flex-column gap-2 col-md-3">
-                                    <label>Mês </label>
-                                    <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
-                                </div>
-                            </div>
+                        <div style="text-align: left">
+                            <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
                         </div>
                     </template>
                     <Column field="product_id" sortable style="width: 15%" header="Product Code"></Column>
@@ -82,6 +101,7 @@ import ProgressBar from 'primevue/progressbar';
 import ShowCostDetailsComponents from './ShowCostDetailsComponents.vue';
 import { randTime } from './../../../../rand';
 import { exportCSV } from './../csv.js';
+import Toolbar from 'primevue/toolbar';
 
 export default {
     name: 'CostIntelligence',
@@ -97,7 +117,8 @@ export default {
         InputText,
         Dropdown,
         ProgressBar,
-        ShowCostDetailsComponents
+        ShowCostDetailsComponents,
+        Toolbar
     },
 
     data(){
@@ -209,7 +230,7 @@ export default {
                     width: 0.6,
                     type: "bar",
                     orientation:"h",
-                    marker: {color:"rgba(0,0,255)"}
+                    marker: {color:"#9ca3af"}
                 }];
                 const layout = {title: "Custo por fornecedore"};
                 Plotly.newPlot('suppChart', data, layout);
