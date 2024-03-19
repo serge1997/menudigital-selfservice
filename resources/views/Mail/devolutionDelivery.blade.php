@@ -7,7 +7,7 @@
             @endphp
             <div style="width: 70%; height: 340px; margin: auto;">
                 <h3 style="color: #ef4444; text-decoration: underline; text-align: center;">Óla, uma nova devolução foi registrada</h3>
-                <ul style="list-style: none; font-size: 1.3em; color: #71717a;">
+                <ul style="list-style: none; font-size: 1.1em; color: #71717a;">
                     <li style="padding: 3px;">#Data: {{ $date }}</li>
                     @if (isset($user))
                         <li style="padding: 3px;">#Devolução feita por : {{ $user->name }}</li>

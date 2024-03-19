@@ -1,34 +1,34 @@
 <template>
     <div class="container-fluid">
         <h5 class="text-center text-capitalize">Analise de custo e fornecedore</h5>
+        <div class="col-md-8 m-auto mt-3 p-2">
+            <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
+        </div>
         <div class="row d-flex flex-column">
-            <div class="col-md-8 m-auto mt-3 p-2">
-                <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
-            </div>
-            <Toolbar>
+            <Toolbar class="col-md-12">
                 <template #center>
                     <div style="width: 100%;" class="d-flex justify-content-between">
                         <div class="col-md-12 d-flex justify-content-end gap-3">
                             <div class="d-flex flex-column gap-2 col-md-5">
                                 <label>
-                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash"></i></span>
+                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroProduct" class="pi pi-filter-slash"></i></span>
                                     Produto | Fornecedor
                                 </label>
                                 <span class="p-input-icon-left">
-                                    <InputText @change="getFiltersData" v-model="filtreParam.prodName" class="w-100" placeholder="produto, fornecedor" @input="filterDataTable" />
+                                    <InputText @change="getFiltersItem" v-model="filtreParam.prodName" class="w-100" placeholder="produto, fornecedor" @input="filterDataTable" />
                                 </span>
                             </div>
                             <div class="d-flex flex-column gap-2 col-md-4">
                                 <label>
-                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash"></i></span>
-                                    Ano 
+                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroYear" class="pi pi-filter-slash"></i></span>
+                                    Ano
                                 </label>
                                 <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
                             </div>
                             <div class="d-flex flex-column gap-2 col-md-4">
                                 <label>
-                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash"></i></span>
-                                    Mês 
+                                    <span><i style="font-size: 14px;" @click.prevent="limparFiltroMonth" class="pi pi-filter-slash"></i></span>
+                                    Mês
                                 </label>
                                 <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
                             </div>
@@ -44,7 +44,7 @@
             <div class="col-lg-5 d-flex flex-wrap col-md-10 shadow">
                 <div class="col-md-3 d-flex flex-column align-items-center" v-for="sup in supplierCostData">
                     <div>
-                        <Knob class="m-auto" :valueColor=" sup.percent > 50 ? '#dc2626' : '#94a3b8'" v-model="sup.percent" readonly :size="100"/>
+                        <Knob class="m-auto" :valueColor=" sup.percent > 50 ? '#f43f5e' : '#64748b'" v-model="sup.percent" readonly :size="100"/>
                     </div>
                     <div class="w-100 d-flex flex-column">
                         <small class="fw-medium">{{ sup.sup_name }}</small>
@@ -230,14 +230,22 @@ export default {
                     width: 0.6,
                     type: "bar",
                     orientation:"h",
-                    marker: {color:"#9ca3af"}
+                    marker: {color:"rgba(0,0,255)"}
                 }];
                 const layout = {title: "Custo por fornecedore"};
                 Plotly.newPlot('suppChart', data, layout);
             }
+        },
+        limparFiltroYear(){
+            this.filtreParam.year = "";
+        },
+        limparFiltroProduct(){
+            this.filtreParam.prodName = "";
+        },
+        limparFiltroMonth(){
+            this.filtreParam.month = ""
         }
     },
-
     mounted(){
         this.loadStockAnalyse();
     }

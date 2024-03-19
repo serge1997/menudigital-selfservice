@@ -21,7 +21,7 @@
         @endphp
         <div style="width: 70%; height: 340px; margin: auto;" class="col-md-8">
             <h3 style="color: #ef4444; text-decoration: underline; text-align: center;">Óla, uma nova requisição foi enviada</h3>
-            <ul style="list-style: none; font-size: 1.3em; color: #71717a;" class="list-group">
+            <ul style="list-style: none; font-size: 1.1em; color: #71717a;" class="list-group">
                 <li style="padding: 3px;">#Data: {{ $date }}</li>
                 @if (isset($user))
                     <li style="padding: 3px;">#Requerente: {{ $user->name }}</li>

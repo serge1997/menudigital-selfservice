@@ -1,6 +1,6 @@
 <html>
     <body style="font-family: 'Segoe UI'; padding: 12px; background-color: #f4f4f5;">
-        <div style="width: 90%; margin: auto; background-color: #f8fafc; font-size: 1.3em;">
+        <div style="width: 90%; margin: auto; background-color: #f8fafc; font-size: 1.1em;">
             @php
                 $total = 0;
             @endphp
