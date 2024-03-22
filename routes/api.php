@@ -57,7 +57,6 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('cart/items/{table}', 'CustomerFinalCart');
         Route::get('menu-items/fiche/{id}', 'showTechnicalFicheByMenuItemId');
         Route::get('cart-table/{table}', 'getNewCart');
-        Route::post('menu-item/expense', 'expenseAction');
     });
 
     //orders
@@ -122,7 +121,6 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('product/{id}', 'showProductToEdit');
         Route::put('product', 'update');
         Route::delete('product/{id}', 'delete');
-        Route::post('product-expense', 'expenseProductAction');
     });
 
     //userRole
@@ -239,6 +237,8 @@ Route::middleware('auth:sanctum')->group(function() {
 
     //expense
     Route::controller(ExpenseController::class)->group(function() {
+        Route::post('expense-product', 'createExpenseProductAction');
+        Route::post('expense-menu-item', 'createExpenseMenuItemAction');
         Route::get('expense', 'listAllAction');
         Route::get('expense-filter', 'listFilterAction');
     });

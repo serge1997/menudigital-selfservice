@@ -5,6 +5,8 @@ use App\Models\TableNumber;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Collection;
 use DateTime;
+use App\Http\Services\Util\Util;
+use Carbon\Carbon;
 
 class TableNumberRepository implements TableNumberRepositoryInterface
 {
@@ -23,14 +25,14 @@ class TableNumberRepository implements TableNumberRepositoryInterface
 
     public function getAllBusyTable(): Collection
     {
-        $now = new DateTime();
-        $now = $now->format('Y-m-d h:i');
+        $now = Carbon::now()->toDateTimeString();
+        //var_dump($now); die;
         $busyTables = DB::table('pedidos')
         ->select(
             'pedidos.ped_tableNumber',
             'pedidos.id', 'users.name',
             'pedidos.ped_customer_quantity as customer',
-            DB::raw("CONCAT(DATE_FORMAT(TIMEDIFF('$now', DATE_FORMAT(pedidos.created_at, '%Y-%m-%d %h:%i')), '%i'), ' min') as timing")
+            DB::raw("CONCAT(TIMESTAMPDIFF(MINUTE, pedidos.created_at, '{$now}'), ' min') as timing")
             )
             ->join('users', 'pedidos.user_id', '=', 'users.id')
                 ->where([['pedidos.status_id', '=', 6], ['pedidos.ped_delete', 0]])

@@ -5,17 +5,16 @@
             <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
         </div>
         <div class="row d-flex flex-column">
-            <Toolbar class="col-md-12">
+            <Toolbar style="width: 100%;">
                 <template #center>
-                    <div style="width: 100%;" class="d-flex justify-content-between">
-                        <div class="col-md-12 d-flex justify-content-end gap-3">
-                            <div class="d-flex flex-column gap-2 col-md-5">
+                    <div style="min-width: 75rem;" class="d-flex justify-content-between gap-3">
+                            <div class="d-flex flex-column gap-2 col-md-4">
                                 <label>
                                     <span><i style="font-size: 14px;" @click.prevent="limparFiltroProduct" class="pi pi-filter-slash"></i></span>
                                     Produto | Fornecedor
                                 </label>
                                 <span class="p-input-icon-left">
-                                    <InputText @change="getFiltersItem" v-model="filtreParam.prodName" class="w-100" placeholder="produto, fornecedor" @input="filterDataTable" />
+                                    <InputText @input="getFiltersData" v-model="filtreParam.prodName" class="w-100" placeholder="produto, fornecedor"/>
                                 </span>
                             </div>
                             <div class="d-flex flex-column gap-2 col-md-4">
@@ -33,7 +32,6 @@
                                 <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
                             </div>
                         </div>
-                    </div>
                 </template>
             </Toolbar>
         </div>

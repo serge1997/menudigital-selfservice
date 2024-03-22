@@ -255,6 +255,7 @@ class BiController extends Controller
                 ->groupBy(
                     'suppliers.sup_name'
                 )->get();
+
         return response()->json([
             'cost' => $cost,
             'supCost' => $supplier
@@ -308,20 +309,24 @@ class BiController extends Controller
             ORDER BY supp.sup_name";
 
             $supplier = StockEntry::select(
-                'suppliers.sup_name',
+                'supp.sup_name',
                 DB::raw('SUM(stock_entries.totalCost) AS totalCost'),
                 DB::raw("TRUNCATE(SUM(stock_entries.totalCost) * 100 / (SELECT SUM(st.totalCost)
                     from stock_entries AS st WHERE MONTHNAME(st.emissao) LIKE '%{$params->month}%'
                     AND SUBSTRING(st.emissao, 1, 4) LIKE '%{$params->year}%'), 2)  AS percent"),
                 DB::raw('SUM(stock_entries.quantity) AS quantity'),
             )
-            ->join('suppliers', 'stock_entries.supplierID', '=', 'suppliers.id')
-                ->where('stock_entries.is_delete', false)
-                    ->whereRaw("MONTHNAME(stock_entries.emissao) LIKE '%{$params->month}%' AND SUBSTRING(stock_entries.emissao, 1, 4) LIKE '%{$params->year}%'")
-                        ->groupBy(
-                            'suppliers.sup_name'
-                        )
-                        ->get();
+            ->join('suppliers as supp', 'stock_entries.supplierID', '=', 'supp.id')
+                ->join('products as pr', 'stock_entries.productID', 'pr.id')
+                    ->where('stock_entries.is_delete', false)
+                        ->whereRaw(
+                            "MONTHNAME(stock_entries.emissao) LIKE '%{$params->month}%' AND SUBSTRING(stock_entries.emissao, 1, 4) LIKE '%{$params->year}%'
+                            AND pr.prod_name LIKE '%".$params->prodName."%' OR supp.sup_name LIKE '%.$params->prodName.%'
+                            ")
+                            ->groupBy(
+                                'supp.sup_name'
+                            )
+                            ->get();
 
             return response()->json([
                 'cost' => DB::select($query),

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Main\Expense\ExpenseRepositoryInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\StoreExpense;
 
 class ExpenseController extends Controller
 {
@@ -15,6 +16,28 @@ class ExpenseController extends Controller
         ExpenseRepositoryInterface $expenseRepositoryInterface
     ){
         $this->expenseRepositoryInterface = $expenseRepositoryInterface;
+    }
+
+    public function createExpenseProductAction(StoreExpense $request)
+    {
+        try{
+            $message = "Despesa salvou com successo";
+            $this->expenseRepositoryInterface->createExpenseProduct($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
+    }
+
+    public function createExpenseMenuItemAction(StoreExpense $request)
+    {
+        try{
+            $message = "Despesa salvou com successo";
+            $this->expenseRepositoryInterface->createExpenseItemMenu($request);
+            return response()->json($message);
+        }catch(Exception $e){
+            return response()->json($e->getMessage(), 500);
+        }
     }
 
     public function listAllAction(): JsonResponse
@@ -32,7 +55,10 @@ class ExpenseController extends Controller
         try{
             $filterData = $this->expenseRepositoryInterface->listFilterData($request);
             return response()
-                ->json($filterData);
+                ->json([
+                    'bar' => $filterData[0],
+                    'item' => $filterData[1]
+                ]);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);
         }

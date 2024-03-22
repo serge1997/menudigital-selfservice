@@ -1,5 +1,27 @@
 <template>
     <div class="container-fluid">
+        <DataTable tableStyle="min-width: 50rem">
+            <template #header>
+                <div class="d-flex justify-content-between">
+                    <div class="col-md-10 d-flex justify-content-end gap-3">
+                        <div class="d-flex flex-column gap-2 col-md-3">
+                            <label>Produto | Item menu</label>
+                            <span class="p-input-icon-left">
+                                <InputText @input="getFiltersData" class="w-100" v-model="filtreParam.item" placeholder="produto, fornecedor" />
+                            </span>
+                        </div>
+                        <div class="d-flex flex-column gap-2 col-md-3">
+                            <label>Ano </label>
+                            <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
+                        </div>
+                        <div class="d-flex flex-column gap-2 col-md-3">
+                            <label>Mês </label>
+                            <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </DataTable>
         <div class="row d-flex p-4">
             <div class="col-lg-6 col-md-12 d-flex flex-column">
                 <div class="shadow w-100 mt-2">
@@ -14,22 +36,6 @@
                         <div class="d-flex justify-content-between">
                             <div style="text-align: left">
                                 <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
-                            </div>
-                            <div class="col-md-10 d-flex justify-content-end gap-3">
-                                <div class="d-flex flex-column gap-2 col-md-3">
-                                    <label>Produto | Item menu</label>
-                                    <span class="p-input-icon-left">
-                                        <InputText @input="getFiltersData" class="w-100" v-model="filtreParam.item" placeholder="produto, fornecedor" />
-                                    </span>
-                                </div>
-                                <div class="d-flex flex-column gap-2 col-md-3">
-                                    <label>Ano </label>
-                                    <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
-                                </div>
-                                <div class="d-flex flex-column gap-2 col-md-3">
-                                    <label>Mês </label>
-                                    <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
-                                </div>
                             </div>
                         </div>
                     </template>
@@ -65,6 +71,7 @@ export default {
     data(){
         return {
             expenseData: null,
+            barData: null,
             monthData: [
                 {value: "Jan", month: "Janeiro"},
                 {value: "Feb", month: "Fevrereiro"},
@@ -99,29 +106,41 @@ export default {
         async loadExpense(){
             const expenseResponse = await axios.get('/api/expense');
             this.expenseData = (await expenseResponse).data;
+            this.SetBarChart()
         },
         async getFiltersData(){
             const filterData = axios.get('/api/expense-filter/', {
-                params: {year: this.filtreParam.year, month: this.filtreParam.month, item: this.filtreParam.item}
+                params: {year: this.filtreParam.year ?? '2024', month: this.filtreParam.month ?? 'Mar', item: this.filtreParam.item}
             });
-            this.expenseData = (await filterData).data;
+            this.expenseData = (await filterData).data.item;
+            this.barData = (await filterData).data.bar
+            this.SetBarChart();
+            //return this.expenseData
         },
-        SetBarChart(){
-            const xArray = ["Italy","France","Spain","USA","Argentina"];
-            const yArray = [55, 49, 44, 24, 15];
+        async SetBarChart(){
+            const period = [];
+            const expense = [];
+            for (let dt of  this.barData){
+                period.push(dt.month_year);
+                expense.push(dt.total)
+            }
+            console.log(period)
             const data = [{
-                x: xArray,
-                y: yArray,
+                x: expense,
+                y: period,
                 type: "bar",
                 orientation:"h",
                 marker: {color:"rgba(0,0,255)"}
             }];
+            console.log("Expense")
+            console.log(period)
             Plotly.newPlot('bar_expense', data)
         },
     },
     mounted(){
-        this.loadExpense();
-        this.SetBarChart()
+        //this.loadExpense();
+        //this.SetBarChart()
+        this.getFiltersData()
     }
 }
 

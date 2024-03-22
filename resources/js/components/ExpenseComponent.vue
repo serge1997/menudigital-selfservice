@@ -123,7 +123,7 @@ export default {
         createProductExpense(){
             return new Promise(resolve => {
                 setTimeout(() => {
-                    axios.post('/api/product-expense', this.expenseData)
+                    axios.post('/api/expense-product', this.expenseData)
                     .then((response) => {
                         this.toaster().fire({
                             text: response.data,
@@ -132,6 +132,7 @@ export default {
                         this.expenseData.product_id = "";
                         this.expenseData.observation = "";
                         this.expenseData.quantity = "";
+                        resolve(true)
                     })
                     .catch((errors) => {
                         this.errMessageBag = errors.response.data.errors
@@ -146,7 +147,7 @@ export default {
         createMenuItemExpense(){
             return new Promise(resolve => {
                 setTimeout(() => {
-                    axios.post('/api/menu-item/expense', this.expenseData)
+                    axios.post('/api/expense-menu-item', this.expenseData)
                     .then((response) => {
                         this.toaster().fire({
                             text: response.data,
@@ -155,6 +156,7 @@ export default {
                         this.expenseData.observation = "";
                         this.expenseData.item_id = "";
                         this.expenseData.quantity = "";
+                        resolve(true)
                     })
                     .catch((errors) => {
                         errors.response.status === 500 && this.$swal.fire({text: errors.response.data, icon: 'error'});
