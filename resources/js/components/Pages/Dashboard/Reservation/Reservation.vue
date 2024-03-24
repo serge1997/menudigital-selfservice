@@ -15,10 +15,12 @@
                         </div>
                     </template>
                 </Toolbar>
-                <div class="col-sm-8 m-auto">
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <MeterGroup :value="biData"/>
+                <div class="col-md-5">
+                    <div class="card mt-3 border-0 shadow-sm">
+                        <div class="card-header bg-white p-0">
+                            <h6>Reservação por Canal</h6>
+                        </div>
+                        <div id="res-bi" class="card-body">
                         </div>
                     </div>
                 </div>
@@ -304,11 +306,18 @@ export default {
         async loadBiData(){
             const biResponse = await axios.get('/api/reservation-bi');
             this.biData = await biResponse.data;
-            if (localStorage.getItem('meter_data')){
-                localStorage.removeItem('meter_data');
-            }
+            localStorage.removeItem('meter_data');
             localStorage.setItem('meter_data', JSON.stringify( await biResponse.data));
-            console.log(await biResponse.data)
+            let label = [];
+            let quantity = [];
+            for (let dt of (await biResponse.data)){
+                label.push(dt.label)
+                quantity.push(Number(dt.value));
+            }
+
+            var data = [{type: 'funnel', y: label , x: quantity , hoverinfo: 'x+percent previous+percent initial'}];
+            var layout = {margin: {l: 110}, width:530, height: 380}
+            Plotly.newPlot('res-bi', data, layout);
         },
     },
 

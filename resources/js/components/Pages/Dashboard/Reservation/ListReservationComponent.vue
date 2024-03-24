@@ -20,6 +20,7 @@
                         <div><Button v-if="!this.savedReservationDate.includes(date)" class="text-center text-secondary" :label="date.substr(0, 5)" text/></div>
                     </div>
                     <div v-else class="col-sm-12 d-flex flex-column">
+                        <p class="text-center text-secondary">{{ date.substr(0, 5) }}</p>
                         <div class="" v-for="reservation in reservations">
                             <div v-if="reservation.date_come_in == date" class="col-sm-12 d-flex mb-2 border shadow">
                                 <button @click="showReservation(reservation.id)" class="col-sm-10 btn d-flex gap-1" :class="setBgColor(reservation.status)" style="font-size: .8em;" icon="pi pi-user">
@@ -39,34 +40,6 @@
                 </div>
             </div>
         </div>
-        <!-- <div v-for="reservation in reservations" class="row d-flex justify-content-center shadow-sm p-1 mb-3 rounded border">
-            <div class="col-md-4 d-flex flex-column customer-info">
-                <h6>{{ reservation.customer_firstName }} {{ reservation.customer_lastName }}</h6>
-                <div class="d-flex gap-2">
-                    <span class="text-secondary"><i class="pi pi-phone"></i></span>
-                    <Chip>
-                        <span>{{ reservation.customer_tel }}</span>
-                    </Chip>|
-                    <Badge :value="reservation.person_quantity "></Badge>
-                    <span class="text-primary"><i class="pi pi-users"></i></span>
-                </div>
-            </div>
-            <div class="col-md-4 d-flex flex-column align-items-start customer-info">
-                <h6 class="d-flex gap-2"><span class="text-primary"><i class="pi pi-calendar"></i></span>{{ reservation.date_come_in }}</h6>
-                <Tag :value="reservation.hour + 'H' " icon="pi pi-clock" />
-            </div>
-            <div class="col-md-4 d-flex justify-content-end align-items-center gap-2 customer-info">
-                <div>
-                    <Button @click="showReservation(reservation.id)" text icon="pi pi-eye"/>
-                </div>
-                <div v-if="administrativeAccess.includes(`${auth.position_id}`)">
-                    <Button @click="getReservation(reservation.id)" text icon="pi pi-pencil"/>
-                </div>
-                <div v-if="administrativeAccess.includes(`${auth.position_id}`)">
-                    <Button @click="$emit('deleteReservation', reservation.id)" icon="pi pi-trash" text class="text-danger"/>
-                </div>
-            </div>
-        </div> -->
         <div class="row">
             <Dialog v-model:visible="visibleShowReservationModal" maximizable modal header="Detalhes da reservação" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
                 <div class="col-md-12 mt-3">

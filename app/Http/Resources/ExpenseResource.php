@@ -21,10 +21,7 @@ class ExpenseResource extends JsonResource
             'item_name' => $this->item->item_name ?? "Não encontrado",
             'product_id' => $this->product_id,
             'prod_name' => $this->product->prod_name,
-            'totalCost' => StockEntry::where('productID', $this->product_id)
-                ->latest()
-                    ->first()
-                        ->unitCost * $this->quantity,
+            'totalCost' => $this->total_cost,
             'user_id' => $this->user_id,
             'user_name' => $this->user->name,
             'observation' => $this->observation,

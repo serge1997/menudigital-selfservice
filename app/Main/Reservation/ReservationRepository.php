@@ -94,7 +94,7 @@ class ReservationRepository implements ReservationRepositoryInterface
         $count = Reservation::count();
         $query = Reservation::select(
             'reser_canal as label',
-            DB::raw("COUNT(*) / {$count} * 100 as value"),
+            DB::raw("COUNT(reser_canal) as value"),
             DB::raw("CASE
                 WHEN reser_canal = 'Whatsapp' THEN '#4ade80'
                 WHEN reser_canal = 'Instagram' THEN '#f43f5e'
@@ -105,7 +105,8 @@ class ReservationRepository implements ReservationRepositoryInterface
             ")
             )
                 ->groupBy('reser_canal')
-                    ->get();
+                    ->orderByRaw('COUNT(reser_canal) DESC')
+                        ->get();
 
         return $query;
     }
