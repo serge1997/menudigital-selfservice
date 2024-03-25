@@ -8,14 +8,14 @@
         </template>
         <div class="d-flex justify-content-between p-0 z-0">
             <div class="col-8 m-auto">
-                <h4 class="text-capitalize">Espaço operador</h4>
+                <h4 class="">{{ $t('operator.title') }}</h4>
                 <div class="py-4">
-                    <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
+                    <h5 class="text-center fw-normal text-capitalize">{{ $t('operator.table_box_title') }}</h5>
                     <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
                         <button  v-for="tab in tables" class="btn border-0 col-lg-3 col-md-4">
                             <div class="col-sm-10 d-flex flex-column border p-2">
                                 <img class="col-sm-5 img-thumbnail border-0" src="/img/free.png" />
-                                <Tag severity="success" :value ="`Mesa ${tab.table}`"/>
+                                <Tag severity="success" :value ="`${$t('operator.table')} ${tab.table}`"/>
                             </div>
                         </button>
                        <button v-for="busy in busyTables" class="col-lg-3 col-md-4 btn border-0">
@@ -33,7 +33,7 @@
                 <div class="w-100 py-2 d-flex">
                     <Toolbar class="w-100">
                         <template #start>
-                            <Button label="New order" @click="this.$router.push('/home')" icon="pi pi-plus" class="" />
+                            <Button :label="`${$t('operator.toolbar.one')}`" @click="this.$router.push('/home')" icon="pi pi-plus" class="" />
                             <!--<Button label="inventory" data-bs-toggle="modal" icon="pi pi-eye" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)" class="mr-2" />-->
                             <InventoryComponent/>
                             <SellReportComponent/>
@@ -45,11 +45,11 @@
                     <thead>
                         <tr>
                             <th class="text-capitalize">Id</th>
-                            <th class="text-capitalize">Nome</th>
-                            <th class="text-capitalize">Mesa</th>
-                            <th class="text-capitalize">Valor Total</th>
+                            <th class="text-capitalize">{{ $t('operator.dataTable.two')}}</th>
+                            <th class="text-capitalize">{{ $t('operator.dataTable.three')}}</th>
+                            <th class="text-capitalize">{{ $t('operator.dataTable.four')}}</th>
                             <th class="text-capitalize">Status</th>
-                            <th class="text-capitalize">Ação</th>
+                            <th class="text-capitalize">{{ $t('operator.dataTable.six')}}</th>
                         </tr>
                     </thead>
                     <tbody>
