@@ -7,12 +7,12 @@
                         <div class="d-flex flex-column">
                             <span class="fw-medium">
                                 <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
-                                Inicio
+                                {{ $t('bisell.filters.one') }}
                             </span>
                             <Calendar date-format="dd/mm/yy" v-model="dateFilter.start" showIcon placeholder="start"/>
                         </div>
                         <div class="d-flex flex-column">
-                            <span class="fw-medium">Fim</span>
+                            <span class="fw-medium">{{ $t('bisell.filters.two') }}</span>
                             <Calendar date-format="dd/mm/yy" v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
                         </div>
                     </div>
@@ -32,7 +32,7 @@
                             <span class="d-flex align-items-center">
                                 <span class="fw-medium">
                                     <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroColaborador" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
-                                    Colaborador
+                                    {{ $t('bisell.filters.four') }}
                                 </span>
                             </span>
                             <Dropdown style="width: 15rem;" :options="users" optionValue="id" optionLabel="name" placeholder="Selecione colaborador..." v-model="dateFilter.user"/>
@@ -58,7 +58,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column p-0" v-for="sell in monthlySell.totalDay">
                             <span class="fw-medium fs-4">{{ sell.totalDay == null ? '00 ' + 'R$' : sell.totalDay + ' R$' }}</span>
-                            <small>Venda hoje</small>
+                            <small>{{ $t('bisell.cards.one') }}</small>
                         </p>
                     </div>
                     <div class="d-flex align-items-center">
@@ -76,7 +76,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column p-0" v-for="sell in monthlySell.currentMonth">
                             <span class="fw-medium fs-4">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</span>
-                            <small>Venda mes atual</small>
+                            <small>{{ $t('bisell.cards.two') }}</small>
                         </p>
                     </div>
                    <div class="d-flex justify-content-center align-items-center">
@@ -99,7 +99,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column" v-for="sell in monthlySell.lastMonth">
                             <span class="fw-medium fs-4">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</span>
-                            <small>Venda mes anterior</small>
+                            <small>{{ $t('bisell.cards.three') }}</small>
                         </p>
                     </div>
                     <div class="d-flex align-items-center">

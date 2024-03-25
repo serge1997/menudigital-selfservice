@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-        <h5 class="text-center text-capitalize">Analise de custo e fornecedore</h5>
+        <h5 class="text-center text-capitalize">{{ $t('bicost.title') }}</h5>
         <div class="col-md-8 m-auto mt-3 p-2">
             <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
         </div>
@@ -11,7 +11,7 @@
                             <div class="d-flex flex-column gap-2 col-md-4">
                                 <label>
                                     <span><i style="font-size: 14px;" @click.prevent="limparFiltroProduct" class="pi pi-filter-slash"></i></span>
-                                    Produto | Fornecedor
+                                    {{ $t('bicost.filters.one')}}
                                 </label>
                                 <span class="p-input-icon-left">
                                     <InputText @input="getFiltersData" v-model="filtreParam.prodName" class="w-100" placeholder="produto, fornecedor"/>
@@ -20,14 +20,14 @@
                             <div class="d-flex flex-column gap-2 col-md-4">
                                 <label>
                                     <span><i style="font-size: 14px;" @click.prevent="limparFiltroYear" class="pi pi-filter-slash"></i></span>
-                                    Ano
+                                    {{ $t('bicost.filters.two')}}
                                 </label>
                                 <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
                             </div>
                             <div class="d-flex flex-column gap-2 col-md-4">
                                 <label>
                                     <span><i style="font-size: 14px;" @click.prevent="limparFiltroMonth" class="pi pi-filter-slash"></i></span>
-                                    Mês
+                                    {{ $t('bicost.filters.three') }}
                                 </label>
                                 <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
                             </div>
@@ -46,7 +46,7 @@
                     </div>
                     <div class="w-100 d-flex flex-column">
                         <small class="fw-medium">{{ sup.sup_name }}</small>
-                        <small>Quantidade: <span class="fw-medium text-primary">{{ sup.quantity }}</span></small>
+                        <small>{{ $t('bicost.knob.quantity') }}: <span class="fw-medium text-primary">{{ sup.quantity }}</span></small>
                     </div>
                 </div>
             </div>
@@ -59,14 +59,14 @@
                             <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
                         </div>
                     </template>
-                    <Column field="product_id" sortable style="width: 15%" header="Product Code"></Column>
-                    <Column field="prod_name" sortable style="width: 25%" header="Nome produto"></Column>
-                    <Column field="sup_name" sortable style="width: 25%" header="Fornecedor"></Column>
-                    <Column field="quantity" sortable style="width: 10%" header="Quantidade"></Column>
-                    <Column field="cost" sortable style="width: 15%" header="Custo"></Column>
-                    <Column field="totalCost" sortable style="width: 25%" header="Custo total"></Column>
-                    <Column field="period" sortable style="width: 25%" header="period"></Column>
-                    <Column field="prod_unmed" header="Ação" style="width: 25%">
+                    <Column field="product_id" sortable style="width: 15%" header="Code"></Column>
+                    <Column field="prod_name" sortable style="width: 25%" :header="`${ $t('bicost.dataTable.two')}`"></Column>
+                    <Column field="sup_name" sortable style="width: 25%" :header="`${ $t('bicost.dataTable.three')}`"></Column>
+                    <Column field="quantity" sortable style="width: 10%" :header="`${ $t('bicost.dataTable.four')}`"></Column>
+                    <Column field="cost" sortable style="width: 15%" :header="`${ $t('bicost.dataTable.five')}`"></Column>
+                    <Column field="totalCost" sortable style="width: 25%" :header="`${ $t('bicost.dataTable.six')}`"></Column>
+                    <Column field="period" sortable style="width: 25%" :header="`${ $t('bicost.dataTable.seven')}`"></Column>
+                    <Column field="prod_unmed" :header="`${ $t('bicost.dataTable.height')}`" style="width: 25%">
                         <template #body="{ data }">
                             <div class="d-flex">
                                 <ShowCostDetailsComponents @get-cost-details="getCostDetails(data.requisition_id) "

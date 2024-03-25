@@ -23,11 +23,11 @@
                 <div class="modal-content rounded-0 border-0">
                 <div class="modal-header">
                     <div class="d-flex flex-column mt-1">
-                        <h5 class="modal-title" id="staticBackdropLabel">Report</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel">{{ $t('report.title') }}</h5>
                         <div class="text-capitalize">
-                            <button @click="ResetStockTable" class="btn sellmodal-btn text-capitalize rounded-0 text-capitalize">Close journey</button>
+                            <button @click="ResetStockTable" class="btn sellmodal-btn text-capitalize rounded-0 text-capitalize">{{ $t('report.btns.close') }}</button>
                             <span class="px-2"></span>
-                            <button class="btn sellmodal-btn text-capitalize rounded-0">print</button>
+                            <button class="btn sellmodal-btn text-capitalize rounded-0">{{ $t('report.btns.print') }}</button>
                         </div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -37,7 +37,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th>Quandide</th>
+                                <th>{{  $t('report.dataTable.two') }}</th>
                                 <th>Total</th>
                             </tr>
                         </thead>

@@ -14,7 +14,7 @@
             <div class="modal-dialog modal-fullscreen modal-dialog-scrollable">
                 <div class="modal-content rounded-0 border-0">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="staticBackdropLabel">Bill history</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel">{{ $t('billhistory.title') }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -43,12 +43,12 @@
                             <thead>
                                 <tr>
                                     <th>Id</th>
-                                    <th>Customer</th>
-                                    <th>Table number</th>
+                                    <th>{{  $t('billhistory.dataTable.two') }}</th>
+                                    <th>{{  $t('billhistory.dataTable.three') }}</th>
                                     <th>Total</th>
                                     <th>Status</th>
-                                    <th>emissao</th>
-                                    <th>Action</th>
+                                    <th>{{  $t('billhistory.dataTable.six') }}</th>
+                                    <th>{{  $t('billhistory.dataTable.seven') }}</th>
                                 </tr>
                             </thead>
                             <tbody>

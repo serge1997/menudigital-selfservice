@@ -2,13 +2,13 @@
     <SideBarComponent />
     <div class="container-fluid">
         <TabView :scrollable="true">
-            <TabPanel header="ANALISE DE VENDA">
+            <TabPanel :header="`${ $t('bi.painels_title.one') }`">
                 <SellInteligence />
             </TabPanel>
-            <TabPanel header="ANALISE DE CUSTO">
+            <TabPanel :header="`${ $t('bi.painels_title.two') }`">
                 <CostIntelligence />
             </TabPanel>
-            <TabPanel header="ANALISE DE DESPESAS">
+            <TabPanel :header="`${ $t('bi.painels_title.three') }`">
                 <ExpenseIntelligence />
             </TabPanel>
         </TabView>

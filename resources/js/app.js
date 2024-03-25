@@ -73,6 +73,75 @@ const locales = {
                 three: 'Saída',
                 four: 'Saldo final'
             }
+        },
+        //bill history component
+        billhistory: {
+            title: 'Histórico de pedido',
+            filtre: {
+                date: 'Filtro'
+            },
+            dataTable: {
+                two: 'Cliente',
+                three: 'Mesa',
+                six: 'emissão',
+                seven: 'Ação'
+            }
+        },
+         //report component
+         report: {
+            title: 'Report',
+            btns: {
+                close: 'Fechar jornada',
+                print: 'imprimir report'
+            },
+            dataTable: {
+                two: 'Quantidade'
+            },
+        },
+
+        //bi page
+        bi: {
+            painels_title: {
+                title_1: 'ANALISE DE VENDAS',
+                title_2: 'ANALISE DE CUSTOS',
+                title_3: 'ANALISE DE DESPESAS'
+            }
+        },
+
+        //sell inteligence component
+        bisell: {
+            filters: {
+                one: 'Inicio',
+                two: 'Fim',
+                four: 'Colaborador'
+            },
+            cards: {
+                one: 'Vente du jour',
+                two: 'Mois actuel',
+                three: 'Mois antérieur'
+            }
+        },
+
+        //cost intelligence component
+        bicost: {
+            title: 'Analise de Custo e Fornecedore',
+            filters: {
+                one: 'Produto | Fornecedore',
+                two: 'Année',
+                three: 'Mois'
+            },
+            knob:{
+                quantity: 'Quantidade'
+            },
+            dataTable: {
+                two: 'Produto',
+                three: 'Fornecedore',
+                four: 'Quantdade',
+                five: 'Custo',
+                six: 'Custo total',
+                seven: 'Periódo',
+                height: 'Ação'
+            }
         }
     },
     fr: {
@@ -103,6 +172,75 @@ const locales = {
                 two: 'Quantité initial',
                 three: 'Sortie',
                 four: 'Quantité final'
+            }
+        },
+        //bill history component
+        billhistory: {
+            title: 'Historique des commandes',
+            filtre: {
+                date: 'Filtre'
+            },
+            dataTable: {
+                two: 'Client',
+                three: 'Table',
+                six: 'Date',
+                seven: 'Action'
+            }
+        },
+        //report component
+        report: {
+            title: 'Rapport',
+            btns: {
+                close: 'Fermeture',
+                print: 'imprimer rapport'
+            },
+            dataTable: {
+                two: 'Quantité'
+            },
+
+        },
+
+         //bi page
+         bi: {
+            painels_title: {
+                one: 'ANALYSE DE VENTES',
+                two: 'ANALYSE DE COÛTS',
+                three: 'ANALYSE DE PERTES'
+            }
+        },
+
+        //sell inteligence component
+        bisell: {
+            filters: {
+                one: 'Debut',
+                two: 'Fin',
+                four: 'Colaborateur'
+            },
+            cards: {
+                one: 'Vente du jour',
+                two: 'Mois actuel',
+                three: 'Mois antérieur'
+            }
+        },
+        //cost intelligence component
+        bicost: {
+            title: 'Analise de Coût e Fournisseur',
+            filters: {
+                one: 'Produit | Fournisseur',
+                two: 'Année',
+                three: 'Mois'
+            },
+            knob:{
+                quantity: 'Quantité'
+            },
+            dataTable: {
+                two: 'Produit',
+                three: 'Fournisseur',
+                four: 'Quantité',
+                five: 'Coût',
+                six: 'Coût total',
+                seven: 'Periode',
+                height: 'Action'
             }
         }
     }
