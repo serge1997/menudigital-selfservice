@@ -121,7 +121,7 @@ class OrderRepository implements OrderRepositoryInterface
             'users.name',
             'pedidos.ped_tableNumber',
             'status.stat_desc',
-            'pedidos.ped_emissao',
+            DB::raw("DATE_FORMAT(pedidos.ped_emissao, '%d/%m/%Y') as ped_emissao"),
             DB::raw('SUM(item_total) as total')
         )
             ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')

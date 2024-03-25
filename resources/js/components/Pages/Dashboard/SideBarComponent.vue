@@ -1,99 +1,108 @@
 <template>
-    <Sidebar v-model:visible="visibleSidebar">
-        <template #container="{ closeCallback }">
-            <div class="d-flex flex-column align-content-between h-full">
-                <div class="d-flex align-items-center justify-content-between px-4 flex-shrink-0">
-                    <div v-for="rest in restaurant">
-                        <img class="w-25 type-btn" :src="'/img/logo/'+ rest.res_logo" alt="">
+    <div class="w-100 d-flex">
+        <div class="col-md-8">
+            <Sidebar v-model:visible="visibleSidebar">
+                <template #container="{ closeCallback }">
+                    <div class="d-flex flex-column align-content-between h-full">
+                        <div class="d-flex align-items-center justify-content-between px-4 flex-shrink-0">
+                            <div v-for="rest in restaurant">
+                                <img class="w-25 type-btn" :src="'/img/logo/'+ rest.res_logo" alt="">
+                            </div>
+                            <span>
+                                <Button text type="button" @click="closeCallback" icon="pi pi-times" rounded outlined class="h-2rem w-2rem"></Button>
+                            </span>
+                        </div>
+                        <div class="w-100 d-flex flex-column justify-content-between">
+                            <ul class="list-group w-100 mt-4">
+                                <li v-if="administrativeAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{name: 'OperadorPanel'}">
+                                    <span class="pi pi-dollar"></span>
+                                        Caixa
+                                    </router-link>
+                                </li>
+                                <li class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{name: 'Garcom'}">
+                                        <span class="pi pi-user"></span>
+                                        Waiter
+                                    </router-link>
+                                </li>
+                                <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item border-0 rounded-0">
+                                    <router-link class="nav-link" :to="{name: 'BusinessInteligence'}">
+                                    <span class="pi pi-chart-bar"></span>
+                                        Business Inteligence
+                                    </router-link>
+                                </li>
+                                <li class="list-group-item rounded-0 border-0">
+                                <router-link class="nav-link" :to="{ name: 'Reservation'}">
+                                    <span class="pi pi-calendar"></span>
+                                    Gestão de reservação
+                                </router-link>
+                                </li>
+                                <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'NewItem'}">
+                                        <span class="pi pi-plus"></span>
+                                        New item
+                                    </router-link>
+                                </li>
+                                <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'NewMenuType'}">
+                                    <span class="pi pi-plus"></span>
+                                        New Menu type
+                                    </router-link>
+                                </li>
+                                <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'Employe'}">
+                                    <span class="pi pi-user-plus"></span>
+                                        Colaborador
+                                    </router-link>
+                                </li>
+                                <li class="list-group-item rounded-0 border-0">
+                                <router-link class="nav-link" :to="{ name: 'EmployeePlanning'}">
+                                    <span class="pi pi-calendar"></span>
+                                    Escala
+                                </router-link>
+                                </li>
+                                <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'Stock'}">
+                                    <span class="pi pi-database"></span>
+                                        Stock
+                                    </router-link>
+                                </li>
+                                <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
+                                        <span class="pi pi-cart-plus"></span>
+                                        Compras
+                                    </router-link>
+                                </li>
+                                <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'ConsultDelivery'}">
+                                        <span class="pi pi-truck"></span>
+                                        Consulte Entrega
+                                    </router-link>
+                                </li>
+                                <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
+                                    <router-link class="nav-link" :to="{ name: 'SettingPanel'}">
+                                    <span class="pi pi-cog"></span>
+                                        Setting
+                                    </router-link>
+                                </li>
+                            </ul>
+                            <div class="d-flex flex-column p-4">
+                                <Button :label="username"/>
+                                <button @click="LogOut" class="btn logout-btn px-2 mt-4">Log out</button>
+                            </div>
+                        </div>
                     </div>
-                    <span>
-                        <Button text type="button" @click="closeCallback" icon="pi pi-times" rounded outlined class="h-2rem w-2rem"></Button>
-                    </span>
-                </div>
-                <div class="w-100 d-flex flex-column justify-content-between">
-                    <ul class="list-group w-100 mt-4">
-                        <li v-if="administrativeAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{name: 'OperadorPanel'}">
-                            <span class="pi pi-dollar"></span>
-                                Caixa
-                            </router-link>
-                        </li>
-                        <li class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{name: 'Garcom'}">
-                                <span class="pi pi-user"></span>
-                                Waiter
-                            </router-link>
-                        </li>
-                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item border-0 rounded-0">
-                            <router-link class="nav-link" :to="{name: 'BusinessInteligence'}">
-                            <span class="pi pi-chart-bar"></span>
-                                Business Inteligence
-                            </router-link>
-                        </li>
-                        <li class="list-group-item rounded-0 border-0">
-                          <router-link class="nav-link" :to="{ name: 'Reservation'}">
-                            <span class="pi pi-calendar"></span>
-                            Gestão de reservação
-                          </router-link>
-                        </li>
-                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'NewItem'}">
-                                <span class="pi pi-plus"></span>
-                                New item
-                            </router-link>
-                        </li>
-                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'NewMenuType'}">
-                            <span class="pi pi-plus"></span>
-                                New Menu type
-                            </router-link>
-                        </li>
-                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'Employe'}">
-                            <span class="pi pi-user-plus"></span>
-                                Colaborador
-                            </router-link>
-                        </li>
-                        <li class="list-group-item rounded-0 border-0">
-                          <router-link class="nav-link" :to="{ name: 'EmployeePlanning'}">
-                            <span class="pi pi-calendar"></span>
-                            Escala
-                          </router-link>
-                        </li>
-                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'Stock'}">
-                            <span class="pi pi-database"></span>
-                                Stock
-                            </router-link>
-                        </li>
-                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
-                                <span class="pi pi-cart-plus"></span>
-                                Compras
-                            </router-link>
-                        </li>
-                        <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'ConsultDelivery'}">
-                                <span class="pi pi-truck"></span>
-                                Consulte Entrega
-                            </router-link>
-                        </li>
-                        <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
-                            <router-link class="nav-link" :to="{ name: 'SettingPanel'}">
-                            <span class="pi pi-cog"></span>
-                                Setting
-                            </router-link>
-                        </li>
-                    </ul>
-                    <div class="d-flex flex-column p-4">
-                        <Button :label="username"/>
-                        <button @click="LogOut" class="btn logout-btn px-2 mt-4">Log out</button>
-                    </div>
-                </div>
+                </template>
+            </Sidebar>
+            <Button icon="pi pi-bars" @click="visibleSidebar = true" />
+        </div>
+        <div class="col-lg-1 col-md-2 m-auto">
+            <div class="card shadow-sm">
+               <Tag icon="pi pi-clock" :value="time" severity="primary" />
             </div>
-        </template>
-    </Sidebar>
-    <Button icon="pi pi-bars" @click="visibleSidebar = true" />
+        </div>
+    </div>
 </template>
 
 <script>
@@ -101,6 +110,7 @@ import { getAuth } from "../auth.js";
 import Button from 'primevue/button';
 import Sidebar from "primevue/sidebar";
 import Avatar from "primevue/avatar";
+import Tag from 'primevue/tag';
 import { computed } from "vue";
 
 export default {
@@ -109,7 +119,8 @@ export default {
     components:{
         Button,
         Sidebar,
-        Avatar
+        Avatar,
+        Tag
     },
 
     data() {
@@ -128,7 +139,7 @@ export default {
             manager_show: false,
             administrative_show: false,
             is_toShow: null,
-
+            time: null
         }
     },
     provide(){
@@ -182,6 +193,14 @@ export default {
         }).catch((errors) => {
             console.log(errors)
         })
+        setInterval(() => {
+            let dateTime = new Date().toLocaleDateString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            })
+            this.time = dateTime.substring(12, 20)
+        }, 1000)
 
     },
 

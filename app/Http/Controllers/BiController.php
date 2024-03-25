@@ -38,8 +38,8 @@ class BiController extends Controller
         $user_where = "";
         $itemsColection_where = "";
         $mealType_where = "";
-        $thismonth_where = "";
-        $lastmonth_where = "";
+        $thismonth_where = "WHERE pd.ped_delete = 0 ";
+        $lastmonth_where = "WHERE pd.ped_delete = 0 ";
         $couverts_where = "pedidos.ped_delete = '0' ";
         $couverts = "";
 
@@ -47,15 +47,15 @@ class BiController extends Controller
             $user_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
             $mealType_where .= "pedidos.status_id <> '6' AND pedidos.user_id = '{$user}' ";
-            $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
-            $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
+            $thismonth_where .= "AND pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' AND pd.user_id = '{$user}' ";
+            $lastmonth_where .= "AND pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' AND pd.user_id = '{$user}' ";
             $couverts_where .= "AND user_id = '{$user}' ";
         }else{
             $user_where .= "pedidos.status_id <> '6' ";
             $itemsColection_where .= "itens_pedido.item_delete = '0' AND pedidos.status_id <> '6' ";
             $mealType_where .= "pedidos.status_id <> '6' ";
-            $lastmonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' ";
-            $thismonth_where .= "WHERE pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' ";
+            $lastmonth_where .= "AND pd.status_id <> '6' AND item_emissao LIKE '%".$lastMonth."%' ";
+            $thismonth_where .= "AND pd.status_id <> '6' AND item_emissao LIKE '%".$thisMonth."%' ";
         }
         $startDate = new DateTime($start);
         $endDate = new DateTime($end);
@@ -145,7 +145,7 @@ class BiController extends Controller
 
         $itemsColection = DB::table('pedidos')
                             ->select(
-                                'itens_pedido.item_emissao',
+                                DB::raw("DATE_FORMAT(itens_pedido.item_emissao, '%d/%m/%Y') as item_emissao"),
                                 'menuitems.item_name',
                                 'users.name',
                                 DB::raw("SUM(itens_pedido.item_total) venda"),

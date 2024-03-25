@@ -60,8 +60,8 @@ class PurchaseRequisitionRepository implements PurchaseRequisitionRepositoryInte
                 'purchase_requisitions.id',
                 'purchase_requisitions.delivery_date',
                 'purchase_requisitions.requisition_code',
-                DB::raw("DATE_FORMAT(purchase_requisitions.delivery_date, '%d-%m-%Y') as delivery_date"),
-                DB::raw("DATE_FORMAT(purchase_requisitions.created_at, '%d-%m-%Y') as created_at"),
+                DB::raw("DATE_FORMAT(purchase_requisitions.delivery_date, '%d/%m/%Y') as delivery_date"),
+                DB::raw("DATE_FORMAT(purchase_requisitions.created_at, '%d/%m/%Y') as created_at"),
                 'users.name AS require_name',
                 'requisitions_status.stat_desc',
                 'departments.name'

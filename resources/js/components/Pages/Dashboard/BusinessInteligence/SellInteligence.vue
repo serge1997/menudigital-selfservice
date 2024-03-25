@@ -57,7 +57,7 @@
                 <div class="d-flex justify-content-between p-0 bg-white">
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column p-0" v-for="sell in monthlySell.totalDay">
-                            <span class="fw-medium">{{ sell.totalDay == null ? '00 ' + 'R$' : sell.totalDay + ' R$' }}</span>
+                            <span class="fw-medium fs-4">{{ sell.totalDay == null ? '00 ' + 'R$' : sell.totalDay + ' R$' }}</span>
                             <small>Venda hoje</small>
                         </p>
                     </div>
@@ -75,7 +75,7 @@
                 <div class="d-flex justify-content-between p-0 bg-white">
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column p-0" v-for="sell in monthlySell.currentMonth">
-                            <span class="fw-medium">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</span>
+                            <span class="fw-medium fs-4">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</span>
                             <small>Venda mes atual</small>
                         </p>
                     </div>
@@ -84,7 +84,8 @@
                            <i v-if="!monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                            <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                        </div>
-                       <small class="text-success px-1 fw-medium">+53%</small>
+                       <small v-if="monthlySell.current > monthlySell.last" class="text-success px-1 fw-medium">{{ ((monthlySell.current - monthlySell.last) / monthlySell.current * 100).toFixed(2)  }}%</small>
+                       <small v-else class="text-danger px-1 fw-medium">{{ ((monthlySell.current - monthlySell.last) / monthlySell.current * 100).toFixed(2)  }}%</small>
                    </div>
                 </div>
             </div>
@@ -97,7 +98,7 @@
                 <div class="d-flex justify-content-between p-0 bg-white">
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column" v-for="sell in monthlySell.lastMonth">
-                            <span class="fw-medium">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</span>
+                            <span class="fw-medium fs-4">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</span>
                             <small>Venda mes anterior</small>
                         </p>
                     </div>
@@ -106,6 +107,8 @@
                             <i v-if="monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                             <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                         </div>
+                        <small v-if="monthlySell.current > monthlySell.last" class="text-danger fw-medium">{{ monthlySell.last < 1 && '-100' || ((monthlySell.last - monthlySell.current) / monthlySell.last * 100).toFixed(2)  }}%</small>
+                        <small v-else="monthlySell.current > monthlySell.last" class="text-success fw-medium">{{ monthlySell.last < 1 && '-100' || ((monthlySell.last - monthlySell.current) / monthlySell.last * 100).toFixed(2)  }}%</small>
                     </div>
                 </div>
             </div>
@@ -117,7 +120,7 @@
                 </div>
                 <div class="d-flex justify-content-between p-0 bg-white">
                     <div class="d-flex flex-column">
-                        <span class="fw-medium">{{ couverts == null ? '00 ' : couverts }}</span>
+                        <span class="fw-medium fs-4">{{ couverts == null ? '00 ' : couverts }}</span>
                         <small>Couverts</small>
                     </div>
                     <div class="d-flex align-items-center">
@@ -220,7 +223,9 @@ export default {
             monthlySell:{
                 currentMonth: null,
                 lastMonth: null,
-                totalDay: null
+                totalDay: null,
+                last: null,
+                current: null
             },
             monthlyComparaison: null,
             cardClass: {
@@ -275,6 +280,12 @@ export default {
                 this.dataTable = response.data.itemsCollection;
                 this.couverts = response.data.couverts;
                 this.chart.waiterSell = response.data.waiter;
+                this.monthlySell.currentMonth.forEach(index => {
+                    this.monthlySell.current = Number(index.total)
+                })
+                this.monthlySell.lastMonth.forEach(index => {
+                    //this.monthlySell.last = Number(index.total)
+                })
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
                          this.typesCollection.push(typename.type)
@@ -413,24 +424,12 @@ export default {
     },
 
     created(){
-        // let start = new Date();
-        // let end = new Date();
-        // this.dateFilter.start = new Date();
-        // this.dateFilter.end = new Date()
-        // this.dateFilter.start = start.toLocaleDateString('pt-BR', {
-        //     year: 'numeric',
-        //     month: '2-digit',
-        //     day: '2-digit',
-        // })
-        // this.dateFilter.end = start.toLocaleDateString('pt-BR')
     },
+
     mounted() {
         this.getGeneralStat();
         this.getUsers();
         this.getMenuItems();
-        //this.monthCompare();
-        //this.get_type_waiter_dash()
-        //this.donut()
     }
 
 }
