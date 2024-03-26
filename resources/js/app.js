@@ -245,9 +245,9 @@ const locales = {
         }
     }
 }
-
+const language = localStorage.getItem('lang') !== null ? localStorage.getItem('lang') : 'pt';
 i18next.init({
-    lng: 'fr',
+    lng: language,
     fallback: 'pt',
     witeList: ['pt', 'fr'],
     resources: {
