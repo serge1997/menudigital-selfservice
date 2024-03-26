@@ -1,21 +1,24 @@
 <template>
     <div class="container-fluid">
+        <div class="col-md-8 m-auto text-center">
+            <h3>{{ $t('biexpense.title') }}</h3>
+        </div>
         <DataTable tableStyle="min-width: 50rem">
             <template #header>
                 <div class="d-flex justify-content-between">
                     <div class="col-md-10 d-flex justify-content-end gap-3">
                         <div class="d-flex flex-column gap-2 col-md-3">
-                            <label>Produto | Item menu</label>
+                            <label>{{ $t('biexpense.filters.one') }}</label>
                             <span class="p-input-icon-left">
                                 <InputText @input="getFiltersData" class="w-100" v-model="filtreParam.item" placeholder="produto, fornecedor" />
                             </span>
                         </div>
                         <div class="d-flex flex-column gap-2 col-md-3">
-                            <label>Ano </label>
+                            <label>{{ $t('bicost.filters.two') }} </label>
                             <Dropdown @change="getFiltersData" class="w-100" :options="years" optionValue="year" optionLabel="year" placeholder="Selecione ano..." v-model="filtreParam.year" />
                         </div>
                         <div class="d-flex flex-column gap-2 col-md-3">
-                            <label>Mês </label>
+                            <label>{{ $t('bicost.filters.three') }} </label>
                             <Dropdown @change="getFiltersData" class="w-100" :options="monthData" optionValue="value" optionLabel="month" placeholder="Selecione mês..." v-model="filtreParam.month" />
                         </div>
                     </div>
@@ -39,13 +42,13 @@
                             </div>
                         </div>
                     </template>
-                    <Column field="product_id" sortable style="width: 8%" exportHeader="Product Code" header="Product Code"></Column>
-                    <Column field="prod_name" sortable style="width: 10%" header="Nome"></Column>
-                    <Column field="quantity" sortable style="width: 10%;" header="Quantidade despesa"></Column>
-                    <Column field="totalCost" sortable style="width: 10%;" header="Custo despesa"></Column>
+                    <Column field="product_id" sortable style="width: 8%" exportHeader="expense" header="Code"></Column>
+                    <Column field="prod_name" sortable style="width: 10%" :header="`${$t('biexpense.dataTable.two')}`"></Column>
+                    <Column field="quantity" sortable style="width: 10%;" :header="`${$t('bicost.dataTable.four')}`"></Column>
+                    <Column field="totalCost" sortable style="width: 10%;" :header="`${$t('biexpense.dataTable.four')}`"></Column>
                     <Column field="item_name" sortable style="width: 10%" header="menu item"></Column>
-                    <Column field="user_name" sortable style="width: 10%;" header="usuario"></Column>
-                    <Column field="emissao" sortable style="width: 10%;" header="Data"></Column>
+                    <Column field="user_name" sortable style="width: 10%;" :header="`${$t('biexpense.dataTable.five')}`"></Column>
+                    <Column field="emissao" sortable style="width: 10%;" :header="`${$t('billhistory.dataTable.six')}`"></Column>
                 </DataTable>
             </div>
         </div>

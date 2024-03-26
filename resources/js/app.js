@@ -119,6 +119,9 @@ const locales = {
                 one: 'Vente du jour',
                 two: 'Mois actuel',
                 three: 'Mois antérieur'
+            },
+            dataTable: {
+                four: 'Venda'
             }
         },
 
@@ -127,8 +130,8 @@ const locales = {
             title: 'Analise de Custo e Fornecedore',
             filters: {
                 one: 'Produto | Fornecedore',
-                two: 'Année',
-                three: 'Mois'
+                two: 'Ano',
+                three: 'Mês'
             },
             knob:{
                 quantity: 'Quantidade'
@@ -136,11 +139,40 @@ const locales = {
             dataTable: {
                 two: 'Produto',
                 three: 'Fornecedore',
-                four: 'Quantdade',
+                four: 'Quantidade',
                 five: 'Custo',
                 six: 'Custo total',
                 seven: 'Periódo',
                 height: 'Ação'
+            }
+        },
+        //bi expense component
+        biexpense: {
+            title: 'Analise das Despesas',
+            filters: {
+                one: 'Produto | item menu',
+            },
+            dataTable: {
+                two: 'Nome',
+                four: 'Valor Despesa',
+                five: 'Salvou por'
+            }
+        },
+        //waiterpage
+        waiterpage: {
+            title: 'Espaço serviço na sala',
+            icons:{
+                two: 'Novo pedido',
+                three: 'Reservas'
+            },
+            modal: {
+                title: 'Detalhes do pedido',
+                btns: {
+                    one: 'Adicionar'
+                },
+            },
+            dataTable: {
+                three: 'Valor unitario'
             }
         }
     },
@@ -220,6 +252,9 @@ const locales = {
                 one: 'Vente du jour',
                 two: 'Mois actuel',
                 three: 'Mois antérieur'
+            },
+            dataTable: {
+                four: 'Vente'
             }
         },
         //cost intelligence component
@@ -241,6 +276,36 @@ const locales = {
                 six: 'Coût total',
                 seven: 'Periode',
                 height: 'Action'
+            }
+        },
+        //bi expense component
+        biexpense: {
+            title: 'Analise des pertes',
+            filters: {
+                one: 'Produit | item menu',
+            },
+            dataTable: {
+                two: 'Produit',
+                four: 'Valeur perte',
+                five: 'Lancé par',
+                six: 'Date'
+            }
+        },
+        //waiterpage
+        waiterpage: {
+            title: 'Dashboard service en salle',
+            icons:{
+                two: 'Nouvelle commande',
+                three: 'Reservation'
+            },
+            modal: {
+                title: 'Detail de la commande',
+                btns: {
+                    one: 'Adicioner'
+                },
+            },
+            dataTable: {
+                three: 'Valeur unitaire'
             }
         }
     }

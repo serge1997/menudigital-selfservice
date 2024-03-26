@@ -156,11 +156,11 @@
                             <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
                         </div>
                     </template>
-                    <Column field="item_emissao" sortable style="width: 25%" exportHeader="Product Code" header="Date"></Column>
-                    <Column field="item_name" sortable style="width: 25%" header="Meal name"></Column>
-                    <Column field="quantidade" sortable style="width: 15%" header="Quantity"></Column>
-                    <Column field="venda" sortable style="width: 15%" header="Sell"></Column>
-                    <Column field="name" sortable style="width: 25%" header="Waiter"></Column>
+                    <Column field="item_emissao" sortable style="width: 25%" exportHeader="sell" :header="`${$t('biexpense.dataTable.six')}`"></Column>
+                    <Column field="item_name" sortable style="width: 25%" header="Menu item"></Column>
+                    <Column field="quantidade" sortable style="width: 15%" :header="`${$t('bicost.dataTable.four')}`"></Column>
+                    <Column field="venda" sortable style="width: 15%" :header="`${$t('bisell.dataTable.four')}`"></Column>
+                    <Column field="name" sortable style="width: 25%" :header="`${$t('biexpense.dataTable.five')}`"></Column>
                 </DataTable>
             </div>
         </div>
