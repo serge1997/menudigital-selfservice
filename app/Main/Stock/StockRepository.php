@@ -102,7 +102,7 @@ class StockRepository implements StockRepositoryInterface
             endif;
             return true;
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
     public function listAllDelevery()
     {
@@ -122,7 +122,7 @@ class StockRepository implements StockRepositoryInterface
             ->orderBy('emissao', 'DESC')
                 ->first();
         if (!isset($productInfo->productID)){
-            throw new Exception("Produto não tem custo. Custo necessario para processar a ficha tecnica");
+            throw new Exception(__('messages.create_fiche_product_check'));
         }
 
         return $productInfo;
@@ -276,7 +276,7 @@ class StockRepository implements StockRepositoryInterface
             event(new SendedDeliveryDevolutionEmail($requisition));
             return true;
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
     public function reduceSaldo($id): void
     {
@@ -327,7 +327,7 @@ class StockRepository implements StockRepositoryInterface
                 return true;
             }
         }
-        throw new Exception("Saldo indisponivel para realizar devolução");
+        throw new Exception(__('messages.devolution_product_exception'));
     }
 
     public function findStockEntryByRequisitionIdProductId($requisition_id ,$product_id)
@@ -364,7 +364,7 @@ class StockRepository implements StockRepositoryInterface
             event(new SendedDeliveryDevolutionEmail($req));
             return true;
        }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
     public function updateProductDeliveryQuantity($request)
     {
@@ -397,10 +397,10 @@ class StockRepository implements StockRepositoryInterface
                 $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $request->requisition_id, $request->quantity);
                 return true;
             }else {
-                throw new Exception("quantidade informada invalida");
+                throw new Exception(__('messages.delivery_quantity_exception'));
             }
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
 
     public function findAllDevolution()

@@ -56,6 +56,7 @@ const locales = {
                 three: 'report',
                 four: 'historico pedidos'
             },
+
             dataTable: {
                 two: 'Nome',
                 three: 'Mesa',
@@ -102,9 +103,9 @@ const locales = {
         //bi page
         bi: {
             painels_title: {
-                title_1: 'ANALISE DE VENDAS',
-                title_2: 'ANALISE DE CUSTOS',
-                title_3: 'ANALISE DE DESPESAS'
+                one: 'ANALISE DE VENDAS',
+                two: 'ANALISE DE CUSTOS',
+                three: 'ANALISE DE DESPESAS'
             }
         },
 
@@ -116,9 +117,9 @@ const locales = {
                 four: 'Colaborador'
             },
             cards: {
-                one: 'Vente du jour',
-                two: 'Mois actuel',
-                three: 'Mois antérieur'
+                one: 'Vendo do dia',
+                two: 'Mês atual',
+                three: 'Mês anterior'
             },
             dataTable: {
                 four: 'Venda'

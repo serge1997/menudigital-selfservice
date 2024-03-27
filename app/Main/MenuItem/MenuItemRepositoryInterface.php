@@ -14,5 +14,4 @@ interface MenuItemRepositoryInterface
     public function update($request);
     public function search($request): Collection;
     public function setRupture($id): String;
-    public function expense($request): void; //despesa menu item
 }

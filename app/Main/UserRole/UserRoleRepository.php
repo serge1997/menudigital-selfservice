@@ -22,7 +22,7 @@ class UserRoleRepository implements UserRoleRepositoryInterface
             $user_role->role_id = $id;
             $user_role->save();
         else:
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         endif;
     }
 
@@ -33,7 +33,7 @@ class UserRoleRepository implements UserRoleRepositoryInterface
                 ->where([['user_id', $request->user_id], ['role_id', $id]])
                     ->delete();
         else:
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         endif;
 
     }

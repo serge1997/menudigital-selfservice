@@ -136,6 +136,6 @@ class ReservationRepository implements ReservationRepositoryInterface
                 throw new Exception("estatus invalido");
            }
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
 }

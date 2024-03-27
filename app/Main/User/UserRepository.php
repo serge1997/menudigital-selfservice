@@ -42,7 +42,7 @@ class UserRepository implements UserRepositoryInterface
             $user->save();
             return;
         }
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
     }
 
     public function find($id): Collection
@@ -82,7 +82,7 @@ class UserRepository implements UserRepositoryInterface
                     ]);
             endif;
         else:
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         endif;
     }
 
@@ -94,7 +94,7 @@ class UserRepository implements UserRepositoryInterface
                     'isactive' => false
                 ]);
         else:
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         endif;
 
     }

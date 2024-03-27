@@ -56,10 +56,10 @@ class ExpenseRepository implements ExpenseRepositoryInterface
                 $expense->save();
                 return;
             }else{
-                throw new Exception("Quantidade entrada está superior ao saldo do produto");
+                throw new Exception(__('messages.create_expense'));
             }
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
 
     public function createExpenseItemMenu($request)
@@ -92,11 +92,11 @@ class ExpenseRepository implements ExpenseRepositoryInterface
                     $expense->month_year = Carbon::now()->isoFormat('MM/Y');
                     $expense->save();
                 }else{
-                    throw new Exception("Quantidade entrada está superior ao saldo do produto");
+                    throw new Exception(__('messages.create_expense'));
                 }
             }
         }else {
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         }
     }
 

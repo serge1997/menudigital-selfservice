@@ -29,10 +29,10 @@ class MenuItemRepository implements MenuItemRepositoryInterface
             if ($item_role->role_id === Role::MANAGER):
                 $item = new Menuitems($values);
                 $item -> save();
-                return response()->json("Item Salvou com sucesso", 200);
+                return ;
             endif;
         endforeach;
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
 
     }
 
@@ -57,7 +57,7 @@ class MenuItemRepository implements MenuItemRepositoryInterface
         $item_name = Menuitems::where('item_name', $item_name)->exists();
         if ($item_name)
         {
-            throw new Exception("O item já existe");
+            throw new Exception(__('messages.beforesave_exception', ['model' => 'item']));
         }
     }
 
@@ -104,36 +104,5 @@ class MenuItemRepository implements MenuItemRepositoryInterface
                 "item_desc"  => $item_desc,
                 "item_price" => $item_price
             ]);
-    }
-
-    public function expense($request): void
-    {
-        if ($this->can_manage($request) || $this->can_create_product($request)){
-            $item = $this->find($request->item_id);
-            $fiches = Technicalfiche::where('itemID', $item->id)->get();
-            foreach ($fiches as $fiche) {
-                $saldo = Saldo::where('productID', $fiche->productID)->first();
-                $ficheQuantity = Technicalfiche::where([
-                    ['productID', $saldo->productID],
-                    ['itemID', $request->item_id]
-                ])->first();
-                if ($saldo->saldoFinal > ($request->quantity * $ficheQuantity->quantity)){
-                    $saldo::where('productID', $saldo->productID)->update([
-                        'saldoFinal' => $saldo->saldoFinal - ($request->quantity * $ficheQuantity->quantity)
-                    ]);
-                    $expense = new Expense();
-                    $expense->product_id = $saldo->productID;
-                    $expense->user_id = $this->autth($request);
-                    $expense->quantity =  $request->quantity * $ficheQuantity->quantity;
-                    $expense->item_id = $request->item_id;
-                    $expense->observation = $request->observation;
-                    $expense->save();
-                }else{
-                    throw new Exception("Quantidade entrada está superior ao saldo do produto");
-                }
-            }
-        }else {
-            throw new Exception(Util::PermisionExceptionMessage());
-        }
     }
 }
