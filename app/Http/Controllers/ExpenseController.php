@@ -21,7 +21,7 @@ class ExpenseController extends Controller
     public function createExpenseProductAction(StoreExpense $request)
     {
         try{
-            $message = "Despesa salvou com successo";
+            $message = __('messages.create', ['model' => 'Expense']);
             $this->expenseRepositoryInterface->createExpenseProduct($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -32,7 +32,7 @@ class ExpenseController extends Controller
     public function createExpenseMenuItemAction(StoreExpense $request)
     {
         try{
-            $message = "Despesa salvou com successo";
+            $message = __('messages.create', ['model' => 'Expense']);
             $this->expenseRepositoryInterface->createExpenseItemMenu($request);
             return response()->json($message);
         }catch(Exception $e){

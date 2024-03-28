@@ -29,7 +29,7 @@ class MenuItemController extends Controller
     {
         try{
             $request->validated();
-            $message = "Item salvou com sucesso";
+            $message = __('messages.create', ['model' => 'Item']);
             $this->menuItemRepositoryInterface->create($request);
             return response()->json($message);
 
@@ -131,7 +131,7 @@ class MenuItemController extends Controller
     public function deleteItemOnStatus($id)
     {
         try{
-            $message = "Item deletado com sucesso";
+            $message = __('messages.delete');
             $this->menuItemRepositoryInterface->delete($id);
             return response()->json($message);
 
@@ -155,7 +155,7 @@ class MenuItemController extends Controller
                 "item_desc" => "item description is required"
             ]);
 
-            $message = "Item editado com sucesso";
+            $message = __('messages.update');
             $this->menuItemRepositoryInterface->update($request);
             return response()->json($message);
 
@@ -169,19 +169,5 @@ class MenuItemController extends Controller
     public function getNewCart($table)
     {
         return response()->json(Cart::where('tableNumber', $table)->get());
-    }
-
-    public function expenseAction(Request $request)
-    {
-        try{
-            $message = "Despesa salvou com sucesso";
-            DB::beginTransaction();
-            $this->menuItemRepositoryInterface->expense($request);
-            DB::commit();
-            return response()->json($message);
-        }catch(Exception $e){
-            DB::rollBack();
-            return response()->json($e->getMessage(), 500);
-        }
     }
 }

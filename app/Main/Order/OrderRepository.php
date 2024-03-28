@@ -308,7 +308,7 @@ class OrderRepository implements OrderRepositoryInterface
                                         ->where('id', $order->id)
                                             ->delete();
 
-                                        throw new Exception("Quantidade do item superior não é aceitado");
+                                        throw new Exception(__('messages.transfert_order_quantity_exception'));
                                 endif;
                                 DB::table('itens_pedido')
                                     ->where('item_pedido', $request->item_pedido)
@@ -400,8 +400,6 @@ class OrderRepository implements OrderRepositoryInterface
         $fiches = $this->technicalFicheRepositoryInterface->findByItemId($item_id);
         foreach ($fiches as $fiche) {
             $saldo = Saldo::where('productID', $fiche['productID'])->first();
-            //var_dump($saldo->saldoFinal + ($fiche['quantity'] * $quantidade)); die;
-
             Saldo::where('productID', $fiche['productID'])
                 ->update([
                     'saldoFinal' => $saldo->saldoFinal + ($fiche['quantity'] * $quantidade)

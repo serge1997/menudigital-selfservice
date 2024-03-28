@@ -32,7 +32,7 @@ class MealTypeRepository implements MealTypeRepositoryInterface
                 return true;
             endif;
         endforeach;
-        throw new Exception("You dont have permission");
+        throw new Exception(__('messages.permission'));
 
     }
 
@@ -44,7 +44,7 @@ class MealTypeRepository implements MealTypeRepositoryInterface
         $type = MealType::where('desc_type', $type_name)->exists();
         if ($type)
         {
-            throw new Exception("Tipo de item de menu já registrado");
+            throw new Exception(__('messages.beforesave_exception',['model' => 'Type menu']));
         }
     }
 

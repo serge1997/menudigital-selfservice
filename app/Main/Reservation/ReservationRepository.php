@@ -32,7 +32,7 @@ class ReservationRepository implements ReservationRepositoryInterface
             $reservation->user_id = $this->autth($request);
             $reservation->save();
         else:
-            throw new Exception("Você não tem permissao");
+            throw new Exception(__('messages.permission'));
         endif;
 
 
@@ -73,7 +73,7 @@ class ReservationRepository implements ReservationRepositoryInterface
 
             return;
         }
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
     }
 
     public function delete($request, $id)
@@ -82,7 +82,7 @@ class ReservationRepository implements ReservationRepositoryInterface
             Reservation::where('id', $id)->delete();
             return;
         }
-        throw new Exception("Você não tem permissao");
+        throw new Exception(__('messages.permission'));
     }
 
     public function ressourceTeste()
@@ -133,7 +133,7 @@ class ReservationRepository implements ReservationRepositoryInterface
                 $reservation->update(['status' => $status]);
                 return;
            }else{
-                throw new Exception("estatus invalido");
+                throw new Exception(__('messages.invalid_status'));
            }
         }
         throw new Exception(__('messages.permission'));
