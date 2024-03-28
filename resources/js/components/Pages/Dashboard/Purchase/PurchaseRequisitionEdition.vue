@@ -30,8 +30,14 @@
                                <Button @click="setRequisitionItemStatusToRejected(item.id, item.product_id)" style="color: red" icon="pi pi-trash" text/>
                            </div>
                            <div class="col-md-10 d-flex justify-content-start gap-2">
-                               <Checkbox v-model="requisitionData.products_id" class="product-id" :value="item.product_id" />
-                               <label for="ingredient1" class="ml-2 fw-medium"> {{ item.prod_name }}</label>
+                                <div class="form-check">
+                                    <input class="form-check-input product-id" type="checkbox" :value="item.product_id" />
+                                    <label for="ingredient1" class="ml-2 fw-medium form-check-label">
+                                        {{ item.prod_name }}
+                                    </label>
+                                </div>
+                               <!-- <Checkbox @click="onSelected" v-model="requisitionData.products_id" class="product-id" :value="item.product_id" />
+                               <label for="ingredient1" class="ml-2 fw-medium"> {{ item.prod_name }}</label> -->
                            </div>
                        </div>
                        <div class="col-md-3 d-flex justify-content-center">
@@ -43,7 +49,7 @@
                        </div>
                    </div>
                     <div class="d-flex gap-2">
-                        <input type="checkbox" @change="onSelectAll" id="select-all" v-model="selectAll"/>
+                        <input type="checkbox" @click="onSelectAll" id="select-all" v-model="requisitionData.selectAll"/>
                         <label>Selecionar todos</label>
                     </div>
                     <div class="w-100 d-flex flex-column m-auto mt-2">
@@ -122,10 +128,16 @@ export default {
             showEditInput: [],
             requisitionData: {
                 requisition_id: null,
-                products_id: null,
+                products: [],
+                products_id: [],
                 confirm_quantity: null,
                 status_id: null,
-                observation: null
+                observation: null,
+                selectAll: false,
+                getProducts: function(){
+                    const data = this.selectAll ? this.products_id : this.products;
+                    return data;
+                }
             },
             department_name: null,
             paymentSelectedStyle: {
@@ -135,7 +147,8 @@ export default {
             paymentApproved: 2,
             loadQuantity: false,
             errMsg: null,
-            selectAll: false
+            selectAll: false,
+            isChecked: false,
         }
     },
     methods: {
@@ -143,7 +156,6 @@ export default {
             const response = await axios.get(`/api/purchase-requisition/${id}`);
             this.itens = response.data.requisition_itens;
             this.status = response.data.requisition_status
-            console.log(this.itens)
             this.visibleEditionPurchaseModal = true;
             this.getDepartmentName();
         },
@@ -151,7 +163,6 @@ export default {
            for (let department of this.itens){
                this.department_name = department.department_name;
            }
-            //console.log(this.department_name)
         },
 
         setRequisitionItemStatusToRejected(requisition_id, product_id){
@@ -178,10 +189,15 @@ export default {
 
         confirmPurchaseRequisition(){
             let input = document.querySelectorAll('.quantity-data');
+            let product_ids = document.querySelectorAll('.product-id');
+            if (this.checkAllSelected()){
+                return this.$toast.error("Selecione todos os campos");
+            }
+
             this.requisitionData.confirm_quantity = [].map.call(input, value => value.value);
             this.requisitionData.requisition_id = document.getElementById('post-requisition-id').value;
+            this.requisitionData.products_id = [].map.call(product_ids, value => value.value);
             axios.post('/api/purchase-requisition/confirm', this.requisitionData).then((response) => {
-                console.log(response.data);
                 this.visibleEditionPurchaseModal = false;
                 this.$swal.fire({
                     text: response.data,
@@ -218,19 +234,41 @@ export default {
             })
 
         },
+        onSelected(){ console.log("Ocurred")},
 
         onSelectAll(){
-            let checkboxes = document.querySelectorAll("product-id");
-            checkboxes.forEach(function(e) {
-                e.checked;
-            })
-        }
+            this.isChecked = ! this.isChecked;
+            this.selectAll = ! this.selectAll;
+            let products = document.querySelectorAll(".product-id");
+            if ( this.selectAll ) {
+                Array.prototype.map.call(products, (product) => {
+                    product.checked = true
+                    product.checked ? this.requisitionData.products_id.push(product.value) : ''
+                })
+            }else{
+                Array.prototype.map.call(products, (product) => {
+                    product.checked = false
+                    this.requisitionData.products_id.length = 0
+                 })
+            }
+            console.log(this.requisitionData.products_id)
 
+        },
+
+        checkAllSelected(){
+            let product_ids = document.querySelectorAll('.product-id');
+            var isNotchecked;
+            product_ids.forEach((product) => {
+                if ( ! product.checked ) {
+                    isNotchecked = true;
+                }
+            })
+            return isNotchecked;
+        }
 
 
     },
     mounted() {
-
     }
 }
 </script>
