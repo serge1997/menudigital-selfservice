@@ -435,7 +435,7 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
 .waiter-card {
     background-color: #f7f7f7;
     transition: .3s ease-in;
@@ -456,25 +456,6 @@ export default {
     overflow: scroll;
     background-color: #cccccc5f;
 }
-
-*{
-    scrollbar-width: auto;
-    scrollbar-color: #333 #ff00;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #fff;
-}
-
-*::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 10px;
-    border: 3px solid #ffffff;
-  }
 
   .position-fixed {
     left: 0;
