@@ -26,7 +26,7 @@ class RestaurantController extends Controller
     public function create(RestaurantFormRequest $request)
     {
        try{
-            $message = "Informação salvou com sucesso";
+            $message = __('messages.create', ['model', 'Restaurant']);
             $this->restaurantRepositoryInterface->create($request);
             return response()->json($message);
        }catch(Exception $e){
@@ -45,16 +45,16 @@ class RestaurantController extends Controller
                list($width, $height) = getimagesize('img/logo/'.$fotoname);
                if (($width * $height) > Restaurant::RESTAURANT_LOGO_SIZE) {
                    unlink('img/logo/'.$fotoname);
-                   return response()->json("logo muito grande", 422);
+                   return response()->json(__('messages.logo_size'), 422);
                }
                DB::table('restaurants')
                    ->where('id', Restaurant::RESTAURANT_KEY)
                    ->update([
                        'res_logo' => $fotoname
                    ]);
-               return response()->json("Logo Salvou com sucesso");
+               return response()->json(__('messages.create'));
            }
-        return response()->json("Campo logo obrigatorio", 422);
+        return response()->json(__('messages.logo_required'), 422);
        }
     }
 
@@ -75,7 +75,7 @@ class RestaurantController extends Controller
                     'res_open' => $request->res_open,
                     'res_close' => $request->res_close
                 ]);
-            return response()->json("Informação atualizado com successo");
+            return response()->json(__('messages.update'));
         }
     }
 }

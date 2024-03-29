@@ -168,7 +168,7 @@ class OrderController extends Controller
      {
         try{
 
-            $message = "Item cancelado com sucesso";
+            $message = __('messages.canceled');
             $this->orderRepositotyInterface->cancelOrderItem($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -179,7 +179,7 @@ class OrderController extends Controller
      public function cancelOrderAction(Request $request): JsonResponse
      {
         try{
-            $message = "Pedido cancelado com sucesso";
+            $message = __('messages.canceled');
             $this->orderRepositotyInterface->cancelOrder($request);
             return response()->json($message);
         }catch(Exception $e){

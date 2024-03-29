@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Role;
-use http\Env\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +15,6 @@ use App\Http\Services\Util\Util;
 use Illuminate\Support\Facades\DB;
 use App\Models\RequisitionStatus;
 use App\Http\Services\UserInstance;
-use App\Events\RequisitionSended;
 use App\Main\PurchaseRequisition\PurchaseRequisitionRepositoryInterface;
 
 class PurchaseRequisitionController extends Controller
@@ -33,7 +31,7 @@ class PurchaseRequisitionController extends Controller
     {
         try{
             $request->validated();
-            $message = "Requisição enviando com sucesso";
+            $message = __('messages.create_purchase');
             DB::beginTransaction();
             $this->purchaseRequisitionRepositoryInterface->create($request);
             DB::commit();
@@ -155,10 +153,10 @@ class PurchaseRequisitionController extends Controller
                         'confirm_quantity' => $request->quantity
                     ]);
 
-                return response()->json("Quantidade editado com sucesso", 200);
+                return response()->json(__('messages.update'), 200);
             }
         }catch(Exception $e){
-            return response()->json("Ação não pode ser concluída", 422);
+            return response()->json($e->getMessage(), 422);
         }
     }
 
@@ -216,10 +214,13 @@ class PurchaseRequisitionController extends Controller
                         'observation' => $request->observation
                     ]);
             }
-            $message = $status_id == PurchaseRequisition::REQUISITION_REJECTED ? "Requsição foi rejectada com sucesso" : "Requisição confirmado com sucesso";
+            $message = $status_id == PurchaseRequisition::REQUISITION_REJECTED ?
+            __('messages.rejected_requisition') :
+            __('messages.confirmed_requisition');
+
             return response()->json($message, 200);
         }catch(Exception $e) {
-            return response()->json("Ação não pode ser concluída ".$e->getMessage(). " ".$e->getLine(), 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
@@ -233,9 +234,9 @@ class PurchaseRequisitionController extends Controller
                     'status_id' => PurchaseRequisition::REQUISITION_REJECTED
                 ]);
 
-            return response()->json("Produto foi rejeitado", 200);
+            return response()->json(__('messages.rejected'), 200);
         }catch(Exception $e) {
-            return response()->json("Ação não pode ser concluída", 500);
+            return response()->json($e->getMessage(), 500);
         }
 
 
@@ -249,12 +250,12 @@ class PurchaseRequisitionController extends Controller
                 if ($delete->role_id === Role::MANAGER):
                     PurchaseRequisition::where('id', $id)
                         ->delete();
-                    return response()->json("Requisição deletado com sucesso");
+                    return response()->json(__('messages.delete'));
                 endif;
             endforeach;
-            return response()->json("Você não tem permissão", 500);
+            return response()->json(__('messages.permission'), 500);
         }catch(Exception $e){
-            return response()->json(Util::ERROR_EXCEPTION_MESSAGE, 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 }

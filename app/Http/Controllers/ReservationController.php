@@ -33,7 +33,7 @@ class ReservationController extends Controller
         try {
 
             $request->validated();
-            $message = "Reservação salva com sucesso";
+            $message = __('messages.create', ['model' => 'Reservation']);
             $this->reservationRepositoryInterface->create($request);
             return response()->json($message);
 
@@ -45,8 +45,8 @@ class ReservationController extends Controller
     public function findById($id): JsonResponse
     {
         try {
-
-            return response()->json($this->reservationRepositoryInterface->find($id));
+            return response()
+                ->json($this->reservationRepositoryInterface->find($id));
         }catch(Exception $e){
             return response()->json($e->getMessage());
         }
@@ -55,18 +55,18 @@ class ReservationController extends Controller
     public function updateAction(Request $request): JsonResponse
     {
         try {
-            $message = "Reservação editada com sucesso";
+            $message = __('messages.update');
             $this->reservationRepositoryInterface->update($request);
             return response()->json($message);
         }catch(Exception $e){
-            return response()->json($e->getMessage(). " ".$e->getLine(), 500);
+            return response()->json($e->getMessage(), 500);
         }
     }
 
     public function deleteAction(Request $request, $id)
     {
         try {
-            $message = "Reservação deletado com successo";
+            $message = __('messages.delete');
             $this->reservationRepositoryInterface->delete($request, $id);
             return response()->json($message);
         }catch(Exception $e){
@@ -77,7 +77,9 @@ class ReservationController extends Controller
     public function teste()
     {
         try{
-            return response()->json($this->reservationRepositoryInterface->ressourceTeste());
+            return response()->json(
+                $this->reservationRepositoryInterface->ressourceTeste()
+            );
         }catch(Exception $e){
             return response()->json($e->getMessage());
         }
@@ -86,7 +88,9 @@ class ReservationController extends Controller
     public function reservationBiData(): JsonResponse
     {
         try{
-            return response()->json($this->reservationRepositoryInterface->listByCanalAVG());
+            return response()->json(
+                $this->reservationRepositoryInterface->listByCanalAVG()
+            );
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);
         }
@@ -94,8 +98,9 @@ class ReservationController extends Controller
 
     public function autoCancelReservationByDateAction(){
         try{
+            $message = __('messages.update');
             $this->reservationRepositoryInterface->autoCancelReservationByDate();
-            return response()->json("Reservas atualizadas");
+            return response()->json($message);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);
         }
@@ -104,8 +109,9 @@ class ReservationController extends Controller
     public function updateReservationStatusAction($id, $status, Request $request)
     {
         try{
-            $message = "Reserva atualizada com success";
-            $this->reservationRepositoryInterface->updateReservationStatus($id, $status, $request);
+            $message = __('messages.update');
+            $this->reservationRepositoryInterface
+                ->updateReservationStatus($id, $status, $request);
             return response()->json($message);
         }catch(Exception $e){
             return response()->json($e->getMessage(), 500);
