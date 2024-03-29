@@ -46,10 +46,10 @@ class ProductRepository implements ProductRepositoryInterface
                 $expense->save();
                 return;
             }else{
-                throw new Exception("Quantidade entrada está superior ao saldo do produto");
+                throw new Exception(__('messages.create_expense'));
             }
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
 
     }
 }

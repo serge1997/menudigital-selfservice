@@ -103,7 +103,7 @@ class OrderRepository implements OrderRepositoryInterface
                 ]);
             return true;
         endif;
-        throw new Exception("Voçê não tem permissão");
+        throw new Exception(__('messages.permission'));
 
     }
 
@@ -191,7 +191,7 @@ class OrderRepository implements OrderRepositoryInterface
                 return $status;
             endif;
         endforeach;
-        throw new Exception("Voçê não tem permissão");
+        throw new Exception(__('messages.permission'));
     }
 
     public function createOrder($request)
@@ -232,11 +232,11 @@ class OrderRepository implements OrderRepositoryInterface
                 StockServiceRepository::ControleItemLowStockRuptured($this->Order_item_ids);
                 DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
                     ->delete();
-                return response()->json("Pedido confirmado", 200);
+                return ;
             endif;
         Cart::where('tableNumber', $request->ped_tableNumber)
             ->delete();
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
 
     }
 
@@ -308,7 +308,7 @@ class OrderRepository implements OrderRepositoryInterface
                                         ->where('id', $order->id)
                                             ->delete();
 
-                                        throw new Exception("Quantidade do item superior não é aceitado");
+                                        throw new Exception(__('messages.transfert_order_quantity_exception'));
                                 endif;
                                 DB::table('itens_pedido')
                                     ->where('item_pedido', $request->item_pedido)
@@ -331,16 +331,14 @@ class OrderRepository implements OrderRepositoryInterface
                             endif;
                         //endforeach;
                 endforeach;
-                return response()->json("Item transferido com sucesso", 200);
+                return;
             endif;
         endforeach;
-        throw new Exception("You don't have permission");
+        throw new Exception(__('messages.permission'));
     }
 
     public function getOrdersReport()
     {
-        //beugs quando 00h chega sobre o primeiro pedido do dia, caso não tiver pedido as 00h
-        //fazer um new date -1
         $open = "";
         $today = new DateTime();
         $today = $today->format('Y-m-d');
@@ -402,8 +400,6 @@ class OrderRepository implements OrderRepositoryInterface
         $fiches = $this->technicalFicheRepositoryInterface->findByItemId($item_id);
         foreach ($fiches as $fiche) {
             $saldo = Saldo::where('productID', $fiche['productID'])->first();
-            //var_dump($saldo->saldoFinal + ($fiche['quantity'] * $quantidade)); die;
-
             Saldo::where('productID', $fiche['productID'])
                 ->update([
                     'saldoFinal' => $saldo->saldoFinal + ($fiche['quantity'] * $quantidade)
@@ -460,7 +456,7 @@ class OrderRepository implements OrderRepositoryInterface
             }
             return;
         endif;
-        throw new Exception("Senha invalida");
+        throw new Exception("password incorrect");
     }
 
     public function cancelOrder($request)
@@ -477,7 +473,7 @@ class OrderRepository implements OrderRepositoryInterface
                     ]);
             return;
         endif;
-        throw new Exception("Senha invalida ");
+        throw new Exception("password incorrect ");
     }
 
     /**
@@ -499,9 +495,9 @@ class OrderRepository implements OrderRepositoryInterface
                 return;
             endif;
         else:
-            throw new Exception("Esta modalidade não está permitida");
+            throw new Exception(__('messages.order_history_update'));
         endif;
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
 
 }

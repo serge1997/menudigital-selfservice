@@ -32,7 +32,7 @@ class TechnicalFicheController extends Controller
         try {
 
             DB::beginTransaction();
-            $message = "Ficha criada com sucesso";
+            $message = __('messages.create', ['model' => 'Fiche']);
             $this->technicalFicheRepositoryInterface->create($request);
             DB::commit();
             return response()->json($message);
@@ -46,7 +46,9 @@ class TechnicalFicheController extends Controller
     public function showAction($id): JsonResponse
     {
         try{
-            return response()->json($this->technicalFicheRepositoryInterface->show($id));
+            return response()->json(
+                $this->technicalFicheRepositoryInterface->show($id)
+            );
         }catch(Exception $e){
             return response()->json($e->getMessage());
         }
@@ -55,11 +57,10 @@ class TechnicalFicheController extends Controller
     {
         try {
             DB::beginTransaction();
-            $message = "Ficha técnica editada com sucesso";
+            $message = __('messages.update');
             $this->technicalFicheRepositoryInterface->addNewItemToItemFiche($request);
             DB::commit();
             return response()->json($message);
-
         }catch(Exception $e){
             DB::rollBack();
             return response()->json($e->getMessage(), 500);
@@ -70,7 +71,7 @@ class TechnicalFicheController extends Controller
     {
         try {
 
-            $message = "Produto deletado com successo";
+            $message = __('messages.delete');
             $this->technicalFicheRepositoryInterface->deleteProductFromItemFiche($request, $itemID, $productID);
             return response()->json($message);
 
@@ -83,7 +84,7 @@ class TechnicalFicheController extends Controller
     {
         try {
             DB::beginTransaction();
-            $message = "Edição concluida com sucesso";
+            $message = __('messages.update');
             $this->technicalFicheRepositoryInterface->editProductQuantity($request);
             DB::commit();
             return response()->json($message);

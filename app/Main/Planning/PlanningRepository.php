@@ -32,7 +32,7 @@ class PlanningRepository implements PlanningRepositoryInterface
             }
             return;
         endif;
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
 
     public function getAll(): Collection
@@ -88,6 +88,6 @@ class PlanningRepository implements PlanningRepositoryInterface
             ]);
             return true;
         }
-        throw new Exception(Util::PermisionExceptionMessage());
+        throw new Exception(__('messages.permission'));
     }
 }

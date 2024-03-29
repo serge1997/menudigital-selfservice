@@ -127,4 +127,23 @@ thead{
 .btn-eye{
     border: solid 1px #0275d8;
 }
+
+*{
+    scrollbar-width: thin;
+    scrollbar-color: #a9a8a8;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #fff;
+}
+
+*::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+    border: 3px solid #ffffff;
+  }
 </style>

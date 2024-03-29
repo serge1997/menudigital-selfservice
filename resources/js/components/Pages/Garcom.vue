@@ -13,7 +13,7 @@
         </div>
         <div class="d-flex justify-content-between p-0">
             <div class="col-8 d-flex flex-column align-items-center m-auto">
-                <h4 class="text-capitalize">Espaço Garçom</h4>
+                <h4 class="text-capitalize">{{ $t('waiterpage.title') }}</h4>
                 <div class="col-md-12 d-flex justify-content-center p-2">
                     <router-link class="col-md-2 d-flex flex-column nav-link" :to="{ name: 'Menu' }">
                         <img class="w-25 m-auto" src="../../../../public/img/iconmenu.png" alt="">
@@ -21,20 +21,20 @@
                     </router-link>
                     <router-link class="col-md-2 d-flex flex-column nav-link" :to="{ name: 'Home' }">
                         <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
-                        <span class="text-center fw-medium text-capitalize">Novo pedido</span>
+                        <span class="text-center fw-medium text-capitalize">{{ $t('waiterpage.icons.two') }}</span>
                     </router-link>
                     <router-link class="col-md-2 d-flex flex-column nav-link" :to="{ name: 'Reservation' }">
                         <img class="w-25 m-auto" src="../../../../public/img/table.png" alt="">
-                        <span class="text-center fw-medium text-capitalize">Reservação</span>
+                        <span class="text-center fw-medium text-capitalize">{{ $t('waiterpage.icons.three') }}</span>
                     </router-link>
                 </div>
                 <div class="py-4 col-lg-10 col-md-12 d-flex flex-column justify-content-center">
-                    <h5 class="text-center fw-normal text-capitalize">Ocupação mesa na sala</h5>
+                    <h5 class="text-center fw-normal text-capitalize">{{ $t('operator.table_box_title') }}</h5>
                     <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
                         <button  v-for="tab in tables" class="col-lg-4 col-md-5 btn border-0 p-0">
                             <div class="col-md-10 d-flex flex-column border">
                                 <img class="col-md-5 img-thumbnail border-0" src="/img/free.png" />
-                                <Tag severity="success" :value ="`Mesa ${tab.table}`"/>
+                                <Tag severity="success" :value ="`${ $t('operator.table')} ${tab.table}`"/>
                             </div>
                         </button>
                        <button @click="visibleStockAddModal = true" data-bs-toggle="modal" v-for="busy in busyTables" class="col-lg-4 col-md-5 btn border-0 p-0" @click.prevent="getOrderItem(busy.id)">
@@ -44,7 +44,7 @@
                                     <Badge severity="warning" :value="busy.customer " />
                                 </div>
                                 <small class="text-left">{{busy.name}}</small>
-                                <Tag severity="danger" :value ="`Mesa ${busy.ped_tableNumber} (${busy.timing})`"/>
+                                <Tag severity="danger" :value ="`${ $t('operator.table')} ${busy.ped_tableNumber} (${busy.timing})`"/>
                             </div>
                        </button>
                     </div>
@@ -66,18 +66,18 @@
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="visibleStockAddModal" maximizable modal header="Table order" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Dialog v-model:visible="visibleStockAddModal" maximizable modal :header="`${ $t('waiterpage.modal.title')} `" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100 d-flex flex-column">
                 <div class="w-100">
                     <Button @click="visibleStockAddModal = false; visibleMenuModal = true" data-bs-toggle="modal" data-bs-target="#AddMenu">
-                        Adicionar
+                        {{$t('waiterpage.modal.btns.one')}}
                     </Button>
                 </div>
                 <div class="w-100">
                     <DataTable :value="itens">
-                        <Column field="item_name" sortable style="width: 25%" exportHeader="Product Code" header="Item"></Column>
-                        <Column field="item_quantidade" sortable style="width: 25%" header="Quantity"></Column>
-                        <Column field="item_price" sortable style="width: 25%" header="Cost"></Column>
+                        <Column field="item_name" sortable style="width: 25%" header="Item"></Column>
+                        <Column field="item_quantidade" sortable style="width: 25%" :header="`${ $t('bicost.dataTable.four')} `"></Column>
+                        <Column field="item_price" sortable style="width: 25%" :header="`${ $t('waiterpage.dataTable.three')} `"></Column>
                         <Column field="item_total" sortable style="width: 25%" header="Subtotal"></Column>
                     </DataTable>
                 </div>

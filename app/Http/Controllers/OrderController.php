@@ -45,7 +45,7 @@ class OrderController extends Controller
             [
                 'ped_customerName.required' => "customer name is required"
             ]);
-            $message = "Pedido salvou com sucesso";
+            $message = __('messages.create', ['model' => 'Order']);
             DB::beginTransaction();
             $this->orderRepositotyInterface->createOrder($request);
             DB::commit();
@@ -71,7 +71,7 @@ class OrderController extends Controller
     public function orderPayment(Request $request): JsonResponse
     {
         try{
-            $message = "Pagamento realisado com successo";
+            $message = __('messages.create', ['model' => 'Payment']);
             $this->orderRepositotyInterface->setOrderPaymentStatus($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -84,7 +84,7 @@ class OrderController extends Controller
     {
         try {
             DB::beginTransaction();
-            $message = "Item adicionado com sucesso";
+            $message = __('messages.add_to_order');
             $this->orderRepositotyInterface->addNewItemToOrder($request);
             DB::commit();
             return response()->json($message);
@@ -107,7 +107,7 @@ class OrderController extends Controller
     public function updateHistoryOrderStatusAction($order_id, Request $request): JsonResponse
     {
         try{
-            $message = "Pedido editado com sucesso";
+            $message = __('messages.update');
             $this->orderRepositotyInterface->updateHistoryOrderStatus($order_id, $request);
             return response()->json($message);
         }catch(Exception $e){
@@ -137,7 +137,7 @@ class OrderController extends Controller
      public function createOrderTransfertAction(Request $request)
      {
         try {
-            $message = "Item transferido com succeso";
+            $message = __('messages.create_transfert');
             $this->orderRepositotyInterface->createTransertItensAction($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -168,7 +168,7 @@ class OrderController extends Controller
      {
         try{
 
-            $message = "Item cancelado com sucesso";
+            $message = __('messages.canceled');
             $this->orderRepositotyInterface->cancelOrderItem($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -179,7 +179,7 @@ class OrderController extends Controller
      public function cancelOrderAction(Request $request): JsonResponse
      {
         try{
-            $message = "Pedido cancelado com sucesso";
+            $message = __('messages.canceled');
             $this->orderRepositotyInterface->cancelOrder($request);
             return response()->json($message);
         }catch(Exception $e){

@@ -36,7 +36,7 @@ class UserRoleController extends Controller
     public function delete_user_role($id, Request $request): JsonResponse
     {
         try{
-            $message = "Permissão deletada com successo";
+            $message = __('messages.delete');
             $this->userRoleRepositoryInterface->deleteUserRole($id, $request);
             return response()->json($message);
         }catch(Exception $e){
@@ -47,7 +47,7 @@ class UserRoleController extends Controller
     public function store_user_role($id, Request $request): JsonResponse
     {
         try{
-            $message = "Permissão adicionada com sucesso";
+            $message = __('messages.create', ['model' => 'Permission']);
             $this->userRoleRepositoryInterface->createUserRole($id, $request);
             return response()->json($message);
         }catch(Exception $e){

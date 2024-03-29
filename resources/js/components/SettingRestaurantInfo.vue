@@ -7,6 +7,15 @@
                     <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                     <div class="modal-body p-4">
+                        <div class="col-md-12 mb-5 p-3">
+                            <h6>Systeme language</h6>
+                            <div class="col-lg-4 col-md-10">
+                               <select @change="setSysLanguage" v-model="sys_lang" class="form-select">
+                                    <option value="" selected>Select a language</option>
+                                    <option v-for="lang in langs" :value="lang.value">{{ lang.label }}</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="d-flex justify-content-center align-items-center mt-3">
                             <div class="res-header">
                                 <h6 class="text-capitalize">Salvar informação geral</h6>
@@ -108,12 +117,14 @@
 <script>
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import Dropdown from "primevue/dropdown";
 export default {
     name: 'SettingRestaurantInfo',
 
     components: {
         InputText,
-        Button
+        Button,
+        Dropdown
     },
 
     data(){
@@ -139,6 +150,11 @@ export default {
             errMsgLogo: null,
             invalidInput: null,
             logoInvalid: null,
+            langs: [
+                {value: 'pt', label: 'Portuges'},
+                {value: 'fr', label: 'Français'}
+            ],
+            sys_lang: null
         }
     },
 
@@ -195,6 +211,15 @@ export default {
                 this.errMsgLogo = errors.response.data
                 this.logoInvalid = 'p-invalid';
             })
+        },
+        setSysLanguage(){
+            if (localStorage.getItem('lang')){
+                localStorage.removeItem('lang')
+                localStorage.setItem('lang', this.sys_lang)
+            }
+            localStorage.setItem('lang', this.sys_lang)
+            location.reload()
+            return this.$toast.success('Language set succesfully')
         }
     },
 

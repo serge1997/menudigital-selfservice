@@ -9,7 +9,7 @@
     </Dialog>
     <div>
         <button type="button" class="btn fw-medium caixa-btn" data-bs-toggle="modal" data-bs-target="#report">
-            Sell Report
+            {{ $t('operator.toolbar.three') }}
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                 stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8">
@@ -23,11 +23,11 @@
                 <div class="modal-content rounded-0 border-0">
                 <div class="modal-header">
                     <div class="d-flex flex-column mt-1">
-                        <h5 class="modal-title" id="staticBackdropLabel">Report</h5>
+                        <h5 class="modal-title" id="staticBackdropLabel">{{ $t('report.title') }}</h5>
                         <div class="text-capitalize">
-                            <button @click="ResetStockTable" class="btn sellmodal-btn text-capitalize rounded-0 text-capitalize">Close journey</button>
+                            <button @click="ResetStockTable" class="btn sellmodal-btn text-capitalize rounded-0 text-capitalize">{{ $t('report.btns.close') }}</button>
                             <span class="px-2"></span>
-                            <button class="btn sellmodal-btn text-capitalize rounded-0">print</button>
+                            <button class="btn sellmodal-btn text-capitalize rounded-0">{{ $t('report.btns.print') }}</button>
                         </div>
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -37,7 +37,7 @@
                         <thead>
                             <tr>
                                 <th>Item</th>
-                                <th>Quandide</th>
+                                <th>{{  $t('report.dataTable.two') }}</th>
                                 <th>Total</th>
                             </tr>
                         </thead>

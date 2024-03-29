@@ -20,7 +20,7 @@ class RestaurantRepository implements RestaurantRepositoryInterface
             $restaurant->save();
             return ;
         }
-        throw new Exception('Você não tem permissão');
+        throw new Exception(__('messages.permission'));
     }
 
     public function find(): Collection

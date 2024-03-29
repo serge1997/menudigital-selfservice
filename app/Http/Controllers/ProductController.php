@@ -127,15 +127,4 @@ class ProductController extends Controller
             return response()->json("Product cant be deleted");
         }
     }
-
-    public function expenseProductAction(StoreExpense $request): JsonResponse
-    {
-        try{
-            $message = "Despesa salvou com successo";
-            $this->productRepositoryInterface->expenseProduct($request);
-            return response()->json($message);
-        }catch(Exception $e){
-            return response()->json($e->getMessage(), 500);
-        }
-    }
 }

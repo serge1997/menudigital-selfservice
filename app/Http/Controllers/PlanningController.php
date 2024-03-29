@@ -25,7 +25,7 @@ class PlanningController extends Controller
             //     'hour_out' => ['required'],
             //     'user_name'
             // ]);
-            $message = "Escala criado com sucesso";
+            $message = __('messages.create', ['model' => 'Planning']);
             $this->planningRepositoryInterface->create($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -45,7 +45,7 @@ class PlanningController extends Controller
     public function clearAction(Request $request): JsonResponse
     {
         try{
-            $message = "Escala resetado com sucesso";
+            $message = __('messages.delete');
             $this->planningRepositoryInterface->clearTable($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -56,7 +56,7 @@ class PlanningController extends Controller
     public function deleteAction($id, Request $request): JsonResponse
     {
         try{
-            $message = "Ação concluída com sucesso";
+            $message = __('messages.delete');
             $this->planningRepositoryInterface->delete($id, $request);
             return response()->json($message);
         }catch(Exception $e){
@@ -75,7 +75,7 @@ class PlanningController extends Controller
     public function updateAction($id, Request $request): JsonResponse
     {
         try{
-            $message = "Ação salvou com successo";
+            $message = __('messages.update');
             $this->planningRepositoryInterface->update($id, $request);
             return response()->json($message);
         }catch(Exception $e){

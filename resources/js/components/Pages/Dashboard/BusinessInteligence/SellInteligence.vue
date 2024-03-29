@@ -7,12 +7,12 @@
                         <div class="d-flex flex-column">
                             <span class="fw-medium">
                                 <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroData" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
-                                Inicio
+                                {{ $t('bisell.filters.one') }}
                             </span>
                             <Calendar date-format="dd/mm/yy" v-model="dateFilter.start" showIcon placeholder="start"/>
                         </div>
                         <div class="d-flex flex-column">
-                            <span class="fw-medium">Fim</span>
+                            <span class="fw-medium">{{ $t('bisell.filters.two') }}</span>
                             <Calendar date-format="dd/mm/yy" v-model="dateFilter.end" showIcon iconDisplay="input" placeholder="end"/>
                         </div>
                     </div>
@@ -32,7 +32,7 @@
                             <span class="d-flex align-items-center">
                                 <span class="fw-medium">
                                     <span class="icon-filtro"><i style="font-size: 14px;" @click.prevent="limparFiltroColaborador" class="pi pi-filter-slash" title="Limpar filtro"></i></span>
-                                    Colaborador
+                                    {{ $t('bisell.filters.four') }}
                                 </span>
                             </span>
                             <Dropdown style="width: 15rem;" :options="users" optionValue="id" optionLabel="name" placeholder="Selecione colaborador..." v-model="dateFilter.user"/>
@@ -58,7 +58,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column p-0" v-for="sell in monthlySell.totalDay">
                             <span class="fw-medium fs-4">{{ sell.totalDay == null ? '00 ' + 'R$' : sell.totalDay + ' R$' }}</span>
-                            <small>Venda hoje</small>
+                            <small>{{ $t('bisell.cards.one') }}</small>
                         </p>
                     </div>
                     <div class="d-flex align-items-center">
@@ -76,7 +76,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column p-0" v-for="sell in monthlySell.currentMonth">
                             <span class="fw-medium fs-4">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$' }}</span>
-                            <small>Venda mes atual</small>
+                            <small>{{ $t('bisell.cards.two') }}</small>
                         </p>
                     </div>
                    <div class="d-flex justify-content-center align-items-center">
@@ -99,7 +99,7 @@
                     <div class="d-flex flex-column">
                         <p class="d-flex flex-column" v-for="sell in monthlySell.lastMonth">
                             <span class="fw-medium fs-4">{{ sell.total == null ? '00 ' + 'R$' : sell.total + ' R$'}}</span>
-                            <small>Venda mes anterior</small>
+                            <small>{{ $t('bisell.cards.three') }}</small>
                         </p>
                     </div>
                     <div class="d-flex align-items-center">
@@ -156,11 +156,11 @@
                             <Button icon="pi pi-external-link" label="Export" @click="downloadCsv" />
                         </div>
                     </template>
-                    <Column field="item_emissao" sortable style="width: 25%" exportHeader="Product Code" header="Date"></Column>
-                    <Column field="item_name" sortable style="width: 25%" header="Meal name"></Column>
-                    <Column field="quantidade" sortable style="width: 15%" header="Quantity"></Column>
-                    <Column field="venda" sortable style="width: 15%" header="Sell"></Column>
-                    <Column field="name" sortable style="width: 25%" header="Waiter"></Column>
+                    <Column field="item_emissao" sortable style="width: 25%" exportHeader="sell" :header="`${$t('biexpense.dataTable.six')}`"></Column>
+                    <Column field="item_name" sortable style="width: 25%" header="Menu item"></Column>
+                    <Column field="quantidade" sortable style="width: 15%" :header="`${$t('bicost.dataTable.four')}`"></Column>
+                    <Column field="venda" sortable style="width: 15%" :header="`${$t('bisell.dataTable.four')}`"></Column>
+                    <Column field="name" sortable style="width: 25%" :header="`${$t('biexpense.dataTable.five')}`"></Column>
                 </DataTable>
             </div>
         </div>
@@ -435,7 +435,7 @@ export default {
 }
 
 </script>
-<style>
+<style scoped>
 .waiter-card {
     background-color: #f7f7f7;
     transition: .3s ease-in;
@@ -456,25 +456,6 @@ export default {
     overflow: scroll;
     background-color: #cccccc5f;
 }
-
-*{
-    scrollbar-width: auto;
-    scrollbar-color: #333 #ff00;
-}
-
-::-webkit-scrollbar-track {
-    background-color: #fff;
-}
-
-*::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  *::-webkit-scrollbar-thumb {
-    background-color: #333;
-    border-radius: 10px;
-    border: 3px solid #ffffff;
-  }
 
   .position-fixed {
     left: 0;

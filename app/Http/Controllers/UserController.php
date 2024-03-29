@@ -27,7 +27,7 @@ class UserController extends Controller
     public function create(StoreUserRequest $request)
     {
         try {
-            $message = "Usuario criado com sucesso";
+            $message = __('messages.create', ['model' => 'User']);
             $this->userRepositoryInterface->create($request);
             return response()->json($message);
         }catch(Exception $e){
@@ -47,7 +47,7 @@ class UserController extends Controller
     public function deleteAction($id, Request $request): JsonResponse
     {
         try{
-            $message = "Colaborador deletado com sucesso";
+            $message = __('messages.delete');
             $this->userRepositoryInterface->delete($id, $request);
             return response()->json($message);
         }catch(Exception $e){
@@ -58,7 +58,7 @@ class UserController extends Controller
     public function updateAction(Request $request): JsonResponse
     {
         try{
-            $message = "Colaborador editado com sucesso";
+            $message = __('messages.update');
             $this->userRepositoryInterface->update($request);
             return response()->json($message);
         }catch(Exception $e){

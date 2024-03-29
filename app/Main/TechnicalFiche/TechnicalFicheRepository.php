@@ -75,7 +75,7 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
                     endif;
             endforeach;
         else:
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         endif;
     }
 
@@ -138,7 +138,7 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
     public function beforeSaveItem($item_id)
     {
         if (Technicalfiche::where('itemID', $item_id)->exists()){
-            throw new Exception("Ficha técnica já existe");
+            throw new Exception(__('messages.beforesave_exception', ['model' => 'Fiche']));
         }else{
 
         }
@@ -149,7 +149,7 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         $fiche = Technicalfiche::where('itemID', $item_id)->get();
         foreach ($fiche as $value){
             if ($value->productID == $product_id){
-                throw new Exception("Produto já existe na ficha tecnica desse item");
+                throw new Exception(__('messages.beforsave_fiche_product_exception'));
             }
         }
     }
@@ -179,7 +179,7 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
             }
             return;
         endif;
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
     }
 
     public function deleteProductFromItemFiche($request, $item_id, $product_id): void
@@ -192,7 +192,7 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
                 return;
             endif;
         endforeach;
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
     }
 
     public function editProductQuantity($request): void
@@ -217,6 +217,6 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
             }
             return;
         endif;
-        throw new Exception("Você não tem permissão");
+        throw new Exception(__('messages.permission'));
     }
 }

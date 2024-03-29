@@ -16,7 +16,7 @@ class LoginRepository implements LoginRepositoryInterface
 
         if (is_null($user) || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'msgerr' => ['senha ou usuario incoreto']
+                'msgerr' => [__('messages.auth')]
             ]);
         }
 

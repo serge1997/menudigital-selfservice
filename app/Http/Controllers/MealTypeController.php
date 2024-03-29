@@ -21,7 +21,7 @@ class MealTypeController extends Controller
             $request->validate([
                 'desc_type' => ['required']
             ]);
-            $message = "Item salvou com sucesso";
+            $message = __('messages.create', ['model' => 'item']);
             $this->mealTypeRepositoryInterface->create($request);
             return response()->json($message);
         }catch(Exception $e){

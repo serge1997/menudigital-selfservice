@@ -29,7 +29,7 @@ class PositionRepository implements PositionRepositoryInterface
                     "position_id" => $position_id
                 ]);
         else:
-            throw new Exception(Util::PermisionExceptionMessage());
+            throw new Exception(__('messages.permission'));
         endif;
     }
 }

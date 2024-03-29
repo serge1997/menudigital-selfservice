@@ -1,7 +1,7 @@
 <template>
     <div class="w-100 d-flex">
         <div class="col-md-8">
-            <Sidebar v-model:visible="visibleSidebar">
+            <Sidebar style="overflow: scroll;" v-model:visible="visibleSidebar">
                 <template #container="{ closeCallback }">
                     <div class="d-flex flex-column align-content-between h-full">
                         <div class="d-flex align-items-center justify-content-between px-4 flex-shrink-0">
@@ -88,6 +88,10 @@
                                 </li>
                             </ul>
                             <div class="d-flex flex-column p-4">
+                                <label for="lang">Language</label>
+                                <Dropdown :options="lang" optionValue="lang" id="lang" optionLabel="label"/>
+                            </div>
+                            <div class="d-flex flex-column p-4">
                                 <Button :label="username"/>
                                 <button @click="LogOut" class="btn logout-btn px-2 mt-4">Log out</button>
                             </div>
@@ -111,6 +115,7 @@ import Button from 'primevue/button';
 import Sidebar from "primevue/sidebar";
 import Avatar from "primevue/avatar";
 import Tag from 'primevue/tag';
+import Dropdown from "primevue/dropdown";
 import { computed } from "vue";
 
 export default {
@@ -120,7 +125,8 @@ export default {
         Button,
         Sidebar,
         Avatar,
-        Tag
+        Tag,
+        Dropdown
     },
 
     data() {
@@ -139,7 +145,11 @@ export default {
             manager_show: false,
             administrative_show: false,
             is_toShow: null,
-            time: null
+            time: null,
+            lang: [
+                {lang: 'pt', label: 'Portugues'},
+                {lang: 'fr', label: 'Français'}
+            ]
         }
     },
     provide(){
@@ -243,5 +253,25 @@ export default {
     color: #fff;
 }
 
+*{
+    scrollbar-width: thin;
+    scrollbar-color: #9a1010 #ff00;
+}
+
+::-webkit-scrollbar-track {
+    scrollbar-width: thin;
+    background-color: #fff;
+}
+
+*::-webkit-scrollbar {
+    scrollbar-width: thin;
+    width: 4px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+    border: 3px solid #ffffff;
+  }
 
 </style>

@@ -37,7 +37,7 @@ class SupplierController extends Controller
             $data = $request->all();
             Supplier::create($data);
             return response()
-                ->json("supplier created successfully",200);
+                ->json(__('messages.create', ['model' => 'Supplier']),200);
 
         }catch(\Exception $e){
             return response()
@@ -68,7 +68,7 @@ class SupplierController extends Controller
                         'sup_neighborhood' => $request->sup_neighborhood,
                         'sup_email'        => $request->sup_email
                     ]);
-                return response()->json("Supplier edited successfully");
+                return response()->json(__('messages.update'));
             endif;
         }catch (Exception $e){
             return response()->json($e->getMessage(), 400);
@@ -84,7 +84,7 @@ class SupplierController extends Controller
                     ->update([
                         'is_delete' => true
                     ]);
-                return response()->json("Supplier deleted successfully.");
+                return response()->json(__('messages.delete'));
             }
         }catch(Exception $e){
             return response()->json($e->getMessage());

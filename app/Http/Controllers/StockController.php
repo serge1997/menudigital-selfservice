@@ -56,7 +56,7 @@ class StockController extends Controller
     public function storeStockEntryAction(StockEntryRequest $request) :JsonResponse
     {
         try{
-            $message = "Entrega do produto salvou com sucesso !";
+            $message = __('messages.create', ['model' => 'Delivery']);
             DB::beginTransaction();
             $this->stockRepositoryInterface->storeStockEntry($request);
             DB::commit();

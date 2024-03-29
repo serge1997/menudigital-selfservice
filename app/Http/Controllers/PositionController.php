@@ -30,7 +30,7 @@ class PositionController extends Controller
     {
         try{
 
-            $message = "Ação realisada com sucesso";
+            $message = __('messages.update');
             $this->positionRepositoryInterface->updateByUser($user_id, $position_id, $request);
             return response()->json($message);
 
