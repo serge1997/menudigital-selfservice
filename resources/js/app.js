@@ -191,7 +191,7 @@ const locales = {
             eleven: 'Consulte entrega',
             twelve: 'Parametros',
             logout: 'Sair',
-            lang_label: 'Lingua'
+            lang_label: 'Língua'
         }
     },
     fr: {
