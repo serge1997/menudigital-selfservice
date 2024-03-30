@@ -23,6 +23,7 @@ use App\Http\Controllers\PositionController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\LanguageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -241,6 +242,10 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('expense-menu-item', 'createExpenseMenuItemAction');
         Route::get('expense', 'listAllAction');
         Route::get('expense-filter', 'listFilterAction');
+    });
+
+    Route::controller(LanguageController::class)->group( function() {
+        Route::put('language/{lang}', 'setSysLanguageAction');
     });
 });
 
