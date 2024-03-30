@@ -28,8 +28,8 @@ class BiController extends Controller
         $today = $today->format('Y-m-d');
 
         $todayForLastMonth = new DateTime();
-        $lastMonth = $todayForLastMonth->sub(new DateInterval('P1M'));
-        $lastMonth = $lastMonth->format('Y-m');
+        $lastMonth = $todayForLastMonth->format('Y-m');
+        $lastMonth = date('Y-m', strtotime("$lastMonth - 1 month"));
 
         $todayThisMonth = new DateTime();
         $thisMonth = $todayThisMonth->format('Y-m');
