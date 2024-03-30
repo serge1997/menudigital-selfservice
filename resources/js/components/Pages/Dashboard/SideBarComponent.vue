@@ -17,82 +17,82 @@
                                 <li v-if="administrativeAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{name: 'OperadorPanel'}">
                                     <span class="pi pi-dollar"></span>
-                                        Caixa
+                                        {{  $t('sidebarmenu.one') }}
                                     </router-link>
                                 </li>
                                 <li class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{name: 'Garcom'}">
                                         <span class="pi pi-user"></span>
-                                        Waiter
+                                        {{  $t('sidebarmenu.two') }}
                                     </router-link>
                                 </li>
                                 <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item border-0 rounded-0">
                                     <router-link class="nav-link" :to="{name: 'BusinessInteligence'}">
                                     <span class="pi pi-chart-bar"></span>
-                                        Business Inteligence
+                                    {{  $t('sidebarmenu.three') }}
                                     </router-link>
                                 </li>
                                 <li class="list-group-item rounded-0 border-0">
                                 <router-link class="nav-link" :to="{ name: 'Reservation'}">
                                     <span class="pi pi-calendar"></span>
-                                    Gestão de reservação
+                                    {{  $t('sidebarmenu.four') }}
                                 </router-link>
                                 </li>
                                 <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'NewItem'}">
                                         <span class="pi pi-plus"></span>
-                                        New item
+                                        {{  $t('sidebarmenu.five') }}
                                     </router-link>
                                 </li>
                                 <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'NewMenuType'}">
                                     <span class="pi pi-plus"></span>
-                                        New Menu type
+                                    {{  $t('sidebarmenu.six') }}
                                     </router-link>
                                 </li>
                                 <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'Employe'}">
                                     <span class="pi pi-user-plus"></span>
-                                        Colaborador
+                                    {{  $t('sidebarmenu.seven') }}
                                     </router-link>
                                 </li>
                                 <li class="list-group-item rounded-0 border-0">
                                 <router-link class="nav-link" :to="{ name: 'EmployeePlanning'}">
                                     <span class="pi pi-calendar"></span>
-                                    Escala
+                                    {{  $t('sidebarmenu.eight') }}
                                 </router-link>
                                 </li>
                                 <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'Stock'}">
                                     <span class="pi pi-database"></span>
-                                        Stock
+                                    {{  $t('sidebarmenu.nine') }}
                                     </router-link>
                                 </li>
                                 <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'PurchaseRequisition'}">
                                         <span class="pi pi-cart-plus"></span>
-                                        Compras
+                                        {{  $t('sidebarmenu.ten') }}
                                     </router-link>
                                 </li>
                                 <li v-if="stockAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'ConsultDelivery'}">
                                         <span class="pi pi-truck"></span>
-                                        Consulte Entrega
+                                        {{  $t('sidebarmenu.eleven') }}
                                     </router-link>
                                 </li>
                                 <li v-if="managerAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{ name: 'SettingPanel'}">
                                     <span class="pi pi-cog"></span>
-                                        Setting
+                                    {{  $t('sidebarmenu.twelve') }}
                                     </router-link>
                                 </li>
                             </ul>
                             <div class="d-flex flex-column p-4">
                                 <Button :label="username"/>
-                                <button @click="LogOut" class="btn logout-btn px-2 mt-4">Log out</button>
+                                <button @click="LogOut" class="btn logout-btn px-2 mt-4">{{ $t('sidebarmenu.logout') }}</button>
                             </div>
                             <div class="d-flex flex-column p-4">
-                                <label for="lang">Language</label>
+                                <label for="lang">{{ $t('sidebarmenu.lang_label')}}</label>
                                 <div v-for="lng in lang" class="dropdown">
                                     <a v-if="lng.value == currentLang" class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
                                         <img style="width: 35px;" class="img-thumbnail" :src="lng.flag" alt="">

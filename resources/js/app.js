@@ -175,6 +175,23 @@ const locales = {
             dataTable: {
                 three: 'Valor unitario'
             }
+        },
+        //sidebar menu
+        sidebarmenu: {
+            one: 'Caixa',
+            two: 'Garçom',
+            three: 'Inteligencia de negócio',
+            four: 'Gestão de reserva',
+            five: 'Criar item do menu',
+            six: 'Criar tipo do menu',
+            seven: 'Colaboador',
+            eight: 'Escala',
+            nine: 'Estoque',
+            ten: 'Compras',
+            eleven: 'Consulte entrega',
+            twelve: 'Parametros',
+            logout: 'Sair',
+            lang_label: 'Lingua'
         }
     },
     fr: {
@@ -308,6 +325,23 @@ const locales = {
             dataTable: {
                 three: 'Valeur unitaire'
             }
+        },
+        //sidebar menu
+        sidebarmenu: {
+            one: 'Caisse',
+            two: 'Serveur',
+            three: "Inteligence d'affaire",
+            four: 'Gestion de reservation',
+            five: 'Créer item de menu',
+            six: 'Créer type de menu',
+            seven: 'Colaborateur',
+            eight: 'Planning',
+            nine: 'Stoque',
+            ten: 'Achat',
+            eleven: 'Livraison',
+            twelve: 'Réglage',
+            logout: 'Se deconnecter',
+            lang_label: 'Langue'
         }
     }
 }
