@@ -88,12 +88,22 @@
                                 </li>
                             </ul>
                             <div class="d-flex flex-column p-4">
-                                <label for="lang">Language</label>
-                                <Dropdown :options="lang" optionValue="lang" id="lang" optionLabel="label"/>
-                            </div>
-                            <div class="d-flex flex-column p-4">
                                 <Button :label="username"/>
                                 <button @click="LogOut" class="btn logout-btn px-2 mt-4">Log out</button>
+                            </div>
+                            <div class="d-flex flex-column p-4">
+                                <label for="lang">Language</label>
+                                <div v-for="lng in lang" class="dropdown">
+                                    <a v-if="lng.value == currentLang" class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <img style="width: 35px;" class="img-thumbnail" :src="lng.flag" alt="">
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                        <li v-for="lng in lang" @click="setSysLanguage(lng.value)" class="dropdown-item d-flex align-items-center gap-2">
+                                            <span><img style="width: 35px;" class="img-thumbnail" :src="lng.flag" alt=""></span>
+                                            <span>{{ lng.label }}</span>
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -146,9 +156,10 @@ export default {
             administrative_show: false,
             is_toShow: null,
             time: null,
+            currentLang: localStorage.getItem('lang') ?? 'pt',
             lang: [
-                {lang: 'pt', label: 'Portugues'},
-                {lang: 'fr', label: 'Français'}
+                {value: 'pt', label: 'Portugues', flag: "/img/brazil.png"},
+                {value: 'fr', label: 'Français', flag: "/img/france.png"}
             ]
         }
     },
@@ -177,6 +188,18 @@ export default {
                 console.log(error);
             })
         },
+        setSysLanguage(lang){
+            axios.put('/api/language/' + lang).then((response) => {
+                if (localStorage.getItem('lang')){
+                    localStorage.removeItem('lang')
+                    localStorage.setItem('lang', lang)
+                }
+                localStorage.setItem('lang', lang)
+                location.reload()
+                return this.$toast.success(response.data)
+            })
+            .catch(errors => console.log(errors));
+        }
     },
     mounted(){
         console.log(this.administrativeAccess)

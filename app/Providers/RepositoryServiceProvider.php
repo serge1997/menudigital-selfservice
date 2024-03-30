@@ -43,6 +43,8 @@ use App\Main\PurchaseRequisition\PurchaseRequisitionRepositoryInterface;
 use App\Main\PurchaseRequisition\PurchaseRequisitionRepository;
 use App\Main\Expense\ExpenseRepository;
 use App\Main\Expense\ExpenseRepositoryInterface;
+use App\Main\Language\LanguageRepositoryInterface;
+use App\Main\Language\LanguageRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -72,6 +74,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PlanningRepositoryInterface::class, PlanningRepository::class);
         $this->app->bind(PurchaseRequisitionRepositoryInterface::class, PurchaseRequisitionRepository::class);
         $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
+        $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
     }
 
     /**
