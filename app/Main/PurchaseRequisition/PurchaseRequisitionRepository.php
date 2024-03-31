@@ -7,6 +7,9 @@ use App\Traits\Permission;
 use App\Events\RequisitionSended;
 use App\Http\Services\Product\ProductRepositoty;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\PurchaseRequisitionSended;
+use App\Models\User;
 
 class PurchaseRequisitionRepository implements PurchaseRequisitionRepositoryInterface
 {
@@ -50,7 +53,8 @@ class PurchaseRequisitionRepository implements PurchaseRequisitionRepositoryInte
                 $item->total = $cost * $request->quantity[$key];
                 $item->save();
             }
-            event(new RequisitionSended($requision));
+            Mail::to(User::findOrFail(User::GERENTE)->first())
+                ->queue((new PurchaseRequisitionSended($requision))->onConnection('sync'));
     }
 
     public function listAll()

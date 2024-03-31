@@ -25,6 +25,9 @@ use App\Models\Technicalfiche;
 use App\Traits\AuthSession;
 use App\Events\ClosingNotified;
 use App\Models\Pedido;
+use App\Models\User;
+use App\Mail\DevolutionDevoliverySended;
+use Illuminate\Support\Facades\Mail;
 
 class StockRepository implements StockRepositoryInterface
 {
@@ -273,7 +276,9 @@ class StockRepository implements StockRepositoryInterface
             $this->reduceSaldo($id);
             $this->deleteFromStockEntryByRequisitionId($id);
             $this->purchaseRequisitionRepositoryInterface->deleteByRequisitionId($id);
-            event(new SendedDeliveryDevolutionEmail($requisition));
+            Mail::to(User::find(User::GERENTE)->first())
+                ->queue((new DevolutionDevoliverySended($requisition))->onConnection('sync'));
+            //event(new SendedDeliveryDevolutionEmail($requisition));
             return true;
         }
         throw new Exception(__('messages.permission'));
@@ -361,7 +366,9 @@ class StockRepository implements StockRepositoryInterface
                 $this->purchaseRequisitionRepositoryInterface
                     ->deleteByRequisitionId($requisition_id);
             }
-            event(new SendedDeliveryDevolutionEmail($req));
+            Mail::to(User::find(User::GERENTE)->first())
+                ->queue((new DevolutionDevoliverySended($req))->onConnection('sync'));
+            //event(new SendedDeliveryDevolutionEmail($req));
             return true;
        }
         throw new Exception(__('messages.permission'));
