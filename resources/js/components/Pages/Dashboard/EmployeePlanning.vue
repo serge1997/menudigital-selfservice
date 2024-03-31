@@ -1,6 +1,6 @@
 <template>
+<SideBarComponent />
   <div class="container-fluid">
-    <SideBarComponent />
     <div class="container">
       <div class="row">
         <h4 class="fw-normal d-flex gap-2 align-items-center"><i class="pi pi-calendar"></i>Escala do colaborador</h4>

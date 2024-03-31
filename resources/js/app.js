@@ -342,8 +342,48 @@ const locales = {
             twelve: 'Réglage',
             logout: 'Se deconnecter',
             lang_label: 'Langue'
+        },
+        forms: {
+            name: 'Nom',
+            first_name: 'Prénom',
+            tel: 'Telephone',
+            user_name: "Nom d'ultilisateur",
+            password: 'Mots de passe',
+            placeholder_dept: 'Departement',
+            placeholder_post: 'Poste',
+            placeholder_salary: 'Salaire | paiement',
+            placeholder_supplier: 'Selection de fournisseur',
+            picture: 'Photo',
+            observation: 'Observation',
+            canal: 'Canal de reservation',
+            n_person: 'N personne',
+            hour: 'heur',
+            measure_unit: 'Unité de mésure',
+            description: 'Descrition',
+            unit_contain: "Contenu de l'unité",
+            min_quantity: 'Quantité minimum',
+            requisition_number: 'Numero de la requisition',
+            product_name: 'Nom du produits',
+            product_quantity: 'Quantité du produit',
+            peoduct_cost: 'Coût',
+            city: 'Ville',
+            neighborhood: 'Quartier',
+            person_id: 'Numero ID national',
+            submits: {
+                create_reser: 'Confirmer la reservation',
+                create: 'Enregistrer',
+                update: 'Actualiser'
+            },
+            in: 'Entrée',
+            out: 'Sortie',
+            partial: 'Extra',
+            fulltime: 'Plein temps',
+            price: 'Prix de vente',
+            abilitate: 'Habiliter',
+            desabilitate: 'Deshabiliter'
+
         }
-    }
+    },
 }
 const language = localStorage.getItem('lang') !== null ? localStorage.getItem('lang') : 'pt';
 i18next.init({

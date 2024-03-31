@@ -1,8 +1,6 @@
 <template>
-    <div class="container-fuid d-flex justify-content-between">
-        <div class="position-fixed">
-            <SideBarComponent class="text-center"></SideBarComponent>
-        </div>
+    <SideBarComponent />
+    <div class="container-fuid">
         <div class="container">
             <div class="row">
                 <div class="col-8 m-auto">
@@ -17,70 +15,70 @@
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="user-name">Collaborator name</label>
+                                    <label for="user-name">{{$t('forms.name')}}</label>
                                     <InputText :class="invalid" type="text" id="user-name" v-model="user.name" aria-describedby="user name" placeholder="collaborator name"/>
                                     <small class="text-danger" v-if="errMsg" v-for="errname in errMsg.name" id="user-name-err"  v-text="errname"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="user-tel">User contact</label>
+                                    <label for="user-tel">{{$t('forms.tel')}}</label>
                                     <InputText :class="invalid" type="text" id="user-contac" v-model="user.tel" aria-describedby="user name" placeholder="collaborator contact"/>
                                     <small class="text-danger" v-if="errMsg" v-for="errtel in errMsg.tel" id="user-tel-err"  v-text="errtel"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="user-email">Collaborator e-mail</label>
+                                    <label for="user-email">E-mail</label>
                                     <InputText :class="invalid" type="text" id="user-email" v-model="user.email" aria-describedby="user email" placeholder="collaborator email"/>
                                     <small class="text-danger" v-if="errMsg" v-for="erremail in errMsg.email" id="user-email-err"  v-text="erremail"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="user-name">Username</label>
+                                    <label for="user-name">{{$t('forms.user_name')}}</label>
                                     <InputText :class="invalid" type="text" id="user-name" v-model="user.username" aria-describedby="user email" placeholder="collaborator username"/>
                                     <small class="text-danger" v-if="errMsg" v-for="errusername in errMsg.username" id="username-err"  v-text="errusername"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="user-password">Collaborator password</label>
+                                    <label for="user-password">{{$t('forms.password')}}</label>
                                     <InputText :class="invalid" type="password" id="user-name" v-model="user.password" aria-describedby="user password" placeholder="user password"/>
                                     <small class="text-danger" v-if="errMsg" v-for="errpassword in errMsg.password" id="user-password-err"  v-text="errpassword"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 d-flex mt-3 gap-1">
                                 <div class="col-md-6">
-                                    <Dropdown :class="invalid" v-model="user.department_id" option-value="id" :options="departments" optionLabel="name" placeholder="Departamento.." class="w-100 md:w-14rem" />
+                                    <Dropdown :class="invalid" v-model="user.department_id" option-value="id" :options="departments" optionLabel="name" :placeholder="` ${ $t('forms.placeholder_dept') } `" class="w-100 md:w-14rem" />
                                     <small class="text-danger" v-if="errMsg" v-for="errdepartment in errMsg.department_id" id="user-department-err"  v-text="errdepartment"></small>
                                 </div>
                                 <div class="col-md-6">
-                                    <Dropdown :class="invalid" v-model="user.position_id" option-value="id" :options="positions" optionLabel="name" placeholder="Cargo.." class="w-100 md:w-14rem" />
+                                    <Dropdown :class="invalid" v-model="user.position_id" option-value="id" :options="positions" optionLabel="name" :placeholder="` ${ $t('forms.placeholder_post') } `" class="w-100 md:w-14rem" />
                                     <small class="text-danger" v-if="errMsg" v-for="errposition in errMsg.position_id" id="user-password-err"  v-text="errposition"></small>
                                 </div>
                             </div>
                             <div class="col-md-12 mt-3">
                                 <div class="col-md-12">
-                                    <InputText v-model="user.salary" class="w-100" type="number" placeholder="salario / pagamento" />
+                                    <InputText v-model="user.salary" class="w-100" type="number" :placeholder="`${$t('forms.placeholder_salary')}`" />
                                 </div>
                             </div>
                             <div class="col-md-12 d-flex flex-column mt-3 gap-1">
                                 <div class="col-md-12 d-flex gap-3">
                                     <div class="form-check form-switch">
                                         <input v-model="user.is_full_time" value="1" class="form-check-input" type="radio" name="tipo-colaborador" id="pleno">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault">Pleno</label>
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">{{ $t('forms.fulltime') }}</label>
                                     </div>
                                     <div class="form-check form-switch">
                                         <input v-model="user.is_full_time" value="0" class="form-check-input" type="radio" name="tipo-colaborador" id="taxa">
-                                        <label class="form-check-label" for="flexSwitchCheckDefault">Taxa</label>
+                                        <label class="form-check-label" for="flexSwitchCheckDefault">{{ $t('forms.partial') }}</label>
                                     </div>
                                 </div>
                                 <small class="text-danger" v-if="errMsg" v-for="is_full_time in errMsg.is_full_time" id="user-is-full-time"  v-text="is_full_time"></small>
                             </div>
                         </div>
                         <div class="mt-3">
-                            <Button label="Save" type="submit" />
+                            <Button :label="Save" type="submit" />
                         </div>
                     </form>
                 </div>

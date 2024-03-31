@@ -1,6 +1,6 @@
 <template>
+    <SideBarComponent />
     <div class="w-100">
-        <SideBarComponent />
         <div class="container-fluid">
             <div class="container p-0">
                 <div class="row p-0">
