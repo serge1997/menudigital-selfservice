@@ -12,14 +12,14 @@
                         <div class="row mt-4">
                             <div class="col-lg-6 col-md-10 d-flex flex-column">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="item-name">Item name</label>
+                                    <label for="item-name">{{ $t('forms.name') }}</label>
                                     <InputText :class="invalid" type="text" id="item-name" v-model="menuItem.item_name" aria-describedby="item name" />
                                     <small class="text-danger" v-if="errMsg" v-for="item_name in errMsg.item_name" id="item-name-err"  v-text="item_name"></small>
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-10 d-flex flex-column">
                                 <div class="d-flex flex-column gap-2">
-                                    <label for="item-price">Item price</label>
+                                    <label for="item-price">{{ $t('forms.price') }}</label>
                                     <InputText :class="invalid" type="text" id="item-price" v-model="menuItem.item_price" aria-describedby="item-price" />
                                     <small class="text-danger" v-if="errMsg" v-for="item_price in errMsg.item_price" id="item-price-err"  v-text="item_price"></small>
                                 </div>
@@ -33,28 +33,28 @@
                             <div class="d-flex align-items-center">
                                 <RadioButton type="radio"  id="isactive-true" class="" name="isactive" value="1" v-model="menuItem.item_status" />
                                 <span class="px-1"></span>
-                                <label for="isactive-true" class="">Activate</label>
+                                <label for="isactive-true" class="">{{ $t('forms.abilitate') }}</label>
                             </div>
                             <span class="px-1"></span>
                             <div class="d-flex justify-content-between">
                                 <RadioButton type="radio" class="" id="isactive-false" name="isactive" value="0" v-model="menuItem.item_status" />
                                 <span class="px-1"></span>
-                                <label for="isactive-false" class="">Desactivate</label>
+                                <label for="isactive-false" class="">{{ $t('forms.desabilitate') }}</label>
                             </div>
                         </div>
                         <div class="row d-flex flex-colum mt-2 p-1">
-                            <label for="item-desc">Item description</label>
+                            <label for="item-desc">{{ $t('forms.description') }}</label>
                             <Textarea v-model="menuItem.item_desc" rows="5" cols="30" id="item-desc" />
                             <small class="text-danger" v-if="errMsg" v-for="item_desc in errMsg.item_desc" id="item-desc-err"  v-text="item_desc"></small>
                         </div>
                         <div class="row">
                             <div class="col-md-12 mt-3">
-                                <label for="name" class="fs-5">Imagem do prato : </label>
+                                <label for="name" class="fs-5">{{ $t('forms.picture') }}</label>
                                 <input type="file" class="form-control rounded-0 border-secondary" placeholder="nome do prato">
                             </div>
                         </div>
                         <div class="mt-3">
-                            <Button type="submit" label="Salvar"/>
+                            <Button type="submit" :label="`${$t('forms.submits.create')}`"/>
                         </div>
                     </form>
                 </div>

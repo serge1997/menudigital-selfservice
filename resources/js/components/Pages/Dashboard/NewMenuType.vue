@@ -1,8 +1,6 @@
 <template>
+    <SideBarComponent />
     <div class="container-fuid d-flex justify-content-between">
-        <div class="position-fixed">
-            <SideBarComponent class="text-center"></SideBarComponent>
-        </div>
         <div class="container">
             <div class="row">
                 <div class="col-8 m-auto">

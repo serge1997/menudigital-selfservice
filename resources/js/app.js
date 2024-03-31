@@ -192,6 +192,45 @@ const locales = {
             twelve: 'Parametros',
             logout: 'Sair',
             lang_label: 'Lingua'
+        },
+        forms: {
+            name: 'Nome',
+            first_name: 'Sobrenome',
+            tel: 'Telefone',
+            user_name: 'Nome de usúario: ',
+            password: 'Senha',
+            placeholder_dept: 'Departamento',
+            placeholder_post: 'Cargo',
+            placeholder_salary: 'Salario',
+            placeholder_supplier: 'Selecione fornecedore',
+            picture: 'Foto',
+            observation: 'Observações',
+            canal: 'Canal de reservação',
+            n_person: 'N pessoa',
+            hour: 'horario',
+            measure_unit: 'Unidade de medida',
+            description: 'Descriação',
+            unit_contain: 'Conteuto da unidade',
+            min_quantity: 'Quantidade minimo',
+            requisition_number: 'Numero da requisição',
+            product_name: 'Nome do produto',
+            product_quantity: 'Quantidade do produto',
+            peoduct_cost: 'Custo',
+            city: 'Cidade',
+            neighborhood: 'Bairro',
+            person_id: 'CNPJ / CPF',
+            submits: {
+                create_reser: 'Confirmar reserva',
+                create: 'Salvar',
+                update: 'Editar'
+            },
+            in: 'Entrada',
+            out: 'Saída',
+            partial: 'Taxa',
+            fulltime: 'Pleno',
+            price: 'Preço',
+            abilitate: 'Habilitar',
+            desabilitate: 'Desabilitar'
         }
     },
     fr: {
@@ -342,8 +381,48 @@ const locales = {
             twelve: 'Réglage',
             logout: 'Se deconnecter',
             lang_label: 'Langue'
+        },
+        forms: {
+            name: 'Nom',
+            first_name: 'Prénom',
+            tel: 'Telephone',
+            user_name: "Nom d'ultilisateur",
+            password: 'Mots de passe',
+            placeholder_dept: 'Departement',
+            placeholder_post: 'Poste',
+            placeholder_salary: 'Salaire | paiement',
+            placeholder_supplier: 'Selection de fournisseur',
+            picture: 'Photo',
+            observation: 'Observation',
+            canal: 'Canal de reservation',
+            n_person: 'N personne',
+            hour: 'heur',
+            measure_unit: 'Unité de mésure',
+            description: 'Descrition',
+            unit_contain: "Contenu de l'unité",
+            min_quantity: 'Quantité minimum',
+            requisition_number: 'Numero de la requisition',
+            product_name: 'Nom du produits',
+            product_quantity: 'Quantité du produit',
+            peoduct_cost: 'Coût',
+            city: 'Ville',
+            neighborhood: 'Quartier',
+            person_id: 'Numero ID national',
+            submits: {
+                create_reser: 'Confirmer la reservation',
+                create: 'Enregistrer',
+                update: 'Actualiser'
+            },
+            in: 'Entrée',
+            out: 'Sortie',
+            partial: 'Extra',
+            fulltime: 'Plein temps',
+            price: 'Prix de vente',
+            abilitate: 'Habiliter',
+            desabilitate: 'Deshabiliter'
+
         }
-    }
+    },
 }
 const language = localStorage.getItem('lang') !== null ? localStorage.getItem('lang') : 'pt';
 i18next.init({
