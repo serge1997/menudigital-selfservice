@@ -81,11 +81,11 @@
                     </div>
                    <div class="d-flex justify-content-center align-items-center">
                        <div class="d-flex justify-content-center align-items-center rounded-circle" :class="cardClass.cardClassThis">
-                           <i v-if="!monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
+                           <i v-if="monthlySell.current > monthlySell.last" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                            <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                        </div>
-                       <small v-if="monthlySell.current > monthlySell.last" class="text-success px-1 fw-medium">{{ ((monthlySell.current - monthlySell.last) / monthlySell.current * 100).toFixed(2)  }}%</small>
-                       <small v-else class="text-danger px-1 fw-medium">{{ ((monthlySell.current - monthlySell.last) / monthlySell.current * 100).toFixed(2)  }}%</small>
+                       <small v-if="monthlySell.current > monthlySell.last" class="text-success px-1 fw-medium">{{ (((monthlySell.last - monthlySell.current) * 100) / monthlySell.last).toFixed(2)  }}%</small>
+                       <small v-else class="text-danger px-1 fw-medium">-{{ (((monthlySell.last - monthlySell.current) * 100) / monthlySell.last).toFixed(2)  }}%</small>
                    </div>
                 </div>
             </div>
@@ -104,11 +104,11 @@
                     </div>
                     <div class="d-flex align-items-center">
                         <div class="d-flex justify-content-center align-items-center rounded-circle" :class="cardClass.cardClassLast">
-                            <i v-if="monthlyComparaison" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
+                            <i v-if="monthlySell.current < monthlySell.last" class="pi pi-caret-up" style="color: green; font-weight: 400; font-size: 1.1rem"></i>
                             <i v-else class="pi pi-caret-down" style="color: #e63958; font-weight: 400; font-size: 1.1rem"></i>
                         </div>
-                        <small v-if="monthlySell.current > monthlySell.last" class="text-danger fw-medium">{{ monthlySell.last < 1 && '-100' || ((monthlySell.last - monthlySell.current) / monthlySell.last * 100).toFixed(2)  }}%</small>
-                        <small v-else="monthlySell.current > monthlySell.last" class="text-success fw-medium">{{ monthlySell.last < 1 && '-100' || ((monthlySell.last - monthlySell.current) / monthlySell.last * 100).toFixed(2)  }}%</small>
+                        <small v-if="monthlySell.current < monthlySell.last" class="text-success px-1 fw-medium">{{ (((monthlySell.last - monthlySell.current) * 100) / monthlySell.last).toFixed(2)  }}%</small>
+                       <small v-else class="text-danger px-1 fw-medium">-{{ (((monthlySell.last - monthlySell.current) * 100) / monthlySell.last).toFixed(2)  }}%</small>
                     </div>
                 </div>
             </div>
@@ -284,7 +284,7 @@ export default {
                     this.monthlySell.current = Number(index.total)
                 })
                 this.monthlySell.lastMonth.forEach(index => {
-                    //this.monthlySell.last = Number(index.total)
+                    this.monthlySell.last = Number(index.total)
                 })
                 for (let typename of response.data.type){
                     if (this.typesCollection.indexOf(typename.type) === -1){
