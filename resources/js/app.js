@@ -221,7 +221,7 @@ const locales = {
                 one: 'Produit',
                 two: 'Quantité initial',
                 three: 'Sortie',
-                four: 'Quantité final'
+                four: 'Quantité disponible'
             }
         },
         //bill history component
@@ -363,9 +363,9 @@ const locales = {
             unit_contain: "Contenu de l'unité",
             min_quantity: 'Quantité minimum',
             requisition_number: 'Numero de la requisition',
-            product_name: 'Nom du produits',
+            product_name: 'Nom du produit',
             product_quantity: 'Quantité du produit',
-            peoduct_cost: 'Coût',
+            product_cost: 'Coût',
             city: 'Ville',
             neighborhood: 'Quartier',
             person_id: 'Numero ID national',
@@ -381,8 +381,14 @@ const locales = {
             price: 'Prix de vente',
             abilitate: 'Habiliter',
             desabilitate: 'Deshabiliter'
-
-        }
+        },
+        stockModals: {
+            product_title: 'Nouveau produit',
+            create_fiche: 'Nouvelle fiche technique',
+            delivery_title: 'Nouvelle livraison',
+            create_supplier: 'Fournisseur',
+            fiche_add: 'Adicionner'
+        },
     },
 }
 const language = localStorage.getItem('lang') !== null ? localStorage.getItem('lang') : 'pt';

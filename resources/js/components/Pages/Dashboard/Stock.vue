@@ -34,10 +34,10 @@
                 </div>
             </template>
             <Column field="productID" sortable style="width: 10%" exportHeader="Product Code" header="Code"></Column>
-            <Column field="prod_name" sortable style="width: 25%" header="Name"></Column>
-            <Column field="unitCost" sortable style="width: 10%" header="Cost"></Column>
-            <Column field="sup_name" sortable style="width: 25%" header="Supplier"></Column>
-            <Column field="saldoFinal" sortable style="width: 10%" header="Quantity"></Column>
+            <Column field="prod_name" sortable style="width: 25%" :header="`${$t('operator.dataTable.two')}`"></Column>
+            <Column field="unitCost" sortable style="width: 10%" :header="`${$t('bicost.dataTable.five')}`"></Column>
+            <Column field="sup_name" sortable style="width: 25%" :header="`${$t('bicost.dataTable.three')}`"></Column>
+            <Column field="saldoFinal" sortable style="width: 10%" :header="`${$t('inventory.dataTable.four')}`"></Column>
             <Column header="Status" style="width: 15%">
                 <template class="w-100" #body="{ data }">
                     <Tag style="width: 90px" v-if="data.saldoFinal < data.min_quantity && data.saldoFinal > 0" value="Lowstock" severity="warning" />
@@ -45,7 +45,7 @@
                     <Tag style="width: 90px" v-else value="In Stock" severity="success" />
                 </template>
             </Column>
-            <Column v-if="managerAccess.includes(`${auth.position_id}`)" field="prod_unmed" header="Ação" style="width: 25%">
+            <Column v-if="managerAccess.includes(`${auth.position_id}`)" field="prod_unmed" :header="`${$t('bicost.dataTable.height')}`" style="width: 25%">
                 <template #body="{ data }">
                     <div class="d-flex">
                         <Button @click="showProductToEdit(data.productID)" icon="pi pi-pencil" text/>

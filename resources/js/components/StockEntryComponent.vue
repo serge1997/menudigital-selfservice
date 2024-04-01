@@ -5,12 +5,12 @@
                 Loading
             </swal-html>
         </template>
-        <Button label="Save a product delivery" icon="pi pi-external-link" @click="visibleStockEntryModal = true" />
-        <Dialog v-model:visible="visibleStockEntryModal" maximizable modal header="Save product Delivery" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Button :label="`${$t('stockModals.delivery_title')}`" icon="pi pi-external-link" @click="visibleStockEntryModal = true" />
+        <Dialog v-model:visible="visibleStockEntryModal" maximizable modal :header="`${$t('stockModals.delivery_title')}`" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100">
                 <div class="w-100 d-flex flex-column gap-2 mb-3">
                     <input type="hidden" v-model="stockEntry.requisition_id"/>
-                    <label for="product-quantity">Numero da requisição: </label>
+                    <label for="product-quantity">{{$t('forms.requisition_number')}}: </label>
                     <AutoComplete v-model="stockEntry.requisition_code" dropdown :suggestions="requisitionCode" @complete="searchRequisitionCode" @blur="getRequisitionProduct" placeholder="Digite o código da requisição"/>
                     <small class="text-danger" v-if="errMsg" v-for="requisition_code in errMsg.requisition_id" id="product-quantity-err"  v-text="requisition_code"></small>
                 </div>
@@ -34,31 +34,30 @@
                     </div>
                 </div>
                 <div class="w-100 d-flex flex-column gap-2">
-                    <label for="product-name">Product name</label>
+                    <label for="product-name">{{$t('forms.product_name')}}</label>
                     <Dropdown @change="loadProductSupplier(stockEntry.productID)" :class="invalid" v-model="stockEntry.productID" :options="products" option-value="id" option-label="prod_name" placeholder="product"/>
                     <small class="text-danger" v-if="errMsg" v-for="prod_name in errMsg.productID" id="product-name-err"  v-text="prod_name"></small>
                 </div>
                 <div class="w-100 d-flex gap-2 mt-3">
                     <div class="d-flex flex-column w-50">
-                        <label for="product-quantity">Product quantity</label>
+                        <label for="product-quantity">{{$t('forms.product_quantity')}}</label>
                         <InputText :class="invalid" type="text" id="product-quantity" v-model="stockEntry.quantity" aria-describedby="product-name" placeholder="product quantity"/>
                         <small class="text-danger" v-if="errMsg" v-for="quantity in errMsg.quantity" id="product-quantity-err"  v-text="quantity"></small>
                     </div>
                     <div class="d-flex flex-column w-50">
-                        <label for="product-cost">Cost</label>
+                        <label for="product-cost">{{$t('forms.product_cost')}}</label>
                         <InputText :class="invalid" type="number" id="product-cost" v-model="stockEntry.unitCost" aria-describedby="product-name" placeholder="product unit cost"/>
                         <small class="text-danger" v-if="errMsg" v-for="unitCost in errMsg.unitCost" id="product-unitCost-err"  v-text="unitCost"></small>
                     </div>
                 </div>
                 <div class="w-100 d-flex flex-column gap-2 mt-3">
-                    <label for="supplier">Supplier</label>
+                    <label for="supplier">{{$t('forms.placeholder_supplier')}}</label>
                     <Dropdown :class="invalid" v-model="stockEntry.supplierID" :options="suppliers" option-value="id" option-label="sup_name" placeholder="supplier"/>
-
                     <small class="text-danger" v-if="errMsg" v-for="sup_name in errMsg.supplierID" id="supplier-err"  v-text="sup_name"></small>
                 </div>
             </div>
             <div class="w-100 d-flex justify-content-end p-3 mt-3">
-                <Button @click="StoreStockEntry"  label="Save"/>
+                <Button @click="StoreStockEntry"  :label="`${$t('forms.submits.create')}`"/>
             </div>
         </Dialog>
     </div>
