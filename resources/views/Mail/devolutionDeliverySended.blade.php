@@ -4,10 +4,11 @@
 @php
     $date = date('d/m/Y H:i');
 @endphp
-@if ( isset($author, $delivery) )
+@if ( isset($author, $delivered_at, $requisitionCode) )
     - Date: {{ $date }}
+    - Date of delivery: {{ date('d/m/Y', strtotime($delivered_at)) }}
     - Author: {{ $author }}
-    - Requisition code: {{ $delivery->requisition_code}}
+    - Requisition code: {{ $requisitionCode }}
 @endif
 
 <x-mail::button :url="'http://127.0.0.1:8000/dashboard/consult-delivery'">

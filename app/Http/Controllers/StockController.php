@@ -87,7 +87,7 @@ class StockController extends Controller
             return response()->json($message);
         }catch(Exception $e){
             DB::rollBack();
-            return response()->json($e->getMessage(), 500);
+            return response()->json($e->getMessage()." ". $e->getFile(). " ".$e->getLine(), 500);
         }
     }
 

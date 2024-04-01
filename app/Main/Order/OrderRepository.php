@@ -346,12 +346,12 @@ class OrderRepository implements OrderRepositoryInterface
         $latestOrder = Pedido::select('*')->latest()->first();
         $latestOrderDate = date('Y-m-d', strtotime("$latestOrder->created_at"));
         $latesTime = substr($latestOrder->created_at, 11, 2);
-
         if (in_array($latesTime, ['00', '01', '02', '03', '04', '05', '06'])){
-            $open .= strtotime("{$latestOrderDate} - 1 day");
+            $open .= date('Y-m-d', strtotime("{$latestOrderDate} - 1 day")). ' '. $restaurant->res_open;
         }else{
             $open .= $today. ' '. $restaurant->res_open;
         }
+
         $report = DB::table('itens_pedido')
             ->select(
                 'menuitems.item_name',

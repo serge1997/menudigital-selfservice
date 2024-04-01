@@ -78,6 +78,10 @@ class PurchaseRequisitionRepository implements PurchaseRequisitionRepositoryInte
         return $requisition;
     }
 
+    public function findByrequisitionId($id)
+    {
+        return PurchaseRequisition::find($id);
+    }
     public function findById($id)
     {
         $requisition = DB::table('purchase_requisitions')

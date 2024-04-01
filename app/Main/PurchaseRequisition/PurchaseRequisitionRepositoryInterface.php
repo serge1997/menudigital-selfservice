@@ -6,6 +6,7 @@ interface PurchaseRequisitionRepositoryInterface
     public function create($request);
     public function listAll();
     public function findById($id);
+    public function findByrequisitionId($id);
     public function deleteByRequisitionIdProductId($requisition_id, $product_id);
     public function deleteByRequisitionId($requisition_id);
 }

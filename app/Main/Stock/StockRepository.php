@@ -27,6 +27,7 @@ use App\Events\ClosingNotified;
 use App\Models\Pedido;
 use App\Models\User;
 use App\Mail\DevolutionDevoliverySended;
+use App\Mail\ClosingNotification;
 use Illuminate\Support\Facades\Mail;
 
 class StockRepository implements StockRepositoryInterface
@@ -300,35 +301,19 @@ class StockRepository implements StockRepositoryInterface
         //quantidade se o produto for bt (unidade) ou cl/g...
         $quantityCalc = $product->prod_unmed == "bt" ? $stock->quantity : $stock->quantity * $product->prod_contain;
         if ($saldo->saldoFinal >= $quantityCalc && is_null($quantity)){
-            if ($product->prod_unmed == "bt"){
-                Saldo::where('productID', $product->id)
-                    ->update([
-                        'saldoFinal' => $saldo->saldoFinal - $stock->quantity,
-                        'saldoInicial' => $saldo->saldoInicial - $stock->quantity
-                    ]);
-            }else{
-                Saldo::where('productID', $product->id)
-                    ->update([
-                        'saldoFinal' => $saldo->saldoFinal - ($stock->quantity * $product->prod_contain),
-                        'saldoInicial' => $saldo->saldoInicial - ($stock->quantity * $product->prod_contain),
-                    ]);
-            }
-            return true;
+            Saldo::where('productID', $product->id)
+                ->update([
+                    'saldoFinal' => $saldo->saldoFinal - $quantityCalc,
+                    'saldoInicial' => $saldo->saldoInicial - $quantityCalc
+                ]);
+                return true;
         }else {
             if ($quantityCalc <= $saldo->saldoFinal && $quantity > $stock->$quantity){
-                if ($product->prod_unmed == "bt"){
-                    Saldo::where('productID', $product->id)
-                        ->update([
-                            'saldoFinal' => $saldo->saldoFinal - $quantity,
-                            'saldoInicial' => $saldo->saldoInicial - $quantity
-                        ]);
-                }else{
-                    Saldo::where('productID', $product->id)
-                        ->update([
-                            'saldoFinal' => $saldo->saldoFinal - ($quantity * $product->prod_contain),
-                            'saldoInicial' => $saldo->saldoInicial - ($quantity * $product->prod_conatain),
-                        ]);
-                }
+                Saldo::where('productID', $product->id)
+                    ->update([
+                        'saldoFinal' => $saldo->saldoFinal - $quantityCalc,
+                        'saldoInicial' => $saldo->saldoInicial - $quantityCalc
+                    ]);
                 return true;
             }
         }
@@ -348,6 +333,7 @@ class StockRepository implements StockRepositoryInterface
     {
         return  Saldo::where('productID', $product->id)->first();
     }
+
     public function deleteProductFromDelivery($requisition_id ,$product_id, $request): bool
     {
         $product = $this->productRepositoryInterface->findById($product_id);
@@ -387,7 +373,6 @@ class StockRepository implements StockRepositoryInterface
                 ])->update([
                     'totalCost' => $productDelivred->totalCost - ($productDelivred->unitCost * $request->quantity),
                     'quantity' => $productDelivred->quantity - $request->quantity,
-                    'emissao' => $emissao
                 ]);
                 $stock = new StockEntry();
                 $stock->requisition_id = $request->requisition_id;
@@ -399,9 +384,12 @@ class StockRepository implements StockRepositoryInterface
                 $stock->emissao = $emissao;
                 $stock->is_delete = true;
                 $stock->save();
+                $requisition = $this->purchaseRequisitionRepositoryInterface->findByrequisitionId($stock->requisition_id);
                 $product = $this->productRepositoryInterface->findById($request->product_id);
                 $saldo = $this->findSaldoByProductId($product);
                 $this->reduceFromSaldoAfterDeleteDelivery($product, $saldo, $request->requisition_id, $request->quantity);
+                Mail::to(User::find(User::GERENTE)->first())
+                    ->queue((new DevolutionDevoliverySended($requisition))->onConnection('sync'));
                 return true;
             }else {
                 throw new Exception(__('messages.delivery_quantity_exception'));
@@ -549,7 +537,9 @@ class StockRepository implements StockRepositoryInterface
         $this->autoKitchenRequisition($request);
         $query = "UPDATE saldos SET saldoInicial = saldoFinal";
         DB::select($query);
-        event(new ClosingNotified($order));
+        Mail::to(User::find(User::GERENTE)->first())
+            ->queue((new ClosingNotification())->onConnection('sync'));
+        //event(new ClosingNotified($order));
     }
 
     public function cureentSaldoCheck()

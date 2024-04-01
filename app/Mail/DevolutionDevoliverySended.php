@@ -9,6 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\PurchaseRequisition;
+use App\Models\StockEntry;
 use App\Models\User;
 
 class DevolutionDevoliverySended extends Mailable implements ShouldQueue
@@ -43,8 +44,9 @@ class DevolutionDevoliverySended extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'Mail.devolutionDeliverySended',
             with: [
-                'delivery' => $this->delivery,
-                'author' => User::find(session('auth-vue'))->first()->name
+                'delivered_at' => StockEntry::where([['is_delete', false], ['requisition_id', $this->delivery->id]])->first()->emissao,
+                'author' => User::find(session('auth-vue'))->first()->name,
+                'requisitionCode' => PurchaseRequisition::find($this->delivery->id)->requisition_code
             ]
         );
     }
