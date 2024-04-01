@@ -1,17 +1,17 @@
 <template>
     <div class="container">
-        <Button label="Create technical sheet" icon="pi pi-external-link" @click="visibleTechninalShettModal = true" />
-        <Dialog v-model:visible="visibleTechninalShettModal" maximizable modal header="Create a technical sheet" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Button :label="`${$t('stockModals.create_fiche')}`" icon="pi pi-external-link" @click="visibleTechninalShettModal = true" />
+        <Dialog v-model:visible="visibleTechninalShettModal" maximizable modal :header="`${$t('stockModals.create_fiche')}`" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100 mt-3">
                 <div class="w-100 d-flex flex-column gap-2">
                     <div class="w-100 d-flex justify-content-center">
                         <div class="w-75">
                             <label for="prod-description">Menu item</label>
-                            <Dropdown v-model="fiche.itemID" option-value="id" :options="menuItems" optionLabel="item_name" placeholder="Select user function" class="w-100 md:w-14rem" />
+                            <Dropdown v-model="fiche.itemID" option-value="id" :options="menuItems" optionLabel="item_name" placeholder="Select menu item" class="w-100 md:w-14rem" />
                             <small v-if="errMsg" v-for="msg in errMsg.itemID" class="text-danger p-1"> {{ msg }} </small>
                         </div>
                         <div class="p-4">
-                            <Button label="Add field" @click="AddInputField" />
+                            <Button :label="`${$t('stockModals.fiche_add')}`" @click="AddInputField" />
                         </div>
                     </div>
                 </div>
@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="w-100 d-flex justify-content-end mt-3 p-2">
-                <Button @click="storeTechnicalFiche" label="Save" />
+                <Button @click="storeTechnicalFiche" :label="`${$t('forms.submits.create')}`" />
             </div>
         </Dialog>
     </div>

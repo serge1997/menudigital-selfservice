@@ -1,53 +1,53 @@
 <template>
     <div class="container">
-        <Button label="Create a supplier register" icon="pi pi-external-link" @click="visibleSupplierModal = true" />
-        <Dialog v-model:visible="visibleSupplierModal" maximizable modal header="Create a new supplier" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+        <Button :label="`${$t('stockModals.create_supplier')}`" icon="pi pi-external-link" @click="visibleSupplierModal = true" />
+        <Dialog v-model:visible="visibleSupplierModal" maximizable modal :header="`${$t('stockModals.create_supplier')}`" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="w-100 py-2">
                 <Button @click="showForm = !showForm" label="New" icon="pi pi-plus"></Button>
             </div>
             <div v-if="showForm">
                 <div class="w-100 d-flex gap-2 mt-3">
                     <div class="w-50 d-flex flex-column gap-2">
-                        <label for="sup-name">Supplier name</label>
+                        <label for="sup-name">{{$t('forms.name')}}</label>
                         <input type="hidden" v-model="supplier.id"/>
                         <InputText :class="invalid" type="text" id="sup-name" v-model="supplier.sup_name" aria-describedby="product-name" placeholder="product name"/>
                         <small class="text-danger" v-if="errMsg" v-for="sup_name in errMsg.sup_name" id="product-name-err"  v-text="sup_name"></small>
                     </div>
                     <div class="w-50 d-flex flex-column gap-2">
-                        <label for="sup-cpf">Supplier person id</label>
+                        <label for="sup-cpf">{{$t('forms.person_id')}}</label>
                         <InputText type="text" id="sup-cpf" v-model="supplier.sup_personID" aria-describedby="cpf" placeholder="cpf"/>
                     </div>
                 </div>
                 <div class="w-100 d-flex gap-2 mt-3">
                     <div class="d-flex flex-column w-50">
-                        <label for="sup-tel">Contact (cel) </label>
+                        <label for="sup-tel">{{$t('forms.tel')}} </label>
                         <InputMask :class="invalid"  mask="(99)99 999-9999" type="text" id="product-quantity" v-model="supplier.sup_tel" aria-describedby="sup-tel" placeholder="(99)99 999-9999"/>
                         <small class="text-danger" v-if="errMsg" v-for="tel in errMsg.sup_tel" id="sup-tel-err"  v-text="tel"></small>
                     </div>
                     <div class="d-flex flex-column w-50">
-                        <label for="sup-bairro">Bairro </label>
+                        <label for="sup-bairro">{{$t('forms.neighborhood')}} </label>
                         <InputText type="text" id="sup-bairro" v-model="supplier.sup_neighborhood" aria-describedby="product-name" placeholder="product neighborhood"/>
                     </div>
                 </div>
                 <div class="d-flex flex-column w-100 mt-3">
-                    <label for="sup-email">Supplier e-mail </label>
+                    <label for="sup-email">E-mail </label>
                     <InputText type="text" id="sup-email" v-model="supplier.sup_email" aria-describedby="product-name" placeholder="supplier e-mail"/>
                 </div>
                 <div class="d-flex flex-column w-100 mt-3">
-                    <label for="sup-city">Supplier city </label>
+                    <label for="sup-city">{{$t('forms.city')}} </label>
                     <InputText type="text" id="sup-city" v-model="supplier.sup_city" aria-describedby="product-name" placeholder="supplier city"/>
                 </div>
                 <div class="w-100 d-flex justify-content-end p-3 mt-3">
-                    <Button @click="StoreSupplier" label="Save" />
+                    <Button @click="StoreSupplier" :label="`${$t('forms.submits.create')}`" />
                 </div>
             </div>
             <div class="w-100">
                 <DataTable ref="dt" :value="suppliers" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem" edit-mode="row">
                     <Column field="id" sortable style="width: 10%" header="Code"></Column>
-                    <Column field="sup_name" sortable style="width: 10%" header="Name"></Column>
+                    <Column field="sup_name" sortable style="width: 10%" :header="`${$t('operator.dataTable.two')}`"></Column>
                     <Column field="sup_email" sortable style="width: 20%" header="Email"></Column>
-                    <Column field="sup_tel" sortable style="width: 10%" header="Supplier Contact"></Column>
-                    <Column header="Ações" style="width: 10%">
+                    <Column field="sup_tel" sortable style="width: 10%" :header="`${$t('forms.tel')}`"></Column>
+                    <Column :header="`${$t('bicost.dataTable.height')}`" style="width: 10%">
                         <template #body="{ data }">
                             <div class="d-flex">
                                 <Button @click="showSupplierToEdit(data.id)" icon="pi pi-pencil" text/>
