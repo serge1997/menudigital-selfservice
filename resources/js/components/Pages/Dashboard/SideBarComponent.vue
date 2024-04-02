@@ -235,6 +235,13 @@ export default {
             this.time = dateTime.substring(12, 20)
         }, 1000)
 
+        if ( localStorage.getItem('lang') ) {
+            let lang = localStorage.getItem('lang')
+            axios.put('/api/language/' + lang).then((response) => {
+                console.log('language setted');
+            })
+        }
+
     },
 
     created(){
