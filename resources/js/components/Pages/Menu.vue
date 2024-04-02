@@ -42,48 +42,48 @@
                 </div>
             </div>
         </div>
-        <div class="row p-4">
+        <div class="row">
             <div v-if="loadBarType" class="col-md-8 d-flex flex-column mb-3 m-auto">
                 <small class="text-center">Aguarde...</small>
                 <ProgressBar mode="indeterminate" style="height: 6px;"/>
             </div>
-            <div v-if="itemOfType < 1" v-for="item in MenuItems" :key="item.id" class="col-lg-5 col-md-10 mb-4 m-auto" disabled>
-                <div class="card rounded-0 p-0">
-                    <div class="card-body d-flex p-0">
-                        <div class="col-6">
-                            <img class="w-100 h-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
+        </div>
+        <div class="row p-4">
+            <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-10 mb-4 m-auto" disabled>
+                <div class="card rounded-0 border-0 p-0 col-md-8">
+                    <div class="card-body border shadow-sm d-flex flex-column p-0">
+                        <div class="col-md-12">
+                            <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
                         </div>
-                        <div class="w-100 d-flex flex-column justify-content-between p-1">
-                            <small class="m-auto" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
-                            <small class="m-auto" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                        <div class="col-md-12 d-flex flex-column justify-content-between">
+                            <small class="m-auto p-1" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
+                            <small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                            <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
-                            <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
-                            <div class="mt-2 d-flex justify-content-center gap-1">
-                                <Button v-if="item.item_rupture" icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
-                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" />
-                                <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
+                            <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
+                            <div class="order-btn-box text-white d-flex justify-content-end">
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToOrder(item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="addToOrder(item.id)" disabled />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div v-else v-for="item in itemOfType" class="col-lg-5 col-md-10 mb-4 m-auto">
-                <div class="card rounded-0 p-0">
-                    <div class="card-body d-flex p-0">
-                        <div class="col-6">
-                            <img class="w-100 h-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
+            <div v-else v-for="item in itemOfType" class="col-lg-3 col-md-10 mb-4 m-auto">
+                <div class="card rounded-0 border-0 p-0 col-lg-8 col-md-12 m-auto">
+                    <div class="card-body border shadow-sm d-flex flex-column p-0">
+                        <div class="col-md-12">
+                            <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
                         </div>
-                        <div class="w-100 d-flex flex-column justify-content-between p-1">
-                            <small class="m-auto" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
-                            <small class="m-auto" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                        <div class="col-md-12 d-flex flex-column justify-content-between">
+                            <small class="m-auto p-1" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
+                            <small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                            <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
-                            <span class="text-center text-secondary">{{ item.desc_type }}</span>
-                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
-                            <div class="mt-2 d-flex justify-content-center gap-1">
-                                <Button v-if="item.item_rupture" icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
-                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" />
-                                <Button icon="pi pi-eye" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
+                            <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
+                            <div class="order-btn-box text-white d-flex justify-content-end">
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToOrder(item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="addToOrder(item.id)" disabled />
                             </div>
                         </div>
                     </div>

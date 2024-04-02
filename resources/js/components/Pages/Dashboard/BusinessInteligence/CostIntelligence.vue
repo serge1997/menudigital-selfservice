@@ -4,7 +4,7 @@
         <div class="col-md-8 m-auto mt-3 p-2">
             <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
         </div>
-        <div class="row d-flex flex-column">
+        <div class="row">
             <Toolbar style="width: 100%;">
                 <template #center>
                     <div style="min-width: 75rem;" class="d-flex justify-content-between gap-3">
