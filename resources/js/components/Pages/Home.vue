@@ -77,12 +77,14 @@ export default {
         SetTableNumer() {
             localStorage.setItem('table', this.tableNumber);
             this.$router.push('/menu')
-            //window.location.reload();
         },
 
         logout() {
             axios.post('/api/logout').then((response) => {
                 localStorage.removeItem('token')
+                localStorage.removeItem('stockAccess')
+                localStorage.removeItem('managerAccess')
+                localStorage.removeItem('administrativeAccess')
                 this.$router.push('/');
             }).catch((error) => {
                 console.log(error);

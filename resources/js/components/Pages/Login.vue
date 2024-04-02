@@ -68,7 +68,7 @@ export default {
             invalid: null,
             visibleLoginModal: false,
             load: false,
-            domain: 'http://127.0.0.1:8000',
+            domain: location.href,
         }
     },
 
@@ -82,7 +82,7 @@ export default {
                 localStorage.setItem('managerAccess', response.data.managerAccess);
                 localStorage.setItem('administrativeAccess', response.data.administrativeAccess)
                 this.$toast.success("Seja Bem vindo!");
-                setTimeout(() => {location.href = `${this.domain}/dashboard/operador`}, this.randTime())
+                setTimeout(() => {location.href = `${this.domain}dashboard/operador`}, this.randTime())
             }).catch((errors) => {
                 errors.response.status !== 422 ? this.loginerrresponse = errors.response.data: ""
                 this.msgerrors = errors.response.data.errors
