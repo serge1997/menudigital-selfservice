@@ -14,7 +14,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/billboard.js/3.9.3/billboard.min.css" integrity="sha512-6vagKaGvYsy3qbgnB1u56G+WyVS5iPsJH1umRLKEKcCK7oYBQsu/7teAvRQfoIeTNZXoWwn3ord7C0wwJCGw+w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
         <!-- bootsrap -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-        @vite(['resources/css/app.css'])
+        @vite(['resources/js/app.css'])
     </head>
     <body>
       <div id="app">
