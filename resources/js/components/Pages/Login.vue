@@ -27,7 +27,7 @@
                             <small class="text-danger" v-if="msgerrors" v-for="errpassword in msgerrors.password" id="password-err"  v-text="errpassword"></small>
                         </div>
                         <div class="mt-3">
-                            <Button type="submit" label="Sign-innn" />
+                            <Button type="submit" label="Sign-in" />
                         </div>
                     </form>
                 </div>
