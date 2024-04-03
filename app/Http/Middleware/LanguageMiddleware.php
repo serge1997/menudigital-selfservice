@@ -16,7 +16,7 @@ class LanguageMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $lang = $request->session()->get('lang');
+        $lang = !is_null($request->session()->get('lang')) ? $request->session()->get('lang') : 'pt';
         app()->setlocale($lang);
         Log::info("Language seted succesfuly ". $lang);
         return $next($request);
