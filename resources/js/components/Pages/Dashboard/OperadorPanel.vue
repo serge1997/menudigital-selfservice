@@ -1,25 +1,29 @@
 <template>
-     <SideBarComponent></SideBarComponent>
-    <div class="col-lg-12 col-md-12">
-        <template id="swal-template">
-            <swal-html>
-                Loading
-            </swal-html>
-        </template>
-        <div class="d-flex justify-content-between p-0 z-0">
-            <div class="col-8 m-auto">
+    <SideBarComponent/>
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="col-md-8 m-auto">
+                <template id="swal-template">
+                    <swal-html>
+                        Loading
+                    </swal-html>
+                </template>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="col-md-8 m-auto">
                 <h4 class="">{{ $t('operator.title') }}</h4>
                 <div class="py-4">
                     <h5 class="text-center fw-normal text-capitalize">{{ $t('operator.table_box_title') }}</h5>
-                    <div class="col-lg-10 col-md-12 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
-                        <button  v-for="tab in tables" class="btn border-0 col-lg-3 col-md-4">
+                    <div class="col-lg-12 col-md-6 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">
+                        <button  v-for="tab in tables" class="btn border-0 col-lg-3 col-md-2">
                             <div class="col-sm-10 d-flex flex-column border p-2">
                                 <img class="col-sm-5 img-thumbnail border-0" src="/img/free.png" />
                                 <Tag severity="success" :value ="`${$t('operator.table')} ${tab.table}`"/>
                             </div>
                         </button>
                        <button v-for="busy in busyTables" class="col-lg-3 col-md-4 btn border-0">
-                             <div class="col-sm-10 d-flex flex-column border p-2">
+                            <div class="col-sm-10 d-flex flex-column border p-2">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <img class="col-sm-5 img-thumbnail border-0" src="/img/busy.png" />
                                     <Badge severity="warning" :value="busy.customer " />
@@ -27,183 +31,187 @@
                                 <small class="text-left">{{busy.name}}</small>
                                 <Tag severity="danger" :value ="`Mesa ${busy.ped_tableNumber} (${busy.timing})`"/>
                             </div>
-                       </button>
+                        </button>
                     </div>
                 </div>
-                <div class="w-100 py-2 d-flex">
-                    <Toolbar class="w-100">
-                        <template #start>
-                            <Button :label="`${$t('operator.toolbar.one')}`" @click="this.$router.push('/home')" icon="pi pi-plus" class="" />
-                            <!--<Button label="inventory" data-bs-toggle="modal" icon="pi pi-eye" data-bs-target="#InventoryModal" @click.prevent="getOrderItem(pedido.id)" class="mr-2" />-->
-                            <InventoryComponent/>
-                            <SellReportComponent/>
-                            <BillHistoriyComponent :status="status" />
-                        </template>
-                    </Toolbar>
+            </div>
+        </div>
+        <div class="col-md-10 m-auto">
+            <Toolbar>
+                <template #start>
+                    <Button :label="`${$t('operator.toolbar.one')}`" @click="this.$router.push('/home')" icon="pi pi-plus" class="" />
+                    <InventoryComponent/>
+                    <SellReportComponent/>
+                    <BillHistoriyComponent :status="status" />
+                </template>
+            </Toolbar>
+        </div>
+        <div class="col-md-10 m-auto">
+            <table class="table border">
+                <thead>
+                    <tr>
+                        <th class="text-capitalize">Id</th>
+                        <th class="text-capitalize">{{ $t('operator.dataTable.two')}}</th>
+                        <th class="text-capitalize">{{ $t('operator.dataTable.three')}}</th>
+                        <th class="text-capitalize">{{ $t('operator.dataTable.four')}}</th>
+                        <th class="text-capitalize">Status</th>
+                        <th class="text-capitalize">{{ $t('operator.dataTable.six')}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border alert-bg" v-for="pedido in order" :key="pedido.id">
+                        <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.id }}</td>
+                        <td v-else class="success-bg">{{ pedido.id }}</td>
+                        <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.ped_customerName }}</td>
+                        <td v-else class="success-bg">{{ pedido.ped_customerName }}</td>
+                        <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.ped_tableNumber }}</td>
+                        <td v-else class="success-bg">{{ pedido.ped_tableNumber }}</td>
+                        <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.total }}</td>
+                        <td v-else class="success-bg">{{ pedido.total }}</td>
+                        <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.stat_desc }}</td>
+                        <td v-else class="success-bg">{{ pedido.stat_desc }}</td>
+                        <td class="d-flex jusitify-content-center align-items-center">
+                            <Button title="Pagar"
+                                    @click="getPaymentOrderItens(pedido.id)"
+                                    icon="pi pi-money-bill" text
+                            />
+                            <Button
+                                data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+                                @click.prevent="getOrderItem(pedido.id)"
+                                icon="pi pi-eye"
+                                text
+                            />
+                            <Button
+                                icon="pi pi-print"
+                                text
+                            />
+                            <div class="d-flex align-items-center">
+                                <OrderTransfertComponent @get-TransfertItems="getTransferItens(pedido.id)" :transfert-items="titems" :tables="tables"/>
+                            </div>
+                            <Button
+                                @click="setOrderID(pedido.id)" data-bs-toggle="modal"
+                                data-bs-target="#cancelorder" text
+                                icon="pi pi-trash"
+                                class="text-danger"
+                            />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-10">
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 text-capitalize" id="staticBackdropLabel">customer bill</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table w-100 table-active">
+                            <thead>
+                                <tr class="text-capitalize">
+                                    <th>Item</th>
+                                    <th>quantidade</th>
+                                    <th>Valor</th>
+                                    <th>Subtotal</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="item in itens">
+                                    <td>{{ item.item_name }}</td>
+                                    <td>{{ item.item_quantidade }}</td>
+                                    <td>{{ item.item_price }}</td>
+                                    <td>{{ item.item_total }}</td>
+                                    <td>
+                                        <button v-if="item.status_id != 6" data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn border-0 disabled">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round"
+                                                stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
+                                                </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+                                            </svg>
+                                        </button>
+                                        <button v-else data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn border-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                                fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round"
+                                                stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
+                                                </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
+                                            </svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="fw-medium b fs-5">
+                                    <td>Totais</td>
+                                    <td>{{ billTotalItem }}</td>
+                                    <td></td>
+                                    <td class="text-left bg-dark text-white" colspan="2">
+                                        {{ billTotal.toFixed(2) }} R$
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
-               <table class="table border">
-                    <thead>
-                        <tr>
-                            <th class="text-capitalize">Id</th>
-                            <th class="text-capitalize">{{ $t('operator.dataTable.two')}}</th>
-                            <th class="text-capitalize">{{ $t('operator.dataTable.three')}}</th>
-                            <th class="text-capitalize">{{ $t('operator.dataTable.four')}}</th>
-                            <th class="text-capitalize">Status</th>
-                            <th class="text-capitalize">{{ $t('operator.dataTable.six')}}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="border alert-bg" v-for="pedido in order" :key="pedido.id">
-                            <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.id }}</td>
-                            <td v-else class="success-bg">{{ pedido.id }}</td>
-                            <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.ped_customerName }}</td>
-                            <td v-else class="success-bg">{{ pedido.ped_customerName }}</td>
-                            <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.ped_tableNumber }}</td>
-                            <td v-else class="success-bg">{{ pedido.ped_tableNumber }}</td>
-                            <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.total }}</td>
-                            <td v-else class="success-bg">{{ pedido.total }}</td>
-                            <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.stat_desc }}</td>
-                            <td v-else class="success-bg">{{ pedido.stat_desc }}</td>
-                            <td class="d-flex jusitify-content-center align-items-center">
-                                <Button title="Pagar"
-                                      @click="getPaymentOrderItens(pedido.id)"
-                                      icon="pi pi-money-bill" text
-                                />
-                                <Button
-                                   data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                   @click.prevent="getOrderItem(pedido.id)"
-                                   icon="pi pi-eye"
-                                   text
-                                />
-                                <Button
-                                    icon="pi pi-print"
-                                    text
-                                />
-                                <div class="d-flex align-items-center">
-                                    <OrderTransfertComponent @get-TransfertItems="getTransferItens(pedido.id)" :transfert-items="titems" :tables="tables"/>
+            </div>
+        </div>
+        <div class="modal fade" id="cancel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content rounded-0 border-0">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito (cancel item)</h1>
+                        <span class="px-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
+                                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                    <div class="modal-body">
+                        <p class="fs-5">Manager Password needed</p>
+                        <div>
+                            <form @submit.prevent="cancelOrderItem">
+                                <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
+                                <input class="form-control rounded-0 border-secondary mt-2" type="text" v-model="cancel.quantidade" placeholder="Quantidade">
+                                <div class="form-check form-switch mt-3">
+                                    <input class="form-check-input border border-secondary" type="checkbox" id="flexSwitchCheckDefault" v-model="cancel.to_return">
+                                    <label class="form-check-label fw-medium" for="flexSwitchCheckDefault">Com retorno em estoque ?</label>
                                 </div>
-                                <Button
-                                    @click="setOrderID(pedido.id)" data-bs-toggle="modal"
-                                    data-bs-target="#cancelorder" text
-                                    icon="pi pi-trash"
-                                    class="text-danger"
-                                />
-                            </td>
-                        </tr>
-                    </tbody>
-               </table>
-            </div>
-            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content rounded-0">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5 text-capitalize" id="staticBackdropLabel">customer bill</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table class="table w-100 table-active">
-                                <thead>
-                                    <tr class="text-capitalize">
-                                        <th>Item</th>
-                                        <th>quantidade</th>
-                                        <th>Valor</th>
-                                        <th>Subtotal</th>
-                                        <th>Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="item in itens">
-                                        <td>{{ item.item_name }}</td>
-                                        <td>{{ item.item_quantidade }}</td>
-                                        <td>{{ item.item_price }}</td>
-                                        <td>{{ item.item_total }}</td>
-                                        <td>
-                                            <button v-if="item.status_id != 6" data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn border-0 disabled">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round"
-                                                    stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
-                                                    </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
-                                                </svg>
-                                            </button>
-                                            <button v-else data-bs-toggle="modal" @click="StorParams(item.id, item.item_id)" data-bs-target="#cancel" class="btn border-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                    fill="none" stroke="#d9534f" stroke-width="1.3" stroke-linecap="round"
-                                                    stroke-linejoin="round" class="feather feather-x-square"><rect x="3" y="3" width="18" height="18" rx="2" ry="2">
-                                                    </rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line>
-                                                </svg>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                                <tfoot>
-                                    <tr class="fw-medium b fs-5">
-                                        <td>Totais</td>
-                                        <td>{{ billTotalItem }}</td>
-                                        <td></td>
-                                        <td class="text-left bg-dark text-white" colspan="2">
-                                            {{ billTotal.toFixed(2) }} R$
-                                        </td>
-                                    </tr>
-                                </tfoot>
-                            </table>
+                                <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="cancel" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content rounded-0 border-0">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito (cancel item)</h1>
-                            <span class="px-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                     stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
-                                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                            </span><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                        <div class="modal-body">
-                            <p class="fs-5">Manager Password needed</p>
-                            <div>
-                                <form @submit.prevent="cancelOrderItem">
-                                    <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
-                                    <input class="form-control rounded-0 border-secondary mt-2" type="text" v-model="cancel.quantidade" placeholder="Quantidade">
-                                    <div class="form-check form-switch mt-3">
-                                        <input class="form-check-input border border-secondary" type="checkbox" id="flexSwitchCheckDefault" v-model="cancel.to_return">
-                                        <label class="form-check-label fw-medium" for="flexSwitchCheckDefault">Com retorno em estoque ?</label>
-                                    </div>
-                                    <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
-                                </form>
-                            </div>
+        </div>
+        <div class="modal fade" id="cancelorder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content rounded-0 border-0">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito (cancel order)</h1>
+                        <span class="px-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
+                                <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                                <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </span><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+                    <div class="modal-body">
+                        <p class="fs-5">Manager Password needed</p>
+                        <div>
+                            <form @submit.prevent="CancelOrder">
+                                <input type="hidden" v-model="cancel.orderID"/>
+                                <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
+                                <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal fade" id="cancelorder" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content rounded-0 border-0">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Acesso restrito (cancel order)</h1>
-                            <span class="px-4">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                     stroke="#d9534f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-octagon">
-                                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                            </span><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
-                        <div class="modal-body">
-                            <p class="fs-5">Manager Password needed</p>
-                            <div>
-                                <form @submit.prevent="CancelOrder">
-                                    <input type="hidden" v-model="cancel.orderID"/>
-                                    <input class="form-control rounded-0 border-secondary" type="password" v-model="cancel.password" placeholder="password here...">
-                                    <input class="btn rounded-0 border mt-4 w-50 bg-warning" data-bs-dismiss="modal" type="submit" value="Ok">
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        </div>
             <div class="modal fade" id="BillHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                 <div class="modal-dialog modal-sm">
                     <div class="modal-content rounded-0 border-0">
@@ -308,7 +316,6 @@
                 </div>
             </div>
         </Dialog>
-    </div>
 </template>
 
 <script>
