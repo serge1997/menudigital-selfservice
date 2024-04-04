@@ -146,4 +146,8 @@ thead{
     border-radius: 10px;
     border: 3px solid #ffffff;
   }
+
+  .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
+    z-index: 11000;
+}
 </style>

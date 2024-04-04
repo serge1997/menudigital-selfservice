@@ -1,6 +1,6 @@
 <template>
     <SideBarComponent/>
-    <div class="container-fluid">
+    <div class="container-fluid z-0">
         <div class="col-md-12">
             <div class="col-md-8 m-auto">
                 <template id="swal-template">
