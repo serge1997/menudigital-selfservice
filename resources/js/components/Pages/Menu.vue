@@ -118,7 +118,7 @@
         <Sidebar v-model:visible="visibleRight" header="Cart" position="right" class="col-lg-8 col-md-12">
             <Accordion class="p-accordion" :activeIndex="0">
                 <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
-                    <div class="w-100 d-flex justify-content-evenly">
+                    <div class="row d-flex justify-content-evenly">
                         <div class="col-lg-2 col-md-12 item-img d-flex justify-content-start">
                             <img alt="item menu image" class="img-thumbnail w-75" src="img/banner.jpg">
                         </div>
@@ -132,7 +132,7 @@
                             <div class="w-75">
                                 <Button class="w-100" @click="ReduceQuantity(item.cart_id)" icon="pi pi-minus" />
                             </div>
-                            <div class="w-75 d-flex justify-content-center bg-white">
+                            <div class="w-50 d-flex justify-content-center bg-white">
                                 <span class="fw-medium">{{ item.total}} <small>R$</small></span>
                             </div>
                             <div class="d-flex flex-column justify-content-center">
