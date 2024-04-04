@@ -11,22 +11,22 @@
                 <span class="px-2">Stock page</span>
             </h6>
         </div>
-        <div class=" d-flex justify-content-center">
-            <CreateProductComponent />
-            <TechnicalSheetComponent />
-            <StockEntryComponent />
-            <SupplierComponent />
+        <div class="row d-flex justify-content-center">
+            <CreateProductComponent class="col-md-3 mt-2" />
+            <TechnicalSheetComponent class="col-md-3 mt-2" />
+            <StockEntryComponent class="col-md-3 mt-2" />
+            <SupplierComponent class="col-md-3 mt-2" />
         </div>
         <DataTable id="stock-table" :value="products" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
             <div class="position-absolute" :class="{ 'place': placeh}"></div>
             <template #header>
-                <div class="d-flex justify-content-between">
-                    <div class="d-flex gap-4" style="text-align: left">
+                <div class="row d-flex justify-content-between">
+                    <div class="col-md-6 d-flex gap-2" style="text-align: left">
                         <Button icon="pi pi-external-link" label="Export" @click="exportCSV($event)" />
                         <ExpenseComponent />
                     </div>
-                    <div class="d-flex gap-2">
-                        <span class="p-input-icon-left">
+                    <div class="col-md-6 d-flex justify-content-end mt-2">
+                        <span class="p-input-icon-left d-flex gap-2 align-items-center">
                             <i class="pi pi-search" />
                             <InputText v-model="search_param" placeholder="produto, fornecedor" @input="filterDataTable" />
                         </span>

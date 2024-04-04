@@ -61,9 +61,10 @@
                             <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
-                            <div class="order-btn-box text-white d-flex justify-content-end">
-                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToOrder(item.id)"/>
-                                <Button v-else icon="pi pi-cart-plus" @click="addToOrder(item.id)" disabled />
+                            <div class="text-white d-flex justify-content-end mt-1">
+                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToCart(item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
                             </div>
                         </div>
                     </div>
@@ -81,9 +82,10 @@
                             <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
-                            <div class="order-btn-box text-white d-flex justify-content-end">
-                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToOrder(item.id)"/>
-                                <Button v-else icon="pi pi-cart-plus" @click="addToOrder(item.id)" disabled />
+                            <div class="order-btn-box text-white d-flex justify-content-end mt-1">
+                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToCart(item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
                             </div>
                         </div>
                     </div>

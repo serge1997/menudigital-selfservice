@@ -192,7 +192,53 @@ const locales = {
             twelve: 'Parametros',
             logout: 'Sair',
             lang_label: 'Língua'
-        }
+        },
+        forms: {
+            name: 'Nom',
+            first_name: 'Prénom',
+            tel: 'Telephone',
+            user_name: "Nom d'ultilisateur",
+            password: 'Mots de passe',
+            placeholder_dept: 'Departement',
+            placeholder_post: 'Poste',
+            placeholder_salary: 'Salaire | paiement',
+            placeholder_supplier: 'Selection de fournisseur',
+            picture: 'Photo',
+            observation: 'Observation',
+            canal: 'Canal de reservation',
+            n_person: 'N personne',
+            hour: 'heur',
+            measure_unit: 'Unité de mésure',
+            description: 'Descrition',
+            unit_contain: "Contenu de l'unité",
+            min_quantity: 'Quantité minimum',
+            requisition_number: 'Numero de la requisition',
+            product_name: 'Nom du produit',
+            product_quantity: 'Quantité du produit',
+            product_cost: 'Coût',
+            city: 'Ville',
+            neighborhood: 'Quartier',
+            person_id: 'Numero ID national',
+            submits: {
+                create_reser: 'Confirmer la reservation',
+                create: 'Enregistrer',
+                update: 'Actualiser'
+            },
+            in: 'Entrada',
+            out: 'Saída',
+            partial: 'Taxa',
+            fulltime: 'Pleno',
+            price: 'Preço de venda',
+            abilitate: 'Abilitar',
+            desabilitate: 'Desabilitar'
+        },
+        stockModals: {
+            product_title: 'Novo produto',
+            create_fiche: 'Nova ficha técnica',
+            delivery_title: 'Nova entrega',
+            create_supplier: 'Fornecedor',
+            fiche_add: 'Adicionar'
+        },
     },
     fr: {
         //operator page

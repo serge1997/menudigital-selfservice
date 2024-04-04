@@ -3,7 +3,7 @@
     <div class="container-fuid">
         <div class="container">
             <div class="row">
-                <div class="col-8 m-auto">
+                <div class="col-lg-8 col-md-11 m-auto">
                     <form @submit.prevent="createUser" class="w-100 p-4">
                         <div class="row">
                             <div class="form-header p-2 text-capitalize rounded-3 text-white w-100">

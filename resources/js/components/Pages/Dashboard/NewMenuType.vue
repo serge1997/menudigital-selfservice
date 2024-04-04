@@ -3,7 +3,7 @@
     <div class="container-fuid d-flex justify-content-between">
         <div class="container">
             <div class="row">
-                <div class="col-8 m-auto">
+                <div class="col-lg-7 col-md-11 m-auto">
                     <form @submit.prevent="SaveType" class="w-100 p-4">
                         <div class="row p-0">
                             <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">

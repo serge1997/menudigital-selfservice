@@ -1,6 +1,6 @@
 <template>
     <div class="container-fluid">
-        <div class="col-md-10 m-auto d-flex">
+        <div class="col-md-12 m-auto">
             <Toolbar class="w-100">
                 <template #start>
                     <div class="d-flex align-items-center gap-1">

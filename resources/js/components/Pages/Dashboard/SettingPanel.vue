@@ -17,8 +17,8 @@
             <h3 class="px-2">Setting</h3>
         </div>
         <div class="row p-4 mt-4">
-            <div class="col-12 d-flex">
-                <div class="col-lg-6 col-md-12">
+            <div class="col-md-8">
+                <div class="col-md-10">
                     <div class="header d-flex align-items-center">
                         <div class="px-2 py-2 rounded-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -27,19 +27,19 @@
                         </div>
                         <h6 class="px-2">Employe management</h6>
                     </div>
-                    <div class="col-md-12">
+                    <div class="col-md-11">
                         <small>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
                             magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                         </small>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-12 d-flex justify-content-center align-items-center">
+                <div class="col-md-6 mt-2">
                     <Button label="Manage"  data-bs-toggle="modal" data-bs-target="#ModelPersonalSetting"></Button>
                 </div>
             </div>
-            <div class="col-12 d-flex mt-5">
-                <div class="col-lg-6 col-md-12">
+            <div class="row mt-5">
+                <div class="col-md-8">
                     <div class="header d-flex align-items-center">
                         <div class="px-2 py-2 rounded-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -53,12 +53,12 @@
                         magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                     </small>
                 </div>
-                <div class="col-lg-6 col-md-12 d-flex justify-content-center align-items-center">
+                <div class="col-6 mt-2">
                     <Button data-bs-toggle="modal" data-bs-target="#ModelItemSetting" label="Menu Alteration"></Button>
                 </div>
             </div>
             <div class="col-12 d-flex mt-5">
-                <div class="col-6">
+                <div class="col-lg-6 col-md-10">
                     <div class="header d-flex align-items-center">
                         <div class="px-2 py-2 rounded-1">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -67,7 +67,6 @@
                         </div>
                         <h6 class="px-2">General information Configuration</h6>
                     </div>
-
                     <small>
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
                         magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
