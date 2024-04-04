@@ -192,7 +192,7 @@ const routes = [
         component:PublicMenu
     },
     {
-        path: '/dashboard/purchase/',
+        path: '/dashboard/purchase',
         name: 'PurchaseRequisition',
         component: PurchaseRequisition,
         beforeEnter: (to, from, next) => {

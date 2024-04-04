@@ -6,8 +6,8 @@
                     <div class="modal-header">
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="w-75 form-header p-2 text-capitalize rounded-3 text-white m-auto">
+                    <div class="modal-body row">
+                        <div class="col-md-10 form-header p-2 text-capitalize rounded-3 text-white m-auto">
                             <h6>Personal management</h6>
                             <p>personal hr</p>
                         </div>
@@ -17,35 +17,42 @@
                         <div class="col-md-8 m-auto">
                             <ProgressBar v-if="load" mode="indeterminate" style="height: 6px"></ProgressBar>
                         </div>
-                        <div v-if="ShowForm" class="w-100 edit-form mt-4">
-                            <div class="form w-100">
-                                <form class="d-flex flex-column justify-content-center w-100 p-2" v-for="user in userForEdit">
-                                    <div class="w-75 d-flex m-auto">
-                                        <input type="hidden" :value="user.id" id="user-id">
-                                        <div class="w-50 d-flex flex-column">
-                                            <InputText type="text" class="w-100" :value="user.name" id="user-name"/>
-                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></small>
+                        <div v-if="ShowForm" class="row mt-4">
+                            <div class="col-md-10 m-auto">
+                                <form class="p-2" v-for="user in userForEdit">
+                                    <input type="hidden" :value="user.id" id="user-id">
+                                    <div class="row p-2">
+                                        <div class="col-lg-6 col-md-10 m-auto mt-2">
+                                            <div class="d-flex flex-column gap-2">
+                                                <InputText type="text" :value="user.name" id="user-name"/>
+                                                <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></small>
+                                            </div>
                                         </div>
-                                        <div class="px-2"></div>
-                                        <div class="w-50 d-flex flex-column">
-                                            <InputText type="text" class="w-100" :value="user.tel" id="user-tel"/>
-                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></small>
+                                        <div class="col-lg-6 col-md-10 m-auto mt-2">
+                                            <div class="d-flex flex-column gap-2">
+                                                <InputText type="text" :value="user.tel" id="user-tel"/>
+                                                <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></small>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group w-100 d-flex align-items-center flex-column mt-2">
-                                        <InputText type="text" class="w-75 m-auto" :value="user.email" id="user-email"/>
-                                        <small class="w-75 m-auto text-danger" v-if="errMsg" v-for="msg in errMsg.user_email" v-text="msg"></small>
-                                    </div>
-                                    <div class="w-75 d-flex m-auto mt-3">
-                                        <input type="hidden" :value="user.id" id="user-id">
-                                        <div class="w-50 d-flex flex-column">
-                                            <InputText type="text" class="w-100" :value="user.username" id="user-username"/>
-                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></small>
+                                    <div class="row p-2">
+                                        <div class="col-lg-12 col-md-12">
+                                            <InputText type="text" class="form-control" :value="user.email" id="user-email"/>
+                                            <small class="m-auto text-danger" v-if="errMsg" v-for="msg in errMsg.user_email" v-text="msg"></small>
                                         </div>
-                                        <div class="px-2"></div>
-                                        <div class="w-50 d-flex flex-column">
-                                            <InputText type="password" class="w-100" v-model="updateEmployeeData.password" id="user-password" placeholder="nova senha"/>
-                                            <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></small>
+                                    </div>
+                                    <div class="row p-2">
+                                        <div class="col-lg-6 col-md-10 m-auto mt-2">
+                                            <div class="d-flex flex-column gap-2">
+                                                <InputText type="text" class="w-100" :value="user.username" id="user-username"/>
+                                                <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_name" v-text="msg"></small>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-10 m-auto mt-2">
+                                            <div class="d-flex flex-column gap-2">
+                                                <InputText type="password" class="w-100" v-model="updateEmployeeData.password" id="user-password" placeholder="nova senha"/>
+                                                <small class="text-danger" v-if="errMsg" v-for="msg in errMsg.user_tel" v-text="msg"></small>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="w-75 m-auto d-flex justify-content-center flex-wrap p-2 mt-2">

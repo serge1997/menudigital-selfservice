@@ -8,8 +8,8 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <div class="w-100 p-3 d-flex justify-content-center gap-2">
-                            <div v-for="type in MenuType" class="col-md-2 shadow">
+                        <div class="row d-flex justify-content-center gap-2">
+                            <div v-for="type in MenuType" class="col-lg-2 col-md-10">
                                 <div class="w-100 card">
                                     <div class="card-header text-center border-0">
                                         <h6 class="text-uppercase">{{ type.desc_type }}</h6>
