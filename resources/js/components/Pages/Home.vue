@@ -28,7 +28,7 @@
                                     </select>
                                 </div>
                                 <div class="d-flex flex-column align-items-center mt-4 justify-content-center">
-                                    <button @click="SetTableNumer" class="btn btn-primary rounded-0 h-4" data-bs-dismiss="modal">OK</button>
+                                    <button @click="SetTableNumer" class="btn btn-primary rounded-0 h-4" :class="! tableNumber ? 'disabled' : ''" data-bs-dismiss="modal">OK</button>
                                 </div>
                             </div>
                             <div class="text-center p-4 text-secondary">
@@ -55,11 +55,9 @@
 <script>
 export default {
     name: 'Home',
-
     components: {
 
     },
-
     data() {
         return {
             tableNumber: null,
@@ -75,16 +73,18 @@ export default {
 
     methods: {
         SetTableNumer() {
+            if ( ! this.tableNumber ) return this.$toast.error("Table number is required");
             localStorage.setItem('table', this.tableNumber);
             this.$router.push('/menu')
         },
 
         logout() {
             axios.post('/api/logout').then((response) => {
-                localStorage.removeItem('token')
-                localStorage.removeItem('stockAccess')
-                localStorage.removeItem('managerAccess')
-                localStorage.removeItem('administrativeAccess')
+                localStorage.removeItem('token');
+                localStorage.removeItem('stockAccess');
+                localStorage.removeItem('managerAccess');
+                localStorage.removeItem('administrativeAccess');
+                localStorage.removeItem('table');
                 this.$router.push('/');
             }).catch((error) => {
                 console.log(error);
