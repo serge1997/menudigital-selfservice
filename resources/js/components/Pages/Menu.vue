@@ -25,18 +25,22 @@
             </div>
        </div>
        <div class="row">
-        <SearchComponent :show="show" -search-placeholder="Search item here..." @add-to-cart="addToCart" @show-item="ShowItem"></SearchComponent>
+        <SearchComponent
+            -search-placeholder="Search item here..."
+            @add-to-cart="addToCart"
+            @show-item="ShowItem"
+        />
        </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden"></span>
             </div>
         </div>
-        <div class="row d-flex justify-content-center">
+        <div class="row d-flex justify-content-center shadow-sm">
             <div class="row d-flex justify-content-center p-3">
-                <div class="col-lg-2 col-md-4 d-flex justify-content-center menu-type-card p-2" id="typebt" v-for="mtype in MenuType" :key="mtype.id_type">
-                    <button class="btn w-75 border-0 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">
-                        <img class="w-50 col-md-6 type-btn" :src="'/img/type/'+ mtype.foto_type" alt="">
+                <div class="col-lg-2 col-md-2 d-flex justify-content-center menu-type-card p-2" v-for="mtype in MenuType" :key="mtype.id_type">
+                    <button class="btn w-50 border-0 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">
+                        <img style="width: 60%;" class="rounded-circle border type-btn" :src="'/img/type/'+ mtype.foto_type" alt="">
                         {{ mtype.desc_type }}
                     </button>
                 </div>
@@ -50,7 +54,7 @@
         </div>
         <div class="row p-4">
             <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-10 mb-4 m-auto" disabled>
-                <div class="card rounded-0 border-0 p-0 w-75">
+                <div class="card rounded-0 border-0 p-0 w-75 m-auto">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
                         <div class="col-md-12">
                             <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
@@ -62,7 +66,7 @@
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="text-white d-flex justify-content-end mt-1">
-                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
+                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="ShowItem(item.id)" />
                                 <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToCart(item.id)"/>
                                 <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
                             </div>
@@ -71,7 +75,7 @@
                 </div>
             </div>
             <div v-else v-for="item in itemOfType" class="col-lg-3 col-md-10 mb-4 m-auto">
-                <div class="card rounded-0 border-0 p-0 col-lg-8 col-md-12 m-auto">
+                <div class="card rounded-0 border-0 p-0 w-75 m-auto">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
                         <div class="col-md-12">
                             <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
@@ -83,7 +87,7 @@
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="order-btn-box text-white d-flex justify-content-end mt-1">
-                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="visibleShowItemMenuModal = true; ShowItem(item.id)" />
+                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="ShowItem(item.id)" />
                                 <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToCart(item.id)"/>
                                 <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
                             </div>
@@ -321,6 +325,7 @@ export default {
             this.loadBar = true;
             this.show = null;
             this.fiche = null;
+            this.visibleShowItemMenuModal = true;
             return new Promise(async resolve => {
                 try{
                     setTimeout( async () => {
@@ -362,12 +367,10 @@ export default {
 
         confirmOrder() {
             axios.post('/api/order', this.cart).then((response) => {
-                console.log(response.data)
+                localStorage.removeItem('table');
                 this.$router.push('/dashboard/garcom')
                 this.$toast.success(response.data)
             }).catch((errors) => {
-                console.log(errors)
-                //this.$toast.error(errors.response.data)
                 if (errors.response.status === 500){
                     this.visibleRight = false
                     this.$swal.fire({
@@ -411,19 +414,6 @@ export default {
     gap: 8px;
     justify-content: center;
     align-items: center;
-}
-
-
-.menu-type-card {
-    border-bottom: 1px #e63958 solid;
-}
-
-.type-btn {
-    width: 25%;
-    padding: 8px;
-    border-radius: 50%;
-    border: 1px solid #e63958;
-    transition: all .4s ease-in;
 }
 
 .menu-type-card:hover .type-btn{
