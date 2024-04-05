@@ -50,7 +50,7 @@
         </div>
         <div class="row p-4">
             <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-10 mb-4 m-auto" disabled>
-                <div class="card rounded-0 border-0 p-0 col-md-8">
+                <div class="card rounded-0 border-0 p-0 w-75">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
                         <div class="col-md-12">
                             <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">

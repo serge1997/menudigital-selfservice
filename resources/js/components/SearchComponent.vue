@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div class="col-md-10 m-auto d-flex justify-content-between p-3">
-            <InputText v-model="search" class="col-md-12" :placeholder="SearchPlaceholder" @keydown="this.isSpinner = !this.isSpinner"/>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center m-auto p-3">
+            <InputText class="w-75" v-model="search" :placeholder="SearchPlaceholder" @keydown="this.isSpinner = !this.isSpinner"/>
             <button class="btn border rounded-0 text-white" id="search-icon">
                 <i v-if="isSpinner" class="pi pi-search" />
                 <i v-else class="pi pi-spin pi-spinner" />

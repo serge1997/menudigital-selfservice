@@ -159,7 +159,7 @@ export default {
     watch: {
         products: _.debounce(function (newProducts){
             this.get_stock_stat();
-        }, 4000)
+        }, 30000)
     },
 
     methods: {
@@ -168,7 +168,6 @@ export default {
             return new Promise((resolve, reject) => {
                 setTimeout(() =>{
                     axios.get('/api/products-stat').then((response) => {
-                        console.log(response.data)
                         this.products = response.data
                         this.placeh = false;
                     }).catch((errors) => {
