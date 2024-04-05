@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12">
+    <div class="row">
         <template id="swal-template">
             <swal-html>
                 Loading
@@ -211,17 +211,4 @@ export default {
 
 </script>
 <style scoped>
-    .position-fixed {
-        max-width: 310px;
-        width: 230px;
-    }
-
-    .alert-bg{
-        background-color: #f8d7da;
-    }
-
-    .success-bg {
-        background-color: #d4edda;
-    }
-
 </style>
