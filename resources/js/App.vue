@@ -19,11 +19,17 @@ export default {
 </script>
 
 <style>
-.menu-type-card {
-    border-bottom: 1px #e63958 solid;
-}
 
 .type-btn {
+    width: 25%;
+    padding: 8px;
+    border-radius: 50%;
+    background-color: #f6afaf;
+    border: 1px solid #e63958;
+    transition: all .4s ease-in;
+}
+
+.sidebar-logo{
     width: 25%;
     padding: 8px;
     border-radius: 50%;
@@ -149,5 +155,10 @@ thead{
 
   .swal2-container.swal2-backdrop-show, .swal2-container.swal2-noanimation {
     z-index: 11000;
+}
+
+::selection{
+    background-color: #e63958;
+    color: #fff;
 }
 </style>

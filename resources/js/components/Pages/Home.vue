@@ -111,7 +111,7 @@ export default {
 }
 
 .banner {
-    background: url('img/banner.jpg');
+    background: url('/img/banner.jpg');
     background-position: center;
     background-size: content;
     min-height: 35vh;

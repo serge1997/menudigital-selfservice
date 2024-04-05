@@ -20,42 +20,26 @@
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <span class="text-center text-secondary">{{ item.desc_type }}</span>
                             <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price">R$ {{ item.item_price }} </small>
-                            <div class="mt-2 d-flex justify-content-center gap-1">
-                                <div>
-                                    <CartSidebarComponent :rupture="item.item_rupture" @add-to-cart="addToCart(item.id)"/>
-                                </div>
-                                <Button icon="pi pi-eye" @click="visibleShowItemMenuSearchModal = true; ShowItem(item.id)" />
+                            <div class="order-btn-box text-white d-flex justify-content-end mt-1">
+                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="$emit('ShowItem', item.id) " />
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="$emit('AddToCart', item.id)"/>
+                                <Button v-else icon="pi pi-cart-plus" @click="$emit('AddToCart', item.id)" disabled />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p v-if="notFound" class="text-center alert alert-danger w-25 m-auto">{{ notFound }}</p>
+            <p v-if="notFound" class="text-center alert alert-danger w-50 m-auto">{{ notFound }}</p>
         </div>
-        <Dialog v-model:visible="visibleShowItemMenuSearchModal" maximizable modal v-for="item in show" :header="item.item_name" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-            <div class="w-100 mt-3">
-                <div v-for="item in show" class="d-flex justify-content-between">
-                    <div class="w-50">
-                        <img class="w-100" src="/img/banner.jpg" alt="">
-                        <div class="mt-2 d-flex justify-content-center">
-                            <small class="col-lg-4 text-center fw-medium m-auto rounded-4 py-2 px-2 price mt-2">R$ {{ item.item_price }} </small>
-                        </div>
-                    </div>
-                    <div class="px-2"></div>
-                    <div class="w-100 d-flex flex-column align-items-center">
-                        <ul class="d-flex list-group w-100">
-                            <li class="list-group-item bg-dark text-white">Ingredients</li>
-                            <li class="list-group-item" v-for="ingredients in fiche">{{ ingredients.prod_name }}</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </Dialog>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import Sidebar from "primevue/sidebar";
+import Accordion from "primevue/accordion";
+import AccordionTab from "primevue/accordiontab";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import CartSidebarComponent from "@/components/CartSidebarComponent.vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -70,7 +54,13 @@ export default {
         Button,
         InputText,
         Dialog,
-        Tag
+        Tag,
+        Sidebar,
+        Accordion,
+        AccordionTab,
+        DataTable,
+        Column
+
     },
 
     props: {
@@ -92,9 +82,18 @@ export default {
                 tableNumber: localStorage.getItem('table'),
             },
             isSpinner: true,
-            show: null,
             fiche: null,
-            visibleShowItemMenuSearchModal: false
+            visibleShowItemMenuSearchModal: false,
+            cartItems: null,
+            cart: {
+                comments: null,
+                options: [],
+                tableNumber: localStorage.getItem('table'),
+                ped_tableNumber: localStorage.getItem('table'),
+                user_id: null,
+                ped_customerName: null,
+                ped_customer_quantity: null,
+            },
         }
     },
 
@@ -116,23 +115,25 @@ export default {
                 console.log(response.data);
             })
         },
-        addToCart(id) {
-            axios.post('/api/add/cart/' + id, this.table).then((response) => {
-                console.log(response.data)
-            }).catch((errors) => {
-                console.log(errors)
-            })
-        },
+        // addToCart(id) {
+        //     axios.post('/api/add-to-cart/' + id, this.table).then((response) => {
+        //         console.log(response.data)
+        //         this.cartItems = response.data
+        //         this.visibleRight = true;
+        //     }).catch((errors) => {
+        //         console.log(errors)
+        //     })
+        // },
 
-        ShowItem(id){
-            axios.get('/api/show/'+id).then((response) => {
-                console.log(response.data);
-                this.show = response.data.item
-                this.fiche = response.data.fiche
-            }).catch((errors) => {
-                console.log(errors);
-            })
-        },
+        // ShowItem(id){
+        //     axios.get('/api/menu-items/fiche/' +id).then((response) => {
+        //         this.show = response.data.item
+        //         this.fiche = response.data.fiche
+        //         this.visibleShowItemMenuSearchModal = true;
+        //     }).catch((errors) => {
+        //         console.log(errors);
+        //     })
+        // },
 
     }
 }

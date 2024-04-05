@@ -6,7 +6,7 @@
                     <div class="d-flex flex-column align-content-between h-full">
                         <div class="d-flex align-items-center justify-content-between px-4 flex-shrink-0">
                             <div v-for="rest in restaurant">
-                                <img class="w-25 type-btn" :src="'/img/logo/'+ rest.res_logo" alt="">
+                                <img class="w-25 sidebar-logo" :src="'/img/logo/'+ rest.res_logo" alt="">
                             </div>
                             <span>
                                 <Button text type="button" @click="closeCallback" icon="pi pi-times" rounded outlined class="h-2rem w-2rem"></Button>
