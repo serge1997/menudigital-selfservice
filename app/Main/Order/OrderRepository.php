@@ -145,7 +145,6 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function addNewItemToOrder($request)
     {
-        $status = 200;
         $tableNumber = null;
         $orderID = $request->orderID;
         $itemID = $request->itemID;
@@ -157,7 +156,9 @@ class OrderRepository implements OrderRepositoryInterface
 
         $menuitem = Menuitems::where('id', $itemID)->first();
         $item = ItensPedido::where([
-            ['item_pedido', $orderID], ['item_id', $itemID]
+            ['item_pedido', $orderID],
+            ['item_id', $itemID],
+            ['item_delete', false]
         ])->first();
         foreach (UserInstance::get_user_roles($auth) as $confirm):
             if (
@@ -170,14 +171,16 @@ class OrderRepository implements OrderRepositoryInterface
                 //DB::beginTransaction();
                 if (isset($item)):
                     $totalQuantity = $item->item_quantidade + $quantity;
-                    DB::table('itens_pedido')
-                        ->where([['item_pedido', $orderID], ['item_id', $itemID], ['item_quantidade', '>=', 1]])
-                        ->update([
-                            'item_quantidade' => $totalQuantity,
-                            'item_total' => $menuitem->item_price * $totalQuantity
-                        ]);
-                        StockServiceRepository::ControleItemLowStockRuptured(str_split($itemID, 10));
-                  return $status;
+                    $item::where([
+                        ['item_pedido', $orderID],
+                        ['item_id', $itemID],
+                        ['item_delete', false]
+                    ])->update([
+                        'item_quantidade' => $totalQuantity,
+                        'item_total' => $menuitem->item_price * $totalQuantity
+                    ]);
+                    StockServiceRepository::ControleItemLowStockRuptured(str_split($itemID, 10));
+                  return;
                 endif;
                 $itens = new ItensPedido();
                 $itens->item_pedido     = $orderID;
@@ -188,7 +191,7 @@ class OrderRepository implements OrderRepositoryInterface
                 $itens->item_emissao    = Util::Today();
                 $itens->save();
                 StockServiceRepository::ControleItemLowStockRuptured(str_split($itemID, 10));
-                return $status;
+                return;
             endif;
         endforeach;
         throw new Exception(__('messages.permission'));
