@@ -17,9 +17,9 @@ class IpMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info("Current Ip ". str_replace(':', '', $request->ip()));
+        Log::info("Current Ip ". str_replace('.', '', session()->get('ip')));
         $appIp = Restaurant::find(Restaurant::RESTAURANT_KEY);
-        if ( str_replace(':', '', $request->ip()) !== $appIp->res_ip ) {
+        if ( str_replace('.', '', session()->get('ip')) !== $appIp->res_ip ) {
             return response()->json("unauthorized", 401);
         }
         return $next($request);
