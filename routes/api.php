@@ -24,6 +24,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\IpController;
 
 /*
 |--------------------------------------------------------------------------
@@ -253,5 +254,9 @@ Route::middleware('auth:sanctum')->group(function() {
  Route::controller(LoginController::class)->group(function() {
     Route::post('login', 'loginAction');
     Route::post('logout', 'logoutAction')->middleware('auth:sanctum');
+});
+
+Route::controller(IpController::class)->group(function() {
+    Route::put('ip/{ip}', 'checkCurrentIp');
 });
 

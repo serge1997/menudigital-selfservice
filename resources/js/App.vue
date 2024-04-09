@@ -12,6 +12,13 @@ export default {
         //  localStorage.removeItem('token')
         //  localStorage.removeItem('stockAccess');
         //  localStorage.removeItem('managerAccess');
+        //const ip = async () => {
+            //const res = await fetch('http://www.geoplugin.net/json.gp')
+            //const result = await res.json()
+            //axios.put('/api/ip/' +  String(result.geoplugin_request))
+            //.then(res => console.log("Checked"));
+        //}
+        //ip();
     },
 
 }

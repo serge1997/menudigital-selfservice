@@ -17,9 +17,9 @@ class IpMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        Log::info("Current Ip ". str_replace(':', '', $request->ip()));
-        $appIp = Restaurant::find(Restaurant::RESTAURANT_KEY);
-        if ( str_replace(':', '', $request->ip()) !== $appIp->res_ip ) {
+        $currentUserInfo = unserialize(file_get_contents('http://www.geoplugin.net/php.gp?ip='. $_SERVER['REMOTE_ADDR']));
+        $appInfo = Restaurant::find(Restaurant::RESTAURANT_KEY);
+        if ( $currentUserInfo['geoplugin_latitude'] !== $appInfo->latitude || $currentUserInfo['geoplugin_longitude'] !== $appInfo->longitude ) {
             return response()->json("unauthorized", 401);
         }
         return $next($request);
