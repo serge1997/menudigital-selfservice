@@ -337,8 +337,8 @@ export default {
         donut(){
 
             const data = [{
-                values: [this.type.drinks, this.type.principal, this.type.wine, this.type.fastFood],
-                labels: ["DRINKS", "PRINCIPAL", "VINHO", "FASTFOOD"],
+                values: [this.type.starter, this.type.drinks, this.type.principal, this.type.wine, this.type.fastFood, this.type.dessert],
+                labels: ["ENTRADA", "DRINKS", "PRINCIPAL", "VINHO", "FASTFOOD", "SOBREMESA"],
                 hole: .4,
                 hoverinfo: 'label+percent',
                 textinfo: 'label+percent',
