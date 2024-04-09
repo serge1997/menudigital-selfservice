@@ -9,6 +9,6 @@ class IpController extends Controller
 {
     public function checkCurrentIp($ip, Request $request)
     {
-        $request->session()->put('ip', $ip);
+        //$request->session()->put('ip', $ip);
     }
 }
