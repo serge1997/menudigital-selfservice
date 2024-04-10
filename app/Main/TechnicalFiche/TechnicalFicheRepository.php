@@ -39,7 +39,7 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         $itemID = $request->itemID;
         $productIds = $request->productID;
         $quantity = $request->quantity;
-        
+
         if ($this->can_manage($request) || $this->can_create_product($request)):
             $this->beforeSaveItem($itemID);
             foreach ($productIds as $key => $productID):
@@ -151,14 +151,15 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
                 $productInfo = $this->productRepositoryInterface->findById($productId);
                 $productCost = $this->stockRepositoryInterface->findLastProductEntry($productId);
                 $cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
+                $calcule = new CalculeMarge(new MealMarge($cost));
                 $fiche = new Technicalfiche();
                 $fiche->itemID = $itemId;
                 $fiche->productID = $productId;
                 $fiche->quantity = $quantitys[$key];
                 $fiche->cost =  $cost;
-                $fiche->fix_margin = $cost * $restaurant_data['fix_margin'] / 100;
-                $fiche->loss_margin = $cost * $restaurant_data['loss_margin'] / 100;
-                $fiche->variable_margin = $cost * $restaurant_data['variable_margin'] / 100;
+                $fiche->fix_margin = $calcule->calculeMargeFix();
+                $fiche->loss_margin = $calcule->calculeMargeLose();
+                $fiche->variable_margin = $calcule->calculeMargeVariable();
                 $fiche->save();
 
             }
