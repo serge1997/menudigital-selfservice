@@ -161,25 +161,22 @@ export default {
     methods: {
         getRestaurantInfo(){
             axios.get('/api/rest-info').then((response) => {
-                console.log(response.data)
-                for (let result of response.data){
-                    console.log(result.rest_name)
-                    this.restaurant.rest_name = result.rest_name;
-                    this.restaurant.rest_email = result.rest_email;
-                    this.restaurant.res_close = result.res_close;
-                    this.restaurant.res_open = result.res_open;
-                    this.restaurant.id  = result.id;
-                    this.restaurant.rest_StreetNumber = result.rest_StreetNumber;
-                    this.restaurant.res_city = result.res_city;
-                    this.restaurant.rest_cep = result.rest_cep;
-                    this.restaurant.rest_cnpj = result.rest_cnpj;
-                    this.restaurant.rest_streetName = result.rest_streetName;
-                    this.restaurant.res_neighborhood = result.res_neighborhood;
-                    this.restaurant.res_logo = result.res_logo;
-                    this.restaurant.fix_margin = result.fix_margin;
-                    this.restaurant.loss_margin = result.loss_margin;
-                    this.restaurant.variable_margin = result.variable_margin
-                }
+                this.restaurant.rest_name = response.data.rest_name;
+                this.restaurant.rest_email = response.data.rest_email;
+                this.restaurant.res_close = response.data.res_close;
+                this.restaurant.res_open = response.data.res_open;
+                this.restaurant.id  = response.data.id;
+                this.restaurant.rest_StreetNumber = response.data.rest_StreetNumber;
+                this.restaurant.res_city = response.data.res_city;
+                this.restaurant.rest_cep = response.data.rest_cep;
+                this.restaurant.rest_cnpj = response.data.rest_cnpj;
+                this.restaurant.rest_streetName = response.data.rest_streetName;
+                this.restaurant.res_neighborhood = response.data.res_neighborhood;
+                this.restaurant.res_logo = response.data.res_logo;
+                this.restaurant.fix_margin = response.data.fix_margin;
+                this.restaurant.loss_margin = response.data.loss_margin;
+                this.restaurant.variable_margin = response.data.variable_margin
+
             }).catch((errors) => {
                 console.log(errors);
             })

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use http\Env\Response;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Models\Restaurant;
@@ -21,7 +22,12 @@ class RestaurantController extends Controller
 
     public function index(): JsonResponse
     {
-        return response()->json(Restaurant::all());
+        try {
+            return response()
+                ->json($this->restaurantRepositoryInterface->find());
+        } catch(Exception $e) {
+            return response()->json($e->getMessage());
+        }
     }
     public function create(RestaurantFormRequest $request)
     {
@@ -73,7 +79,10 @@ class RestaurantController extends Controller
                     'rest_StreetNumber' => $request->rest_StreetNumber,
                     'res_logo' => $request->res_logo,
                     'res_open' => $request->res_open,
-                    'res_close' => $request->res_close
+                    'res_close' => $request->res_close,
+                    'loss_margin' => $request->loss_margin / 100,
+                    'variable_margin' => $request->variable_margin / 100,
+                    'fix_margin' => $request->fix_margin / 100
                 ]);
             return response()->json(__('messages.update'));
         }

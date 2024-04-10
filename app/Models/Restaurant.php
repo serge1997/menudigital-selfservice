@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Restaurant extends Model
 {
@@ -31,4 +32,12 @@ class Restaurant extends Model
         'fix_margin',
         'variable_margin'
     ];
+
+    public function scopeRetrive(Builder $query)
+    {
+        return $query->where('id', self::RESTAURANT_KEY)
+            ->first();
+
+    }
+
 }

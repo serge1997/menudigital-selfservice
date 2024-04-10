@@ -5,6 +5,7 @@ use App\Models\Restaurant;
 use App\Traits\Permission;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use App\Http\Resources\RestaurantResource;
 
 class RestaurantRepository implements RestaurantRepositoryInterface
 {
@@ -16,6 +17,9 @@ class RestaurantRepository implements RestaurantRepositoryInterface
 
             $values = $request->all();
             $restaurant = new Restaurant($values);
+            $restaurant->loss_margin = $request->loss_margin / 100;
+            $restaurant->fix_margin = $request->fix_margin / 100;
+            $restaurant->variavle_margin = $request->cariable_margin / 100;
             $restaurant->res_logo = "waiting logo update";
             $restaurant->save();
             return ;
@@ -23,11 +27,10 @@ class RestaurantRepository implements RestaurantRepositoryInterface
         throw new Exception(__('messages.permission'));
     }
 
-    public function find(): Collection
+    public function find()
     {
-        return new Collection(
-            Restaurant::where('id', Restaurant::RESTAURANT_KEY)
-                ->first()
+        return new RestaurantResource(
+            Restaurant::find(Restaurant::RESTAURANT_KEY)
         );
     }
 }
