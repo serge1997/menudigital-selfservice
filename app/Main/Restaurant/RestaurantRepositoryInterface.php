@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Collection;
 interface RestaurantRepositoryInterface
 {
     public function create($request);
-    public function find(): Collection;
+    public function update($request);
+    public function find();
 }

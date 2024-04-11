@@ -9,10 +9,11 @@ use App\Main\Restaurant\RestaurantRepositoryInterface;
 use Exception;
 use App\Models\Role;
 use App\Http\Services\UserInstance;
-use App\Http\Services\Util\Util;
 use App\Traits\AuthSession;
 use App\Traits\Permission;
 use Illuminate\Support\Facades\DB;
+use App\Http\Services\MealMarge\MealMarge;
+use App\Http\Services\MealMarge\CalculeMarge;
 
 class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
 {
@@ -39,40 +40,24 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         $productIds = $request->productID;
         $quantity = $request->quantity;
 
-        // $this->checkOnlyManager($request);
         if ($this->can_manage($request) || $this->can_create_product($request)):
             $this->beforeSaveItem($itemID);
             foreach ($productIds as $key => $productID):
-
                 $stock = $this->stockRepositoryInterface->findLastProductEntry($productID);
                 $product = $this->productRepositoryInterface->findById($productID);
-                $rest_cost_info = $this->restaurantRepositoryInterface->find();
-            //var_dump($rest_cost_info['loss_margin']); die;
+                $qty = $quantity[$key];
+                $cost = $product->prod_unmed != "bt" ? ($qty * $stock->unitCost) / $product->prod_contain : $stock->unitCost;
 
-                    if ($product->prod_unmed != "bt"):
-                        $qty = $quantity[$key];
-                        $cost = ($qty * $stock->unitCost) / $product->prod_contain;
-                        $fiche = new Technicalfiche();
-                        $fiche->itemID = $itemID;
-                        $fiche->productID = $productID;
-                        $fiche->quantity = $qty;
-                        $fiche->cost = $cost;
-                        $fiche->loss_margin = $cost * $rest_cost_info['loss_margin'] / 100;
-                        $fiche->fix_margin = $cost * $rest_cost_info['fix_margin'] / 100;
-                        $fiche->variable_margin = $cost * $rest_cost_info['variable_margin'] / 100;
-                        $fiche->save();
-                    else:
-                        $qty = $quantity[$key];
-                        $fiche = new Technicalfiche();
-                        $fiche->itemID = $itemID;
-                        $fiche->productID = $productID;
-                        $fiche->quantity = $qty;
-                        $fiche->cost = $stock->unitCost;
-                        $fiche->loss_margin = $stock->unitCost * $rest_cost_info['loss_margin'] / 100;
-                        $fiche->fix_margin = $stock->unitCost * $rest_cost_info['fix_margin'] / 100;
-                        $fiche->variable_margin = $stock->unitCost * $rest_cost_info['variable_margin'] / 100;
-                        $fiche->save();
-                    endif;
+                $calcule = new CalculeMarge(new MealMarge($cost));
+                $fiche = new Technicalfiche();
+                $fiche->itemID = $itemID;
+                $fiche->productID = $productID;
+                $fiche->quantity = $qty;
+                $fiche->cost = $cost;
+                $fiche->loss_margin = $calcule->calculeMargeLose();
+                $fiche->fix_margin = $calcule->calculeMargeFix();
+                $fiche->variable_margin = $calcule->calculeMargeVariable();
+                $fiche->save();
             endforeach;
         else:
             throw new Exception(__('messages.permission'));
@@ -166,14 +151,15 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
                 $productInfo = $this->productRepositoryInterface->findById($productId);
                 $productCost = $this->stockRepositoryInterface->findLastProductEntry($productId);
                 $cost = $productInfo->prod_unmed == "bt" ? $productCost->unitCost : ($quantitys[$key] * $productCost->unitCost) / $productInfo->prod_contain;
+                $calcule = new CalculeMarge(new MealMarge($cost));
                 $fiche = new Technicalfiche();
                 $fiche->itemID = $itemId;
                 $fiche->productID = $productId;
                 $fiche->quantity = $quantitys[$key];
                 $fiche->cost =  $cost;
-                $fiche->fix_margin = $cost * $restaurant_data['fix_margin'] / 100;
-                $fiche->loss_margin = $cost * $restaurant_data['loss_margin'] / 100;
-                $fiche->variable_margin = $cost * $restaurant_data['variable_margin'] / 100;
+                $fiche->fix_margin = $calcule->calculeMargeFix();
+                $fiche->loss_margin = $calcule->calculeMargeLose();
+                $fiche->variable_margin = $calcule->calculeMargeVariable();
                 $fiche->save();
 
             }
