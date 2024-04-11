@@ -116,11 +116,11 @@
                                 <tfoot>
                                     <tr>
                                         <th colspan="1" class="fw-medium">Total</th>
-                                        <th colspan="1" class="fw-medium">{{ totalContain }} Cl</th>
+                                        <th colspan="1" class="fw-medium"></th>
                                         <th colspan="1" class="fw-medium">{{ costData.productTotalcost }} <span class="real-symbol">R$</span></th>
+                                        <th colspan="1" class="fw-medium">{{ costData.loss_margin }} <span class="real-symbol">R$</span></th>
                                         <th colspan="1" class="fw-medium">{{ costData.fix_margin }} <span class="real-symbol">R$</span></th>
-                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} <span class="real-symbol">R$</span></th>
-                                        <th colspan="1" class="fw-medium">{{ costData.fix_margin }} <span class="real-symbol">R$</span></th>
+                                        <th colspan="1" class="fw-medium">{{ costData.variable_margin }} <span class="real-symbol">R$</span></th>
                                         <th colspan="1" class="fw-medium"><Badge severity="success" :value="totalCost + ' R$'" /></th>
                                     </tr>
                                 </tfoot>
