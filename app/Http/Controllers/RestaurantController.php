@@ -34,9 +34,10 @@ class RestaurantController extends Controller
        try{
             $message = __('messages.create', ['model', 'Restaurant']);
             $this->restaurantRepositoryInterface->create($request);
-            return response()->json($message);
+            return response()
+                ->json($message);
        }catch(Exception $e){
-        return response()->json($e->getMessage(), 500);
+            return response()->json($e->getMessage(), 500);
        }
     }
 
@@ -64,27 +65,15 @@ class RestaurantController extends Controller
        }
     }
 
-    public function update(Request $request)
+    public function updateAction(Request $request)
     {
-        if ($request->isMethod("put")){
-            DB::table('restaurants')->where('id', Restaurant::RESTAURANT_KEY)
-                ->update([
-                    'rest_name' => $request->rest_name,
-                    'rest_email' => $request->rest_email,
-                    'rest_cnpj' =>$request->rest_cnpj,
-                    'res_city' => $request->res_city,
-                    'res_neighborhood' => $request->res_neighborhood,
-                    'rest_cep' => $request->rest_cep,
-                    'rest_streetName' =>$request->rest_streetName,
-                    'rest_StreetNumber' => $request->rest_StreetNumber,
-                    'res_logo' => $request->res_logo,
-                    'res_open' => $request->res_open,
-                    'res_close' => $request->res_close,
-                    'loss_margin' => $request->loss_margin / 100,
-                    'variable_margin' => $request->variable_margin / 100,
-                    'fix_margin' => $request->fix_margin / 100
-                ]);
-            return response()->json(__('messages.update'));
+        try {
+            $this->restaurantRepositoryInterface->update($request);
+            return response()
+                ->json(__('messages.update'));
+        }catch(Exception $e) {
+            return response()
+                ->json($e->getMessage());
         }
     }
 }

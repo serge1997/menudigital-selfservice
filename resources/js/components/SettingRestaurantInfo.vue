@@ -186,7 +186,7 @@ export default {
         },
         postRestInfo(){
             let method;
-            this.restaurant.id == null ? method = axios.post: method = axios.put;
+            method = this.restaurant.id === null ? axios.post : axios.put;
             method("/api/rest-info", this.restaurant).then((response) => {
                 console.log(response.data)
                 this.invalidInput = ''
