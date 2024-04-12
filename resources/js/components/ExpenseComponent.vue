@@ -1,5 +1,5 @@
 <template>
-    <Button @click="visibleExpenseModal = true;" label="Salvar despesa" icon="pi pi-plus" text/>
+    <Button @click="visibleExpenseModal = true;" :label="`${$t('purchase.toolbar.three')}`" icon="pi pi-plus" text/>
     <Dialog v-model:visible="visibleExpenseModal" maximizable modal header="Nova requisição de compra" :style="{ width: '75rem', }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
         <div class="row p-5">
             <div class="col-md-12 d-flex justify-content-between align-items-center">

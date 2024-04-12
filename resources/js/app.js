@@ -156,7 +156,8 @@ const locales = {
             dataTable: {
                 two: 'Nome',
                 four: 'Valor Despesa',
-                five: 'Salvou por'
+                five: 'Salvou por',
+                six: 'Data'
             }
         },
         //waiterpage
@@ -194,35 +195,35 @@ const locales = {
             lang_label: 'Língua'
         },
         forms: {
-            name: 'Nom',
-            first_name: 'Prénom',
-            tel: 'Telephone',
-            user_name: "Nom d'ultilisateur",
-            password: 'Mots de passe',
-            placeholder_dept: 'Departement',
+            name: 'Nome',
+            first_name: 'Sobrenome',
+            tel: 'Celular',
+            user_name: "Nome de usuario",
+            password: 'Senha',
+            placeholder_dept: 'Departamento',
             placeholder_post: 'Poste',
-            placeholder_salary: 'Salaire | paiement',
-            placeholder_supplier: 'Selection de fournisseur',
-            picture: 'Photo',
-            observation: 'Observation',
-            canal: 'Canal de reservation',
-            n_person: 'N personne',
-            hour: 'heur',
-            measure_unit: 'Unité de mésure',
-            description: 'Descrition',
-            unit_contain: "Contenu de l'unité",
-            min_quantity: 'Quantité minimum',
-            requisition_number: 'Numero de la requisition',
-            product_name: 'Nom du produit',
-            product_quantity: 'Quantité du produit',
-            product_cost: 'Coût',
-            city: 'Ville',
-            neighborhood: 'Quartier',
-            person_id: 'Numero ID national',
+            placeholder_salary: 'Salario | Pagamento',
+            placeholder_supplier: 'Fornecedores',
+            picture: 'Foto',
+            observation: 'Observação',
+            canal: 'Canal de reserva',
+            n_person: 'N pessoa',
+            hour: 'hora',
+            measure_unit: 'Unidade de medida',
+            description: 'Descrição',
+            unit_contain: "Conteudo da unidade",
+            min_quantity: 'Quantidade minima',
+            requisition_number: 'Numero da requisição',
+            product_name: 'Nome do produto',
+            product_quantity: 'Quantidade do produto',
+            product_cost: 'Custo',
+            city: 'Cidade',
+            neighborhood: 'Bairro',
+            person_id: 'CPF',
             submits: {
-                create_reser: 'Confirmer la reservation',
-                create: 'Enregistrer',
-                update: 'Actualiser'
+                create_reser: 'Confirmar a reserva',
+                create: 'Salvar',
+                update: 'Atualizar'
             },
             in: 'Entrada',
             out: 'Saída',
@@ -239,6 +240,17 @@ const locales = {
             create_supplier: 'Fornecedor',
             fiche_add: 'Adicionar'
         },
+        purchase: {
+            toolbar: {
+                one: 'Consultar estoque',
+                two: 'Salvar despesa',
+                three: 'Nova requisição'
+            },
+            dataTable: {
+                two: 'Requerente',
+                five: 'A entregar'
+            }
+        }
     },
     fr: {
         //operator page
@@ -435,6 +447,17 @@ const locales = {
             create_supplier: 'Fournisseur',
             fiche_add: 'Adicionner'
         },
+        purchase: {
+            toolbar: {
+                one: 'Consulter stock',
+                two: 'Enregistrer pertes',
+                three: 'Nouvelle requisition'
+            },
+            dataTable: {
+                two: 'Requerent',
+                five: 'Prevision de livraison'
+            }
+        }
     },
 }
 const language = localStorage.getItem('lang') !== null ? localStorage.getItem('lang') : 'pt';
