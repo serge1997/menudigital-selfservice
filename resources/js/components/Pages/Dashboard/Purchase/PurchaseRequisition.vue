@@ -10,9 +10,9 @@
                 </template>
                 <template #end>
                     <div>
-                        <Button @click="this.$router.push({name: 'Stock'})" label="Consultar estoque" icon="pi pi-database" text/>
+                        <Button @click="this.$router.push({name: 'Stock'})" :label="`${$t('purchase.toolbar.one')}`" icon="pi pi-database" text/>
                         <expense-component></expense-component>
-                        <Button @click="visibleNewPurchaseModal= true" label="Nova requisição" icon="pi pi-plus"/>
+                        <Button @click="visibleNewPurchaseModal= true" :label="`${$t('purchase.toolbar.two')}`" icon="pi pi-plus"/>
                     </div>
                 </template>
             </Toolbar>
@@ -58,10 +58,10 @@
         <div class="col-md-12 m-auto p-4">
             <DataTable :value="requisitions" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
                 <Column field="requisition_code" sortable style="width: 15%" header="Code"></Column>
-                <Column field="require_name" sortable style="width: 20%" header="Requerente"></Column>
-                <Column field="name" sortable style="width: 15%" header="Departamento"></Column>
-                <Column field="created_at" sortable style="width: 15%" header="Emissao"></Column>
-                <Column field="delivery_date" sortable style="width: 15%" header="A entregar"></Column>
+                <Column field="require_name" sortable style="width: 20%" :header="`${$t('purchase.dataTable.two')}`"></Column>
+                <Column field="name" sortable style="width: 15%" :header="`${$t('forms.placeholder_dept')}`"></Column>
+                <Column field="created_at" sortable style="width: 15%" :header="`${$t('biexpense.dataTable.six')}`"></Column>
+                <Column field="delivery_date" sortable style="width: 15%" :header="`${$t('purchase.dataTable.five')}`"></Column>
                 <Column header="Status" style="width: 25%">
                     <template class="w-100" #body="{ data }">
                         <Tag style="width: 90px" v-if="data.stat_desc === requisition_status.waiting" :value="data.stat_desc" severity="warning" />
@@ -69,7 +69,7 @@
                         <Tag style="width: 90px" v-else severity="success" :value="data.stat_desc"/>
                     </template>
                 </Column>
-                <Column field="prod_unmed" header="Ações" style="width: 25%">
+                <Column field="prod_unmed" :header="`${$t('bicost.dataTable.height')}`" style="width: 25%">
                     <template #body="{ data }">
                         <div class="d-flex">
                             <div v-if="managerAcess.includes(`${position_id}`)">

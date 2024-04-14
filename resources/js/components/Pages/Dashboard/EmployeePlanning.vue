@@ -3,7 +3,7 @@
   <div class="container-fluid">
     <div class="container">
       <div class="row">
-        <h4 class="fw-normal d-flex gap-2 align-items-center"><i class="pi pi-calendar"></i>Escala do colaborador</h4>
+        <h4 class="fw-normal d-flex gap-2 align-items-center"><i class="pi pi-calendar"></i>{{ $t('planning.title')}}</h4>
       </div>
       <div class="col-md-8 d-flex flex-column m-auto">
           <small v-if="load" class="text-center">Carregando...</small>
@@ -28,8 +28,8 @@
         </div>
       </div>
       <div v-if="Object.values(managerAcess).includes(`${position_id}`)" class="row p-3 mt-3 d-flex gap-2">
-        <Button @click="createPlaning" class="col-md-4 m-auto" label="Criar Escala" />
-        <Button @click="clearPlaning" class="col-md-4 m-auto" label="Limpar Escala" severity="danger"/>
+        <Button @click="createPlaning" class="col-md-4 m-auto" :label="`${$t('planning.buttons.one')}`" />
+        <Button @click="clearPlaning" class="col-md-4 m-auto" :label="`${$t('planning.buttons.two')}`" severity="danger"/>
       </div>
       <div class="modal fade" id="exampleModal" aria-hidden="true" aria-labelledby="exampleModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -45,11 +45,11 @@
               <div class="col-sm-12">
                 <div class="d-flex gap-2 mt-3">
                     <div class="input-group mb-3">
-                        <span class="input-group-text bg-success text-white" id="basic-addon1">Entrada</span>
+                        <span class="input-group-text bg-success text-white" id="basic-addon1">{{ $t('forms.in') }}</span>
                         <input v-model="hour_in" type="time" class="form-control">
                     </div>
                     <div class="input-group mb-3">
-                        <span class="input-group-text input-badge" id="basic-addon1">Saída</span>
+                        <span class="input-group-text input-badge" id="basic-addon1">{{ $t('forms.out') }}</span>
                         <input v-model="hour_out" type="time" class="form-control">
                     </div>
                 </div>
@@ -65,7 +65,7 @@
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content rounded-0 border-0">
             <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">Editar</h1>
+              <h1 class="modal-title fs-5" id="exampleModalToggleLabel">{{ $t('forms.submits.update') }}</h1>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -74,18 +74,18 @@
               <div class="col-sm-12">
                 <div class="d-flex gap-2 mt-3">
                     <div class="input-group mb-3">
-                        <span class="input-group-text bg-success text-white" id="basic-addon1">Entrada</span>
+                        <span class="input-group-text bg-success text-white" id="basic-addon1">{{ $t('forms.in') }}</span>
                         <input v-model="updateData.hour_in" type="time" class="form-control">
                     </div>
                     <div class="input-group mb-3">
-                        <span class="input-group-text input-badge" id="basic-addon1">Saída</span>
+                        <span class="input-group-text input-badge" id="basic-addon1">{{ $t('forms.out') }}</span>
                         <input v-model="updateData.hour_out" type="time" class="form-control">
                     </div>
                 </div>
               </div>
             </div>
             <div class="modal-footer">
-              <Button @click="update" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" label="Editar"/>
+              <Button @click="update" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" :label="`${$t('forms.submits.update')}`"/>
             </div>
           </div>
         </div>
