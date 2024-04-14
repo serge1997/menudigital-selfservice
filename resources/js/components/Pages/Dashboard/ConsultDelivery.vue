@@ -7,12 +7,12 @@
                     <Toolbar class="w-100">
                         <template #start>
                             <div>
-                                <h5 class="d-flex gap-3 align-items-center"><i class="pi pi-calendar"></i>Consult delivery list</h5>
+                                <h5 class="d-flex gap-3 align-items-center"><i class="pi pi-calendar"></i>{{ $t('delivery.title')}}</h5>
                             </div>
                         </template>
                         <template #end>
                             <div class="">
-                                <Button @click="$router.push({name: 'Stock'})" icon="pi pi-database" label="Stock" text/>
+                                <Button @click="$router.push({name: 'Stock'})" icon="pi pi-database" :label="`${$t('purchase.toolbar.one')}`" text/>
                                 <DeliveryDevolutionComponent />
                             </div>
                         </template>
@@ -20,11 +20,11 @@
                 </div>
                 <div class="w-100 mt-3">
                     <DataTable :value="deliveryList" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 55rem">
-                        <Column field="requisition_code" sortable style="width: 25%" header="Purchase code" />
-                        <Column field="user_name" sortable style="width: 25%" header="Require" />
-                        <Column field="department_name" sortable style="width: 25%" header="Department" />
-                        <Column field="delivery_date" sortable style="width: 25%" header="Entrega" />
-                        <Column header="Ação">
+                        <Column field="requisition_code" sortable style="width: 25%" :header="`${$t('delivery.dataTable.one')}`" />
+                        <Column field="user_name" sortable style="width: 25%" :header="`${$t('purchase.dataTable.two')}`" />
+                        <Column field="department_name" sortable style="width: 25%" :header="`${$t('forms.placeholder_dept')}`" />
+                        <Column field="delivery_date" sortable style="width: 25%" :header="`${$t('biexpense.dataTable.six')}`" />
+                        <Column :header="`${$t('bicost.dataTable.height')}`">
                             <template #body = "{ data }">
                                 <div class="d-flex gap-2">
                                     <Button @click="showDeliveryItems(data.id)" icon="pi pi-eye" text />

@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="row p-4">
-            <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-10 mb-4 m-auto" disabled>
+            <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-10 mb-4 m-auto">
                 <div class="card rounded-0 border-0 p-0 w-75 m-auto">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
                         <div class="col-md-12">
@@ -87,9 +87,7 @@
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
                             <div class="order-btn-box text-white d-flex justify-content-end mt-1">
-                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="ShowItem(item.id)" />
-                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToCart(item.id)"/>
-                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
+                                <Button icon="pi pi-eye" @click="ShowItem(item.id)" />
                             </div>
                         </div>
                     </div>
@@ -234,7 +232,6 @@ export default {
             loadBarType: false,
             isRupture: false,
             fiche: null,
-            visibleRight: false,
             visibleShowItemMenuModal: false,
             quantity: null,
             total: null,

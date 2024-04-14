@@ -248,7 +248,27 @@ const locales = {
             },
             dataTable: {
                 two: 'Requerente',
-                five: 'A entregar'
+                five: 'A entregar',
+                show:{
+                    two: 'Quantidade pedido',
+                    three: 'Quantidade confirmada'
+                }
+            }
+        },
+        delivery: {
+            title: 'Entregas',
+            toolbar: {
+                two: 'Devolução'
+            },
+            dataTable: {
+                one: 'Codido da requisição'
+            }
+        },
+        planning: {
+            title: 'Escala do colaborador',
+            buttons: {
+                one: 'Criar escala',
+                two: 'Limpar escala'
             }
         }
     },
@@ -455,7 +475,28 @@ const locales = {
             },
             dataTable: {
                 two: 'Requerent',
-                five: 'Prevision de livraison'
+                five: 'Prevision de livraison',
+                show:{
+                    two: 'Quantité demandé',
+                    three: 'Quantité confirmé'
+                }
+            }
+        },
+
+        delivery: {
+            title: 'Livraisons',
+            toolbar: {
+                two: 'Devolution'
+            },
+            dataTable: {
+                one: 'Code requisition'
+            }
+        },
+        planning: {
+            title: 'Planning du personnels',
+            buttons: {
+                one: 'Enregistrer planning',
+                two: 'Supprimer planning'
             }
         }
     },

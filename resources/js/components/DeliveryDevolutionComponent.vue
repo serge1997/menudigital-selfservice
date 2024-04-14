@@ -1,5 +1,5 @@
 <template>
-    <Button @click="visibleDevolutionModal = true" icon="pi pi-arrow-right-arrow-left" label="Devolution" text/>
+    <Button @click="visibleDevolutionModal = true" icon="pi pi-arrow-right-arrow-left" :label="`${$t('delivery.toolbar.two')}`" text/>
     <div class="container">
         <Dialog v-model:visible="visibleDevolutionModal" maximizable modal header="Devolução de compra" :style="{ width: '85rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
             <div class="accordion accordion_flush" id="accordionExample">

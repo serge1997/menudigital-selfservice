@@ -7,9 +7,9 @@
                     <Tag severity="warning" :value="requisitions_observation" />
                 </div>
                 <DataTable :value="requisitions_itens" selectionMode="single"  paginator :rows="10" tableStyle="min-width: 50rem">
-                    <Column field="prod_name" sortable style="width: 25%" header="Produto"></Column>
-                    <Column field="quantity" sortable style="width: 25%" header="Quantidade pedido"></Column>
-                    <Column field="confirm_quantity" sortable style="width: 25%" header="Quantidade confirmada"></Column>
+                    <Column field="prod_name" sortable style="width: 25%" :header="`${$t('bicost.dataTable.two')}`"></Column>
+                    <Column field="quantity" sortable style="width: 25%" :header="`${$t('purchase.dataTable.show.two')}`"></Column>
+                    <Column field="confirm_quantity" sortable style="width: 25%" :header="`${$t('purchase.dataTable.show.three')}`"></Column>
                     <Column header="Status" style="width: 25%">
                         <template class="w-100" #body="{ data }">
                             <Tag style="width: 90px" v-if="data.show_status === requisition_status.waiting" value="Pendente" severity="warning" />
