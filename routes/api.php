@@ -25,6 +25,7 @@ use App\Http\Controllers\PlanningController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\IpController;
+use App\Http\Controllers\QrcodeOrderNumberController;
 
 /*
 |--------------------------------------------------------------------------
@@ -247,6 +248,10 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::controller(LanguageController::class)->group( function() {
         Route::put('language/{lang}', 'setSysLanguageAction');
+    });
+
+    Route::controller(QrcodeOrderNumberController::class)->group( function() {
+        Route::post('qrcode-order-number', 'createAction');
     });
 });
 

@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Main\QrcodeOrderNumber\QrcodeOrderNumberRepository;
+use App\Main\QrcodeOrderNumber\QrCodeOrderNumberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Main\MealType\MealTypeRepositoryInterface;
 use App\Main\MealType\MealTypeRepository;
@@ -75,6 +77,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PurchaseRequisitionRepositoryInterface::class, PurchaseRequisitionRepository::class);
         $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
         $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
+        $this->app->bind(QrCodeOrderNumberRepositoryInterface::class, QrcodeOrderNumberRepository::class);
     }
 
     /**

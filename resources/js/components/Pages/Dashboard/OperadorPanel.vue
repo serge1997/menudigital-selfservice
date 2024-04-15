@@ -43,6 +43,7 @@
                     <InventoryComponent/>
                     <SellReportComponent/>
                     <BillHistoriyComponent :status="status" />
+                    <Button label="Qr code" text data-bs-toggle="modal" data-bs-target="#qrcodeReaderModal" />
                 </template>
             </Toolbar>
         </div>
@@ -316,6 +317,26 @@
                 </div>
             </div>
         </Dialog>
+        <div class="modal fade" id="qrcodeReaderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="exampleModalLabel">Qr code reader</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="w-100">
+                            <h4>Customer qr code order reader</h4>
+                        </div>
+                        <div class="w-100" id="my-qr-reader">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Show</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 </template>
 
 <script>
@@ -323,6 +344,7 @@ import axios from 'axios';
 import SideBarComponent from './SideBarComponent.vue';
 import OrderTransfertComponent from '../../OrderTransfertComponent.vue';
 import SellReportComponent from '../../SellReportComponent.vue';
+import QrCodeReaderComponent from "@/components/Self-service/QrCodeReaderComponent.vue";
 import InventoryComponent from "@/components/InventoryComponent.vue";
 import BillHistoriyComponent from "@/components/BillHistoriyComponent.vue";
 import _ from 'lodash'
@@ -339,6 +361,7 @@ export default {
         SideBarComponent,
         OrderTransfertComponent,
         SellReportComponent,
+        QrCodeReaderComponent,
         BillHistoriyComponent,
         InventoryComponent,
         Toolbar,
@@ -377,6 +400,7 @@ export default {
             billTotalItem: null,
             visiblePaymentModal: false,
             severity_btn: null,
+            visibleQrcodeReader: false
         }
     },
     watch:{
@@ -566,12 +590,35 @@ export default {
                 break;
                 default: null
             }
+        },
+
+      setDom(callback) {
+        if ( document.readyState === "complete" || document.readyState === "interactive") {
+          setTimeout(callback, 1000);
+        } else {
+          document.addEventListener("DOMContentLoaded", callback);
         }
+      },
+      mounteQrCodeScanner(){
+        this.setDom(function() {
+          function onScanSuccess(decodeText, decodeResult) {
+            alert('Your qr code result is: ' + decodeText, decodeResult)
+          }
+
+          let htmlScanner = new Html5QrcodeScanner(
+              "my-qr-reader",
+              {fps: 15, qrbos: 350}
+          );
+
+          htmlScanner.render(onScanSuccess);
+        })
+      }
 
     },
 
     mounted(){
         this.mountedLoadEffect();
+        this.mounteQrCodeScanner();
 
     }
 }

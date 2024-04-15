@@ -19,6 +19,7 @@ import PurchaseRequisition from "../components/Pages/Dashboard/Purchase/Purchase
 import EmployeePlanning from "../components/Pages/Dashboard/EmployeePlanning.vue";
 import Reservation from '../components/Pages/Dashboard/Reservation/Reservation.vue'
 import ConsultDelivery from '../components/Pages/Dashboard/ConsultDelivery.vue';
+import GenerateQrCode from "@/components/Self-service/GenerateQrCode.vue";
 
 
 var managerAccess;
@@ -230,6 +231,11 @@ const routes = [
         },
         component: ConsultDelivery,
         meta: {requiresAuth: true}
+    },
+    {
+        path: '/self-service/generate-qr-code',
+        name: 'GenerateQrCode',
+        component: GenerateQrCode
     }
 ]
 
