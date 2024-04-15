@@ -40,4 +40,9 @@ class Pedido extends Model
     {
         return $this->belongsTo(TableNumber::class, 'ped_tableNumber');
     }
+
+    public function qrcodeOrderNumber(): BelongsTo
+    {
+        return $this->belongsTo(QrcodeOrderNumber::class, 'qrcode_order_number_id');
+    }
 }
