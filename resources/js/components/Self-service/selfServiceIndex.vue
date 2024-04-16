@@ -13,7 +13,6 @@
                 <img class="w-100 h-100" src="/img/self-banner.jpg" alt="">
             </div>
         </div>
-
         <div class="modal fade" id="qrcodeReaderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -25,30 +24,36 @@
                             <div class="w-100">
                                 <h4>Scann your order QR code </h4>
                             </div>
-                            <div class="w-100" id="my-qr-reader">
+                            <div class="w-100" id="customer-qr-reader">
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div style="width: 500px" class="modal-footer">
                             <button type="button" class="btn btn-primary">Show</button>
                         </div>
                     </div>
                 </div>
             </div>
+        <div class="col-md-12">
+            <Dialog v-model:visible="visibleOrderQrcode" maximizable modal :header="`${ $t('waiterpage.modal.title')} `" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+                <h1>Hello world</h1>
+            </Dialog>
         </div>
-
+    </div>
 </template>
 <script>
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 export default {
     name: 'selfServiceIndex',
 
     components: {
-        Button
+        Button,
+        Dialog
     },
 
     data() {
         return {
-
+            visibleOrderQrcode: false
         }
     },
     methods: {
@@ -63,14 +68,18 @@ export default {
         this.setDom(function() {
           function onScanSuccess(decodeText, decodeResult) {
             alert('Your qr code result is: ' + decodeText, decodeResult);
+            alert("Hello");
+          }
+          function onScanFailure(error) {
+             console.warn(`Code scan error = ${error}`);
           }
 
           let htmlScanner = new Html5QrcodeScanner(
-              "my-qr-reader",
-              {fps: 15, qrbos: 350}
+              "customer-qr-reader",
+              {fps: 10, qrbox: 250}
           );
 
-          htmlScanner.render(onScanSuccess);
+          htmlScanner.render(onScanSuccess, onScanFailure);
         })
       }
     },
