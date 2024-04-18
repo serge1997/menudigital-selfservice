@@ -77,8 +77,8 @@
                                 <small class="text-danger" v-if="errMsg" v-for="is_full_time in errMsg.is_full_time" id="user-is-full-time"  v-text="is_full_time"></small>
                             </div>
                         </div>
-                        <div class="mt-3">
-                            <Button :label="Save" type="submit" />
+                        <div class="mt-3 w-50">
+                            <Button :label="`${$t('forms.submits.create')}`" type="submit" />
                         </div>
                     </form>
                 </div>

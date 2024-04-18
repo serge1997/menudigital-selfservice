@@ -41,7 +41,7 @@
                 <div class="w-100 d-flex gap-2 mt-3">
                     <div class="d-flex flex-column w-50">
                         <label for="product-quantity">{{$t('forms.product_quantity')}}</label>
-                        <InputText :class="invalid" type="text" id="product-quantity" v-model="stockEntry.quantity" aria-describedby="product-name" placeholder="product quantity"/>
+                        <InputText :class="invalid" type="number" id="product-quantity" v-model="stockEntry.quantity" aria-describedby="product-name" placeholder="product quantity"/>
                         <small class="text-danger" v-if="errMsg" v-for="quantity in errMsg.quantity" id="product-quantity-err"  v-text="quantity"></small>
                     </div>
                     <div class="d-flex flex-column w-50">

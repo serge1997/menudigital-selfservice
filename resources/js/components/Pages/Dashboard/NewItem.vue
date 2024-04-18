@@ -1,7 +1,7 @@
 <template>
      <SideBarComponent />
     <div class="container-fuid">
-        <div class="row">
+        <div class="col-md-12">
             <div class="col-lg-6 col-md-10 m-auto">
                 <form @submit.prevent="SaveItem" class="w-100 p-4">
                     <div class="form-header p-2 text-capitalize shadow-lg rounded-3 text-white w-100">
@@ -25,7 +25,7 @@
                         </div>
                     </div>
                     <div class="row p-3">
-                        <Dropdown v-model="menuItem.type_id" option-value="id_type" :options="mealType" optionLabel="desc_type" placeholder="Select a food group" class="w-full md:w-14rem" />
+                        <Dropdown v-model="menuItem.type_id" :class="invalid" option-value="id_type" :options="mealType" optionLabel="desc_type" placeholder="Select a food group" class="w-full md:w-14rem" />
                         <small class="text-danger" v-if="errMsg" v-for="type_id in errMsg.type_id" id="item-price-err"  v-text="type_id"></small>
                     </div>
                     <div class="d-flex p-2 mt-2">
@@ -41,6 +41,7 @@
                             <label for="isactive-false" class="">{{ $t('forms.desabilitate') }}</label>
                         </div>
                     </div>
+                    <small class="text-danger" v-if="errMsg" v-for="item_status in errMsg.item_status" id="item-status"  v-text="item_status"></small>
                     <div class="row d-flex flex-colum mt-2 p-1">
                         <label for="item-desc">{{ $t('forms.description') }}</label>
                         <Textarea v-model="menuItem.item_desc" rows="5" cols="30" id="item-desc" />
@@ -92,6 +93,7 @@ export default {
                 type_id: null,
                 item_status: null
             },
+            invalid: null,
             mealType: null,
             errMsg: null,
             invalid: null,
@@ -118,6 +120,7 @@ export default {
            }).catch((errors) => {
              console.log(errors.response.data.errors)
              this.errMsg = errors.response.data.errors
+             this.invalid = 'p-invalid'
              errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'warning'}): null
            })
         },
