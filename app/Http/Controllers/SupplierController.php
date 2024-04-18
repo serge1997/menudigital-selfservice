@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\Product;
 use Exception;
+use App\Http\Requests\StoreSupplierRequest;
 
 
 class SupplierController extends Controller
@@ -20,19 +21,10 @@ class SupplierController extends Controller
     {
         $this->supplierRespository = $supplierRespository;
     }
-    public function StoreSupplier(Request $request): JsonResponse
+    public function StoreSupplier(StoreSupplierRequest $request): JsonResponse
     {
-        $request->validate([
-            "sup_name" => ["required"],
-            "sup_tel" => ["required"],
-        ],
-            [
-                "sup_name.required" => "name is required",
-                "sup_tel.required" => "contact is required"
-            ]);
-
         try {
-
+            $request->validated();
             $this->supplierRespository->beforeSave($request->sup_name);
             $data = $request->all();
             Supplier::create($data);

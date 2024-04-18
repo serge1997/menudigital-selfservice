@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\EmailValidation;
 
 class StoreUserRequest extends FormRequest
 {
@@ -22,13 +23,13 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'          => ['required'],
-            'tel'           => ['required'],
-            'email'         => ['required'],
-            'password'      => ['required'],
+            'name'          => ['required', 'max:40', 'min:8'],
+            'tel'           => ['required', 'max:40'],
+            'email'         => ['required', new EmailValidation()],
+            'password'      => ['required', 'min:5'],
             'department_id' => ['required'],
             'position_id'   => ['required'],
-            'username'      => ['required'],
+            'username'      => ['required', 'min:4'],
             'is_full_time' => ['required']
         ];
     }
@@ -37,12 +38,17 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'name.required'              => 'nome obrigatório',
+            'name.max'                   => '40 caracteres no maximó',
+            'name.min'                   => 'no minímo 8 caracteres',
             'tel.required'               => 'telefone obrigatório',
+            'tel.max'                    => 'numero muito longo',
             'email.required'             => 'email obrigatório',
             'password.required'          => 'senha obrigatório',
+            'password.min'               => 'no minímo 4 caracteres',
             'department_id.required'     => 'departamento é obrigatório',
             'position_id.required'       => 'cargo é obrigatório',
             'username.required'          => 'nome de usuário é obrigatório',
+            'username.min'               => 'no minímo 4 carateres',
             'is_full_time.required'      => 'o campo taxa ou pleno é obrigatório'
         ];
     }
