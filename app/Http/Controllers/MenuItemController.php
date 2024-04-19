@@ -7,7 +7,7 @@ use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\StoreMenuItemsRequest;
 use App\Models\Menuitems;
 use App\Models\Cart;
 use App\Models\MealType;
@@ -25,7 +25,7 @@ class MenuItemController extends Controller
         $this->menuItemRepositoryInterface = $menuItemRepositoryInterface;
     }
 
-    public function StoreMenuItem(StoreProductRequest $request): JsonResponse
+    public function StoreMenuItem(StoreMenuItemsRequest $request): JsonResponse
     {
         try{
             $request->validated();

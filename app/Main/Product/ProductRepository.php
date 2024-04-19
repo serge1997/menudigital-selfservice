@@ -14,6 +14,24 @@ class ProductRepository implements ProductRepositoryInterface
 {
     use Permission, AuthSession { AuthSession::autth insteadof Permission; }
 
+
+    public function create($request)
+    {
+        if ( $this->can_manage($request) || $this->can_create_product($request)){
+            $this->beforeSave($request->prod_name);
+            Product::create($request->validated());
+            return true;
+        }
+        throw new Exception(__('messages.permission'));
+    }
+
+    public function beforeSave($product)
+    {
+        if ($product = Product::where('prod_name', $product)->exists()){
+            throw new Exception("Product always exist");
+        }
+    }
+
     public function getAll(): Collection
     {
         return new Collection(
