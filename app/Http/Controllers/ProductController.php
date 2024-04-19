@@ -12,7 +12,7 @@ use App\Http\Services\UserInstance;
 use App\Http\Services\Product\ProductRepositoty;
 use App\Main\Product\ProductRepositoryInterface;
 use Exception;
-use App\Http\Requests\StoreExpense;
+use App\Http\Requests\StoreProductRequest;
 
 class ProductController extends Controller
 {
@@ -26,38 +26,13 @@ class ProductController extends Controller
         $this->suppliers = new Supplier();
         $this->productRepositoryInterface = $productRepositoryInterface;
     }
-    public function StoreProduct(Request $request)
+    public function StoreProduct(StoreProductRequest $request)
     {
-        $request->validate([
-
-            'prod_name' => ['required'],
-            'prod_supplierID' => ['required'],
-            'prod_unmed' => ['required'],
-            'prod_contain' => ['required'],
-            'min_quantity' => ['required']
-        ],
-        [
-            'prod_name.required' => 'name is required',
-            'prod_supplierID.required' => 'supplier is required',
-            'prod_unmed.required' => 'unit. measure is required',
-            'prod_contain.rqeuired' => 'unit. contain is required',
-            'min_quantity.required' => 'minimum quantity required'
-
-        ]);
-
         try {
-            ProductRepositoty::checkProductNameCreate($request->prod_name);
-            $auth = $request->session()->get('auth-vue');
-            $data = $request->all();
-            foreach (UserInstance::get_user_roles($auth) as $create):
-                if ($create->role_id === Role::CAN_CREATE_PRODUCT || $create->role_id === Role::MANAGER):
-                    Product::create($data);
-                    return response()
-                        ->json("Produto Salvou com sucesso", 200);
-                endif;
-            endforeach;
+            $message = __('messages.create', ['model' => 'Product']);
+            $this->productRepositoryInterface->create($request);
             return response()
-                ->json("You dont have permission", 500);
+                ->json($message);
         }catch(\Exception $e){
             return response()
                 ->json($e->getMessage(), 500);
