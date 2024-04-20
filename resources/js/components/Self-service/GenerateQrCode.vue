@@ -61,7 +61,7 @@ export default {
             this.loadEffect();
             const orderNumber = (Math.random() * 100).toFixed(0);
             this.qrCode = `${this.code_}${this.cod}${orderNumber}`;
-            const data = { qrcode_order_number: 27};
+            const data = { qrcode_order_number: orderNumber};
             axios.post('/api/qrcode-order-number', data)
                 .then((response) => {
                   this.$toast.success(response.data)

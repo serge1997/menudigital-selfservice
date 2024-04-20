@@ -214,6 +214,7 @@ class OrderRepository implements OrderRepositoryInterface
                 $order->user_id          = $this->autth($request);
                 $order->ped_emissao      = Util::Today();
                 $order->status_id        = 6;
+                $order->qrcode_order_number = $request->qrcode_order_number;
                 $order->ped_customer_quantity = $request->ped_customer_quantity;
                 $order->save();
 

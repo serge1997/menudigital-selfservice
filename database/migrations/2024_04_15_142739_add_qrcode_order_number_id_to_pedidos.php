@@ -12,9 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
-            $table->integer('qrcode_order_number_id')->unsigned()->nullable();
-            $table->foreign('qrcode_order_number_id')->references('id')
-                ->on('qrcode_orders_numbers');
+            $table->integer('qrcode_order_number');
         });
     }
 
@@ -24,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
-            $table->dropColumn('qrcode_order_number_id');
+            $table->dropColumn('qrcode_order_number');
         });
     }
 };

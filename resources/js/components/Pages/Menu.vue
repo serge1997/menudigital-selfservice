@@ -174,9 +174,13 @@
                 </div>
             </div>
             <div class="w-100 d-flex mt-3 justify-content-end">
-                <Button @click="confirmOrder" label="Confirm order"/>
+                <Button @click="visibleRight = false" data-bs-toggle="modal" data-bs-target="#orderConfirmqrcodeReaderModal" label="Confirm order"/>
             </div>
         </Sidebar>
+        <QrCodeReaderComponent
+            :customer-name="cart.ped_customerName"
+            :customer-quantity="cart.ped_customer_quantity"
+        />
     </div>
 </template>
 
@@ -195,6 +199,7 @@ import Dialog from "primevue/dialog";
 import ProgressBar from 'primevue/progressbar';
 import InputText from "primevue/inputtext";
 import { randTime } from './../../rand';
+import QrCodeReaderComponent from '../Self-service/QrCodeReaderComponent.vue';
 
 export default {
     name: 'Menu',
@@ -211,7 +216,8 @@ export default {
         AccordionTab,
         DataTable,
         Column,
-        InputText
+        InputText,
+        QrCodeReaderComponent
     },
 
     data() {

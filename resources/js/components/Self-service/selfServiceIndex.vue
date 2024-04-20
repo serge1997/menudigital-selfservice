@@ -3,7 +3,7 @@
         <div class="row p-0">
             <div class="col-md-6 border shadow d-flex flex-column justify-content-center align-items-center gap-3">
                 <div class="w-100">
-                    <Button class="w-50" label="Start ordering" />
+                    <Button @click="this.$router.push({name: 'Menu'})" class="w-50" label="Start ordering" />
                 </div>
                 <div class="w-100">
                     <Button data-bs-toggle="modal" data-bs-target="#qrcodeReaderModal" class="w-50" label="See order" />
@@ -15,20 +15,18 @@
         </div>
         <div class="modal fade" id="qrcodeReaderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
-                    <div class="modal-content">
+                    <div class="modal-content rounded-0 p-2">
                         <div class="modal-header border-0">
                             <h5 class="modal-title" id="exampleModalLabel">Qr code reader</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="w-100">
-                                <h4>Scann your order QR code </h4>
+                                <h6>Scan your Qrcode to see your order !</h6>
                             </div>
+                            <div class="customer-order-list">{{ order }}</div>
                             <div class="w-100" id="customer-qr-reader">
                             </div>
-                        </div>
-                        <div style="width: 500px" class="modal-footer">
-                            <button type="button" class="btn btn-primary">Show</button>
                         </div>
                     </div>
                 </div>
@@ -53,7 +51,8 @@ export default {
 
     data() {
         return {
-            visibleOrderQrcode: false
+            visibleOrderQrcode: false,
+            order: null,
         }
     },
     methods: {
@@ -65,10 +64,18 @@ export default {
             }
       },
       mounteQrCodeScanner(){
+        let self = this;
         this.setDom(function() {
           function onScanSuccess(decodeText, decodeResult) {
-            alert('Your qr code result is: ' + decodeText, decodeResult);
-            alert("Hello");
+            axios.get('/api/menu-items/' + 10)
+            .then(response => {
+                let reader_div = document.getElementById("customer-qr-reader");
+                let orderListDiv = document.getElementById('customer-order-list');
+                if (response.status == 200 && response.data) {
+                    self.order = response.data
+                    reader_div.remove();
+                }
+            })
           }
           function onScanFailure(error) {
              console.warn(`Code scan error = ${error}`);
@@ -99,5 +106,10 @@ export default {
     height: 100vh;
     box-sizing: border-box;
     text-align: center;
+}
+
+#html5-qrcode-button-camera-start {
+    padding: 6px;
+    background-color: blueviolet;
 }
 </style>

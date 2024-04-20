@@ -52,7 +52,7 @@ class OrderController extends Controller
             return response()->json($message);
         }catch (Exception $e){
             DB::rollBack();
-            Cart::where('tableNumber', $request->tableNumber)->delete();
+            Cart::where('tableNumber', $request->ped_tableNumber)->delete();
             return \response()->json($e->getMessage(), 500);
         }
     }

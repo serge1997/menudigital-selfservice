@@ -18,7 +18,8 @@ class Pedido extends Model
         'ped_delete',
         'status_id',
         'user_id',
-        'ped_customer_quantity'
+        'ped_customer_quantity',
+        'qrcode_order_number'
     ];
 
     public function item(): HasMany

@@ -1,17 +1,23 @@
 <template>
   <div class="container">
-    <Button label="Qr code" text @click="visibleQrcodeReader = true" />
-    <Dialog v-model:visible="visibleQrcodeReader" maximizable modal :header="`${$t('stockModals.product_title')}`" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-      <div class="row">
-        <div class="col-md-10 m-auto d-flex flex-column">
-          <div class="w-100">
-            <h3>Generate Order QR code</h3>
-          </div>
-          <div class="w-100" id="my-qr-reader">
-          </div>
+    <div class="modal fade" id="orderConfirmqrcodeReaderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-0 p-2">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="exampleModalLabel">Qr code reader</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" :value="customerName" id="customer-name" />
+                    <input type="hidden" :value="customerQuantity" id="customer-quantity" />
+                    <div class="w-100">
+                        <h6>Scan your Qrcode to confirm your order !</h6>
+                    </div>
+                    <div class="w-100" id="confirm-order-qr-reader"></div>
+                </div>
+            </div>
         </div>
-      </div>
-    </Dialog>
+    </div>
   </div>
 </template>
 <script>
@@ -20,6 +26,7 @@ import Button from "primevue/button";
 export default {
     name: 'GenerateQrCode',
 
+    props: ['customerName', 'customerQuantity'],
     components: {
       Dialog,
       Button
@@ -27,7 +34,14 @@ export default {
 
     data(){
         return {
-          visibleQrcodeReader: false
+          visibleQrcodeReader: false,
+          domain: location.origin,
+          confirmOrderData: {
+                ped_tableNumber: localStorage.getItem('table'),
+                qrcode_order_number: null,
+                ped_customerName: null,
+                ped_customer_quantity: null
+            },
         }
     },
 
@@ -40,14 +54,32 @@ export default {
             }
         },
         mounteQrCodeScanner(){
+            let self = this;
             this.setDom(function() {
                 function onScanSuccess(decodeText, decodeResult) {
-                    alert('Your qr code result is: ' + decodeText, decodeResult)
+                    let customer = document.getElementById('customer-name').value;
+                    let quantity = document.getElementById('customer-quantity').value;
+                    let readerDiv = document.getElementById('confirm-order-qr-reader');
+                    self.confirmOrderData.qrcode_order_number = decodeText;
+                    self.confirmOrderData.ped_customerName = customer;
+                    self.confirmOrderData.ped_customer_quantity = quantity;
+                    axios.post('/api/order', self.confirmOrderData).then((response) => {
+                        //self.$router.push({name: 'SelfServiceIndex'});
+                        self.$toast.success(response.data)
+                        location.replace(`${self.domain}/self-service/home`);
+                        htmlScanner.stop();
+                    }).catch((errors) => {
+                        if (errors.response.status === 500){
+                            self.$swal.fire({
+                                text: !errors.response.data.message ? errors.response.data : errors.response.data.message  ,
+                                icon: "warning"
+                            })
+                        }
+                    })
                 }
-
                 let htmlScanner = new Html5QrcodeScanner(
-                    "my-qr-reader",
-                    {fps: 15, qrbos: 350}
+                    "confirm-order-qr-reader",
+                    {fps: 10, qrbox: 250}
                 );
 
                 htmlScanner.render(onScanSuccess);
