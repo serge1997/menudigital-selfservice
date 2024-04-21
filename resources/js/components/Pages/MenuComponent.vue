@@ -3,30 +3,34 @@
         <div class="w-100" id="add-card-container">
             <input type="hidden" :value="id" id="order-id">
             <transition>
-            <div id="post-new-item-card" v-if="newOrderItem.iteminfo" class="row m-auto border d-flex justify-content-between align-items-center">
-                <div class="item-img col-lg-3 col-md-10">
-                    <img class="w-50 img-thumbnail" src="./../../../../public/img/banner.jpg" alt="">
-                </div>
-                <div class="col-lg-4 col-md-10 d-flex flex-column align-items-center">
-                    <h6>{{ newOrderItem.iteminfo.item_name }}</h6>
-                    <h6>R${{ newOrderItem.iteminfo.item_price }}</h6>
-                </div>
-                <div class="col-lg-5 col-md-10 d-flex">
+                <div id="post-new-item-card" v-if="newOrderItem.iteminfo" class="row m-auto border d-flex justify-content-between align-items-center">
+                    <div class="item-img col-lg-3 col-md-10">
+                        <img class="w-50 img-thumbnail" src="./../../../../public/img/banner.jpg" alt="">
+                    </div>
+                    <div class="col-lg-4 col-md-10 d-flex flex-column align-items-center">
+                        <h6>{{ newOrderItem.iteminfo.item_name }}</h6>
+                        <h6>R${{ newOrderItem.iteminfo.item_price }}</h6>
+                    </div>
+                    <div class="col-lg-5 col-md-10 d-flex">
                         <Button icon="pi pi-minus" @click="addItemToOrder.quantity--"/>
                         <input style="width: 50px;"lass="form-control border-secondary rounded-0" type="text" v-model="addItemToOrder.quantity">
                         <input type="hidden" :value="newOrderItem.iteminfo.id" id="item-id">
                         <Button icon="pi pi-plus" @click="addItemToOrder.quantity++"/>
-                        <button @click="postNewOrderItem" class="btn text-uppercase">ok</button>
+                        <button @click="showScanerBox" class="btn text-uppercase">ok</button>
+                    </div>
                 </div>
-            </div>
             </transition>
+       </div>
+       <div class="row mt-2 p-3" :class="dNone">
+            <div class="col-md-8 m-auto" id="customer-add-qr-reader">
+            </div>
        </div>
         <div class="row">
             <div v-if="load" class="spinner-grow m-auto" style="width: 3rem; height: 3rem;" role="status">
                 <span class="visually-hidden"></span>
             </div>
         </div>
-        <div class="row d-flex justify-content-center">
+        <div class="row d-flex justify-content-center" id="type-menu">
             <div class="col-lg-2 col-md-4 menu-type-card p-2" id="typebt" v-for="mtype in MenuType" :key="mtype.id_type">
                 <button class="btn w-75 border-0 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">
                     <img class="w-50 type-btn" :class="{active: isactive}" :src="'/img/type/'+ mtype.foto_type" alt="">
@@ -34,7 +38,7 @@
                 </button>
             </div>
         </div>
-        <div class="row p-4">
+        <div class="row p-4" id="menu-items">
             <div v-if="itemOfType < 1" v-for="item in MenuItems" :key="item.id" class="col-lg-4 col-md-10 mb-4 m-auto">
                 <div class="card rounded-0 border-0 p-0 col-md-8">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
@@ -82,6 +86,7 @@
 <script>
 import axios from 'axios';
 import SearchComponent from '../SearchComponent.vue';
+import Dialog from 'primevue/dialog';
 import Button from "primevue/button";
 import Tag from "primevue/tag";
 
@@ -91,7 +96,8 @@ export default {
     components: {
         SearchComponent,
         Button,
-        Tag
+        Tag,
+        Dialog
     },
 
     props: {
@@ -118,9 +124,13 @@ export default {
             addItemToOrder: {
                 quantity: 1,
                 orderID: null,
-                itemID: null
+                itemID: null,
+                qrcode_order_number: null
             },
-            isactive: false
+            isactive: false,
+            checkAlwreadySend: true,
+            visibleOrderQrcode: false,
+            dNone: 'd-none'
         }
     },
 
@@ -140,7 +150,6 @@ export default {
     },
 
     methods: {
-
         getMenuType() {
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -165,7 +174,6 @@ export default {
             let cartDiv = document.getElementById('add-card-container');
             cartDiv.style.display = 'block'; //('show-new-item-card')
             axios.get('/api/menu-items/' + id, this.addorder).then((response) => {
-                //this.newOrderItem.orderinfo = response.data.order
                 this.newOrderItem.iteminfo = response.data
             }).catch((errors) => {
                 console.log(errors)
@@ -189,31 +197,61 @@ export default {
                 console.log(errors);
             })
         },
-
-        postNewOrderItem(){
+        handleDom(callback) {
+            if ( document.readyState === "complete" || document.readyState === "interactive") {
+            setTimeout(callback, 1000);
+            } else {
+            document.addEventListener("DOMContentLoaded", callback);
+            }
+        },
+        mounteQrCodeAddScanner(){
+        let self = this;
+        this.handleDom(function() {
+          function onScanSuccess(decodeText, decodeResult) {
+            self.addItemToOrder.qrcode_order_number = decodeText;
             let cartDiv = document.getElementById('add-card-container');
-            this.addItemToOrder.itemID = document.getElementById('item-id').value;
-            this.addItemToOrder.orderID = document.getElementById('order-id').value;
+            self.addItemToOrder.itemID = document.getElementById('item-id').value;
+            self.addItemToOrder.orderID = document.getElementById('order-id').value;
             cartDiv.style.display = 'none'
-            axios.post('/api/new-item', this.addItemToOrder).then((response) => {
-                this.$toast.success(response.data);
-            }).catch((errors) => {
-                console.log(errors)
+            if (self.checkAlwreadySend){
+                self.checkAlwreadySend = false
+                axios.post('/api/new-item', self.addItemToOrder).then((response) => {
+                    self.$toast.success(response.data);
+                    location.reload()
+                }).catch((errors) => {
+                    console.log(errors)
                 //this.$toast.error(errors.response.data)
-                if (errors.response.status === 500){
-                    this.visibleRight = false
-                    this.$swal.fire({
-                        text: !errors.response.data.message ? errors.response.data : errors.response.data.message,
-                        icon: "warning"
-                    })
-                }
-            })
+                    if (errors.response.status === 500){
+                        this.visibleRight = false
+                        this.$swal.fire({
+                            text: !errors.response.data.message ? errors.response.data : errors.response.data.message,
+                            icon: "warning"
+                        })
+                    }
+                })
+            }
         }
+          function onScanFailure(error) {
+             //console.warn(`Code scan error = ${error}`);
+          }
+          let htmlScanner = new Html5QrcodeScanner(
+              "customer-add-qr-reader",
+              {fps: 10, qrbox: 250}
+          );
 
+          htmlScanner.render(onScanSuccess, onScanFailure);
+        })
+      },
+      showScanerBox(){
+        this.dNone = null;
+        let menuItemsBox = document.getElementById('menu-items');
+        menuItemsBox.style.display = "none";
+      }
     },
 
     mounted() {
         this.getMenuType()
+        this.mounteQrCodeAddScanner();
         //this.getMenuItems()
         //this.checkCart()
         //localStorage.removeItem('userRole')

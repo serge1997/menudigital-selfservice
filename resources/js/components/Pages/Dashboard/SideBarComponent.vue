@@ -222,7 +222,6 @@ export default {
 
         });
         axios.get('/api/rest-info').then((response) => {
-            console.log(response.data)
             this.restaurant = response.data
         }).catch((errors) => {
             console.log(errors)

@@ -1,13 +1,33 @@
 <template>
     <div class="container-fluid p-0">
+        <div class="col-md-12">
+            <div class="modal fade" id="AddMenu" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content rounded-0">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <MenuComponent />
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row p-0">
-            <div class="col-md-6 border shadow d-flex flex-column justify-content-center align-items-center gap-3">
-                <div class="w-100">
+            <div class="col-md-6 border shadow d-flex flex-column justify-content-between align-items-center gap-3">
+                <div class="w-50 p-1" v-for="rest in restaurant">
+                    <img class="w-25 sidebar-logo" :src="'/img/logo/'+ rest.res_logo" alt="">
+                    <h6 class="rest-name mt-2">Casino bar</h6>
+                </div>
+                <div class="w-100 d-flex flex-column gap-3 align-items-center">
                     <Button @click="this.$router.push({name: 'Menu'})" class="w-50" label="Start ordering" />
+                    <Button data-bs-toggle="modal" data-bs-target="#AddMenu" text class="w-50 border-primary" label="Add" />
+                    <Button data-bs-toggle="modal" data-bs-target="#qrcodeReaderModal" text class="w-50 border-primary" label="See order" />
                 </div>
-                <div class="w-100">
-                    <Button data-bs-toggle="modal" data-bs-target="#qrcodeReaderModal" class="w-50" label="See order" />
-                </div>
+                <div class="w-100"></div>
             </div>
             <div class="col-md-6 p-0">
                 <img class="w-100 h-100" src="/img/self-banner.jpg" alt="">
@@ -56,21 +76,22 @@
                 </div>
             </div>
         <div class="col-md-12">
-            <Dialog v-model:visible="visibleOrderQrcode" maximizable modal :header="`${ $t('waiterpage.modal.title')} `" :style="{ width: '75rem' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
-                <h1>Hello world</h1>
-            </Dialog>
+
         </div>
     </div>
 </template>
 <script>
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import MenuComponent from './../Pages/MenuComponent.vue';
+
 export default {
     name: 'selfServiceIndex',
 
     components: {
         Button,
-        Dialog
+        Dialog,
+        MenuComponent
     },
 
     data() {
@@ -79,7 +100,8 @@ export default {
             order: null,
             checkAlwreadySend: true,
             showOrderDetails: false,
-            total: 0
+            total: 0,
+            restaurant: null,
         }
     },
     methods: {
@@ -140,6 +162,11 @@ export default {
     },
     mounted(){
         this.mounteQrCodeScanner();
+        axios.get('/api/rest-info').then((response) => {
+            this.restaurant = response.data
+        }).catch((errors) => {
+            console.log(errors)
+        })
     }
 }
 </script>
@@ -162,5 +189,9 @@ export default {
 }
 .isDisplayed {
     display: none;
+}
+
+.rest-name {
+    font-family: 'Borel';
 }
 </style>

@@ -20,4 +20,7 @@ interface OrderRepositoryInterface
     public function returnItem($item_id, $quantidade): void;
 
     public function findByQrCodeOrderNumber(int $qrcode_order_number);
+    public function orderInWaitingStatus($qrcode_order_number): bool;
+    public function findOrderByQrCodeNumber($qrcode_order_number, $item_id);
+
 }

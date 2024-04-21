@@ -25,6 +25,7 @@ use App\Traits\AuthSession;
 use App\Models\Restaurant;
 use DateTime;
 use App\Http\Resources\PedidoResource;
+use Carbon\Carbon;
 
 
 class OrderRepository implements OrderRepositoryInterface
@@ -152,41 +153,31 @@ class OrderRepository implements OrderRepositoryInterface
         $orderID = $request->orderID;
         $itemID = $request->itemID;
         $quantity = $request->quantity;
+        $qrCode =  $request->qrcode_order_number;
+        $newItem = $this->findOrderByQrCodeNumber($qrCode, $itemID);
         StockServiceRepository::SetItemSaldoZeroException($tableNumber, $request->itemID);
         StockServiceRepository::checkSetItemSaldoZeroAddItemToOrder($request->itemID);
         StockServiceRepository::StockOutProduct(str_split($itemID, 10), str_split($quantity, 10));
-        $auth = $request->session()->get('auth-vue');
 
-        $menuitem = Menuitems::where('id', $itemID)->first();
-        $item = ItensPedido::where([
-            ['item_pedido', $orderID],
-            ['item_id', $itemID],
-            ['item_delete', false]
-        ])->first();
-        foreach (UserInstance::get_user_roles($auth) as $confirm):
-            if (
-                $confirm->role_id === Role::MANAGER ||
-                $confirm->role_id === Role::CAN_TAKE_ORDER ||
-                $confirm->role_id === Role::CAN_USE_CASHIER ||
-                $confirm->role_id === Role::CAN_TRANSFERT_ORDER ||
-                $confirm->role_id === Role::CAN_CANCEL_ORDER
-            ):
-                //DB::beginTransaction();
-                if (isset($item)):
-                    $totalQuantity = $item->item_quantidade + $quantity;
-                    $item::where([
-                        ['item_pedido', $orderID],
-                        ['item_id', $itemID],
-                        ['item_delete', false]
-                    ])->update([
-                        'item_quantidade' => $totalQuantity,
-                        'item_total' => $menuitem->item_price * $totalQuantity
-                    ]);
-                    StockServiceRepository::ControleItemLowStockRuptured(str_split($itemID, 10));
-                  return;
-                endif;
+        if ( $this->orderInWaitingStatus($qrCode) ) {
+
+            if (ItensPedido::where([['item_pedido', $newItem->item_pedido], ['item_id', $itemID]])->exists()){
+
+                $totalQuantity = $newItem->item_quantidade + $quantity;
+                ItensPedido::where([
+                    ['item_pedido', $newItem->item_pedido],
+                    ['item_id', $itemID],
+                    ['item_delete', false]
+                ])
+                ->update([
+                    'item_quantidade' => $totalQuantity,
+                    'item_total' => $newItem->item_price * $totalQuantity
+                ]);
+                StockServiceRepository::ControleItemLowStockRuptured(str_split($itemID, 10));
+            } else {
+                $menuitem = Menuitems::where('id', $itemID)->first();
                 $itens = new ItensPedido();
-                $itens->item_pedido     = $orderID;
+                $itens->item_pedido     = $newItem->item_pedido;
                 $itens->item_id         = $itemID;
                 $itens->item_quantidade = $quantity;
                 $itens->item_price      = $menuitem->item_price;
@@ -194,10 +185,8 @@ class OrderRepository implements OrderRepositoryInterface
                 $itens->item_emissao    = Util::Today();
                 $itens->save();
                 StockServiceRepository::ControleItemLowStockRuptured(str_split($itemID, 10));
-                return;
-            endif;
-        endforeach;
-        throw new Exception(__('messages.permission'));
+            }
+        }
     }
 
     public function createOrder($request)
@@ -526,4 +515,28 @@ class OrderRepository implements OrderRepositoryInterface
             );
     }
 
+    public function orderInWaitingStatus($qrcode_order_number): bool
+    {
+        return Pedido::where([
+            ['qrcode_order_number', $qrcode_order_number],
+            ['status_id', OrderStatus::ANDAMENTO],
+            ['ped_emissao', Carbon::now()->isoFormat('Y-MM-DD')]
+        ])->exists();
+    }
+
+    public function findOrderByQrCodeNumber($qrcode_order_number, $item_id)
+    {
+        $order = Pedido::where([
+            ['qrcode_order_number', $qrcode_order_number],
+            ['status_id', OrderStatus::ANDAMENTO],
+            ['ped_emissao', Carbon::now()->isoFormat('Y-MM-DD')]
+        ])->first();
+
+        if ($order->qrcode_order_number) {
+            return ItensPedido::where([
+                ['item_pedido', $order->id],
+            ])->first();
+        }
+        throw new Exception("Aucune commande lancé avec ce Qr code");
+    }
 }
