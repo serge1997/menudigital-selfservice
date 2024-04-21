@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pedidos', function (Blueprint $table) {
-            $table->integer('qrcode_order_number');
+            $table->integer('qrcode_order_number')->nullable();
         });
     }
 

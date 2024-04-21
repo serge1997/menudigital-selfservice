@@ -18,15 +18,15 @@
                     <div class="modal-content rounded-0 p-2">
                         <div class="modal-header border-0">
                             <h5 class="modal-title" id="exampleModalLabel">Qr code reader</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button @click="closeCustomerQrCodeReaderModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <div class="w-100">
+                            <div class="w-100 p-2 mb-3">
                                 <h6>Scan your Qrcode to see your order !</h6>
                             </div>
                             <div class="customer-order-list">
-                                <table class="table">
-                                    <thead>
+                                <table class="table table-borderless isDisplayed">
+                                    <thead class="">
                                         <tr>
                                             <th>Item</th>
                                             <th>Quantité</th>
@@ -34,12 +34,12 @@
                                             <th>Subtotal</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody class="fw-medium">
                                         <tr v-for="item in order">
-                                            <td>{{ item.item_name }}</td>
-                                            <td>{{ item.item_quantidade }}</td>
-                                            <td>{{ item.item_price }}</td>
-                                            <td>{{ item.item_price *  item.item_quantidade}}</td>
+                                            <td style="background-color: #e2e3e5;" class="p-3">{{ item.item_name }}</td>
+                                            <td class="p-3">{{ item.item_quantidade }}</td>
+                                            <td class="p-3">{{ item.item_price }}</td>
+                                            <td class="p-3">{{ item.item_price *  item.item_quantidade}}</td>
                                         </tr>
                                     </tbody>
                                     <tfoot>
@@ -78,6 +78,7 @@ export default {
             visibleOrderQrcode: false,
             order: null,
             checkAlwreadySend: true,
+            showOrderDetails: false,
             total: 0
         }
     },
@@ -100,13 +101,15 @@ export default {
                 .then(response => {
 
                     let reader_div = document.getElementById("customer-qr-reader");
-                    let orderListDiv = document.getElementById('customer-order-list');
+                    console.log(reader_div)
+                    let table = document.querySelector('.table');
+                    table.classList.remove('isDisplayed');
                     if (response.status == 200 && response.data) {
                         self.order = response.data
                         for (let item of self.order) {
                             self.total += Number(item.item_quantidade) * Number(item.item_price)
                         }
-                        reader_div.remove();
+                        reader_div.style.display = "none";
                     }
                 })
             }
@@ -122,6 +125,17 @@ export default {
 
           htmlScanner.render(onScanSuccess, onScanFailure);
         })
+      },
+
+      closeCustomerQrCodeReaderModal(){
+        this.checkAlwreadySend = true;
+        let reader_div = document.getElementById("customer-qr-reader");
+        let table = document.querySelector('.table');
+        setTimeout(() => {
+            reader_div.style.display = "block";
+            table.classList.add('isDisplayed');
+        })
+
       }
     },
     mounted(){
@@ -145,5 +159,8 @@ export default {
 #html5-qrcode-button-camera-start {
     padding: 6px;
     background-color: blueviolet;
+}
+.isDisplayed {
+    display: none;
 }
 </style>
