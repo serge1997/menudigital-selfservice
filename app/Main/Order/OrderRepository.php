@@ -24,6 +24,7 @@ use App\Traits\Permission;
 use App\Traits\AuthSession;
 use App\Models\Restaurant;
 use DateTime;
+use App\Http\Resources\PedidoResource;
 
 
 class OrderRepository implements OrderRepositoryInterface
@@ -51,6 +52,7 @@ class OrderRepository implements OrderRepositoryInterface
                 'pedidos.ped_tableNumber',
                 'status.stat_desc',
                 'pedidos.status_id',
+                'pedidos.qrcode_order_number',
                 DB::raw('SUM(itens_pedido.item_total) AS total')
             )
                 ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
@@ -62,7 +64,8 @@ class OrderRepository implements OrderRepositoryInterface
                                 'pedidos.ped_tableNumber',
                                 'itens_pedido.item_pedido',
                                 'pedidos.status_id',
-                                'status.stat_desc'
+                                'status.stat_desc',
+                                'pedidos.qrcode_order_number'
                                     )
                                     ->orderByRaw('pedidos.created_at DESC')
                                         ->get();
@@ -502,6 +505,25 @@ class OrderRepository implements OrderRepositoryInterface
             throw new Exception(__('messages.order_history_update'));
         endif;
         throw new Exception(__('messages.permission'));
+    }
+
+    public function findByQrCodeOrderNumber(int $qrcode_order_number)
+    {
+       return new Collection(
+            Pedido::select(
+                'pedidos.id',
+                'pedidos.status_id',
+                'itens_pedido.item_id',
+                'menuitems.item_name',
+                'itens_pedido.item_quantidade',
+                'itens_pedido.item_total',
+                'itens_pedido.item_price'
+            )
+                ->join('itens_pedido', 'pedidos.id', '=', 'itens_pedido.item_pedido')
+                    ->join('menuitems', 'itens_pedido.item_id', '=', 'menuitems.id')
+                        ->where([['pedidos.qrcode_order_number', $qrcode_order_number], ['pedidos.status_id', OrderStatus::ANDAMENTO]])
+                            ->get()
+            );
     }
 
 }

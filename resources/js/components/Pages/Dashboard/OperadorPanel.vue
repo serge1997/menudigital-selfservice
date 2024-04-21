@@ -54,6 +54,7 @@
                         <th class="text-capitalize">Id</th>
                         <th class="text-capitalize">{{ $t('operator.dataTable.two')}}</th>
                         <th class="text-capitalize">{{ $t('operator.dataTable.three')}}</th>
+                        <th class="text-capitalize">Numero</th>
                         <th class="text-capitalize">{{ $t('operator.dataTable.four')}}</th>
                         <th class="text-capitalize">Status</th>
                         <th class="text-capitalize">{{ $t('operator.dataTable.six')}}</th>
@@ -67,6 +68,8 @@
                         <td v-else class="success-bg">{{ pedido.ped_customerName }}</td>
                         <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.ped_tableNumber }}</td>
                         <td v-else class="success-bg">{{ pedido.ped_tableNumber }}</td>
+                        <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.qrcode_order_number }}</td>
+                        <td v-else="pedido.status_id == 6" class="success-bg">{{ pedido.qrcode_order_number }}</td>
                         <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.total }}</td>
                         <td v-else class="success-bg">{{ pedido.total }}</td>
                         <td v-if="pedido.status_id == 6" class="alert-bg">{{ pedido.stat_desc }}</td>

@@ -24,7 +24,31 @@
                             <div class="w-100">
                                 <h6>Scan your Qrcode to see your order !</h6>
                             </div>
-                            <div class="customer-order-list">{{ order }}</div>
+                            <div class="customer-order-list">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Quantité</th>
+                                            <th>Prix</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in order">
+                                            <td>{{ item.item_name }}</td>
+                                            <td>{{ item.item_quantidade }}</td>
+                                            <td>{{ item.item_price }}</td>
+                                            <td>{{ item.item_price *  item.item_quantidade}}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Total: {{ total }}</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                             <div class="w-100" id="customer-qr-reader">
                             </div>
                         </div>
@@ -53,6 +77,8 @@ export default {
         return {
             visibleOrderQrcode: false,
             order: null,
+            checkAlwreadySend: true,
+            total: 0
         }
     },
     methods: {
@@ -67,18 +93,26 @@ export default {
         let self = this;
         this.setDom(function() {
           function onScanSuccess(decodeText, decodeResult) {
-            axios.get('/api/menu-items/' + 10)
-            .then(response => {
-                let reader_div = document.getElementById("customer-qr-reader");
-                let orderListDiv = document.getElementById('customer-order-list');
-                if (response.status == 200 && response.data) {
-                    self.order = response.data
-                    reader_div.remove();
-                }
-            })
+            let qrcode_order_number = decodeText;
+            if (self.checkAlwreadySend){
+                self.checkAlwreadySend = false
+                axios.get('/api/oder-qr-code/' + qrcode_order_number)
+                .then(response => {
+
+                    let reader_div = document.getElementById("customer-qr-reader");
+                    let orderListDiv = document.getElementById('customer-order-list');
+                    if (response.status == 200 && response.data) {
+                        self.order = response.data
+                        for (let item of self.order) {
+                            self.total += Number(item.item_quantidade) * Number(item.item_price)
+                        }
+                        reader_div.remove();
+                    }
+                })
+            }
           }
           function onScanFailure(error) {
-             console.warn(`Code scan error = ${error}`);
+             //console.warn(`Code scan error = ${error}`);
           }
 
           let htmlScanner = new Html5QrcodeScanner(

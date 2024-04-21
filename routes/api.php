@@ -78,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('cancel/order-item', 'cancelOrderItemAction');
         Route::put('cancel-order', 'cancelOrderAction');
         Route::put('order-history/{order_id}', 'updateHistoryOrderStatusAction');
+        Route::get('oder-qr-code/{qrcode_order_number}', 'findByQrCodeOrderNumberAction');
     });
 
     //BI

@@ -26,6 +26,7 @@ class PedidoResource extends JsonResource
             'status_id' => $this->status_id,
             'stat_desc' => $this->status->stat_desc,
             'itens' => ItensPedidoResource::collection($this->item),
+            'qrcode_order_number' => $this->qrcode_order_number
         ];
     }
 }

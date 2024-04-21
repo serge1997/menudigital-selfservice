@@ -186,4 +186,15 @@ class OrderController extends Controller
             return response()->json($e->getMessage(), 500);
         }
      }
+
+     public function findByQrCodeOrderNumberAction($qrcode_order_number)
+     {
+        try{
+            return response()
+                ->json($this->orderRepositotyInterface->findByQrCodeOrderNumber($qrcode_order_number));
+        }catch(Exception $e){
+            return response()
+                ->json($e->getMessage(), 500);
+        }
+     }
 }

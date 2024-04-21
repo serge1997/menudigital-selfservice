@@ -42,6 +42,7 @@ export default {
                 ped_customerName: null,
                 ped_customer_quantity: null
             },
+            checkAlwreadySend: true
         }
     },
 
@@ -63,19 +64,23 @@ export default {
                     self.confirmOrderData.qrcode_order_number = decodeText;
                     self.confirmOrderData.ped_customerName = customer;
                     self.confirmOrderData.ped_customer_quantity = quantity;
-                    axios.post('/api/order', self.confirmOrderData).then((response) => {
-                        //self.$router.push({name: 'SelfServiceIndex'});
-                        self.$toast.success(response.data)
-                        location.replace(`${self.domain}/self-service/home`);
-                        htmlScanner.stop();
-                    }).catch((errors) => {
-                        if (errors.response.status === 500){
-                            self.$swal.fire({
-                                text: !errors.response.data.message ? errors.response.data : errors.response.data.message  ,
-                                icon: "warning"
-                            })
-                        }
-                    })
+                    if ( self.checkAlwreadySend ) {
+                        self.checkAlwreadySend = false;
+                        axios.post('/api/order', self.confirmOrderData).then((response) => {
+                            //self.$router.push({name: 'SelfServiceIndex'});
+                            self.$toast.success(response.data)
+                            location.replace(`${self.domain}/self-service/home`);
+
+                            htmlScanner.stop();
+                        }).catch((errors) => {
+                            if (errors.response.status === 500){
+                                self.$swal.fire({
+                                    text: !errors.response.data.message ? errors.response.data : errors.response.data.message  ,
+                                    icon: "warning"
+                                })
+                            }
+                        })
+                    }
                 }
                 let htmlScanner = new Html5QrcodeScanner(
                     "confirm-order-qr-reader",

@@ -18,4 +18,6 @@ interface OrderRepositoryInterface
     public function cancelOrderItem($request);
     public function cancelOrder($request);
     public function returnItem($item_id, $quantidade): void;
+
+    public function findByQrCodeOrderNumber(int $qrcode_order_number);
 }
