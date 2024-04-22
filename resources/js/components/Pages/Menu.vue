@@ -161,8 +161,8 @@
                     <label for="customer-name">Customer name</label>
                     <InputText class="w-100" id="customer-name" v-model="cart.ped_customerName" type="text" placeholder="customer name" />
                     <small class="text-danger" v-if="errMsg" v-text="errMsg[0]"></small>
-                    <label for="ped_customer_total" class="mt-3">Customer Total</label>
-                    <InputText v-model="cart.ped_customer_quantity"  class="w-100" placeholder="Total customer" />
+                    <label for="ped_customer_total" class="mt-3 d-none">Customer Total</label>
+                    <InputText type="hidden" v-model="cart.ped_customer_quantity"  class="w-100" placeholder="Total customer" />
                 </div>
                 <div class="w-100 p-3">
                     <DataTable :value="cartItems">
@@ -248,7 +248,7 @@ export default {
                 ped_tableNumber: localStorage.getItem('table'),
                 user_id: null,
                 ped_customerName: null,
-                ped_customer_quantity: null,
+                ped_customer_quantity: 1,
             },
         }
     },

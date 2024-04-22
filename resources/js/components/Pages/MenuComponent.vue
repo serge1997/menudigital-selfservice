@@ -206,6 +206,9 @@ export default {
         },
         mounteQrCodeAddScanner(){
         let self = this;
+        if ( ! this.checkAlwreadySend ) {
+            this.checkAlwreadySend = !this.checkAlwreadySend;
+        }
         this.handleDom(function() {
           function onScanSuccess(decodeText, decodeResult) {
             self.addItemToOrder.qrcode_order_number = decodeText;
@@ -222,8 +225,8 @@ export default {
                     console.log(errors)
                 //this.$toast.error(errors.response.data)
                     if (errors.response.status === 500){
-                        this.visibleRight = false
-                        this.$swal.fire({
+                        //this.visibleRight = false
+                        self.$swal.fire({
                             text: !errors.response.data.message ? errors.response.data : errors.response.data.message,
                             icon: "warning"
                         })

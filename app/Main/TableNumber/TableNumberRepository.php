@@ -30,7 +30,7 @@ class TableNumberRepository implements TableNumberRepositoryInterface
         $busyTables = DB::table('pedidos')
         ->select(
             'pedidos.ped_tableNumber',
-            'pedidos.id', 'users.name',
+            'pedidos.id', 'pedidos.ped_customerName as name',
             'pedidos.ped_customer_quantity as customer',
             DB::raw("CONCAT(TIMESTAMPDIFF(MINUTE, pedidos.created_at, '{$now}'), ' min') as timing")
             )

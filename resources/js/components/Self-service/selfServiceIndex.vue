@@ -121,9 +121,7 @@ export default {
                 self.checkAlwreadySend = false
                 axios.get('/api/oder-qr-code/' + qrcode_order_number)
                 .then(response => {
-
                     let reader_div = document.getElementById("customer-qr-reader");
-                    console.log(reader_div)
                     let table = document.querySelector('.table');
                     table.classList.remove('isDisplayed');
                     if (response.status == 200 && response.data) {
@@ -156,7 +154,7 @@ export default {
         setTimeout(() => {
             reader_div.style.display = "block";
             table.classList.add('isDisplayed');
-        })
+        }, 200)
 
       }
     },

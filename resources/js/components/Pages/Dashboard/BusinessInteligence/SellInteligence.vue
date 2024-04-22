@@ -112,7 +112,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2 border shadow-sm bg-white p-2" id="score">
+            <div class="col-md-2 d-none border shadow-sm bg-white p-2" id="score">
                 <div class="d-flex justify-content-between border-0 bg-white" id="score">
                     <div class="d-flex justify-content-center alert alert-warning py-0 rounded-circle px-2 py-2">
                         <i class="pi pi-dollar" style="font-size: 1.2rem; color: #f0ad4e;"></i>
@@ -160,7 +160,7 @@
                     <Column field="item_name" sortable style="width: 25%" header="Menu item"></Column>
                     <Column field="quantidade" sortable style="width: 15%" :header="`${$t('bicost.dataTable.four')}`"></Column>
                     <Column field="venda" sortable style="width: 15%" :header="`${$t('bisell.dataTable.four')}`"></Column>
-                    <Column field="name" sortable style="width: 25%" :header="`${$t('biexpense.dataTable.five')}`"></Column>
+                    <!-- <Column field="name" sortable style="width: 25%" :header="`${$t('biexpense.dataTable.five')}`"></Column> -->
                 </DataTable>
             </div>
         </div>
