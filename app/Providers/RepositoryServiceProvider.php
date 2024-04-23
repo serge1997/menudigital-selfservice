@@ -47,6 +47,8 @@ use App\Main\Expense\ExpenseRepository;
 use App\Main\Expense\ExpenseRepositoryInterface;
 use App\Main\Language\LanguageRepositoryInterface;
 use App\Main\Language\LanguageRepository;
+use App\Main\Printer\PrinterRepositoryInterface;
+use App\Main\Printer\PrinterRepository;
 
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -78,6 +80,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ExpenseRepositoryInterface::class, ExpenseRepository::class);
         $this->app->bind(LanguageRepositoryInterface::class, LanguageRepository::class);
         $this->app->bind(QrCodeOrderNumberRepositoryInterface::class, QrcodeOrderNumberRepository::class);
+        $this->app->bind(PrinterRepositoryInterface::class, PrinterRepository::class);
     }
 
     /**

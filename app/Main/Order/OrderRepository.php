@@ -26,6 +26,7 @@ use App\Models\Restaurant;
 use DateTime;
 use App\Http\Resources\PedidoResource;
 use Carbon\Carbon;
+use App\Main\Printer\PrinterRepositoryInterface;
 
 
 class OrderRepository implements OrderRepositoryInterface
