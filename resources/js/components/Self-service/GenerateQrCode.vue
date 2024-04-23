@@ -1,4 +1,5 @@
 <template>
+    <SideBarComponent />
     <div class="container-fluid">
         <template id="swal-template">
             <swal-html>
@@ -22,12 +23,14 @@
 import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import { randTime } from "@/rand.js";
+import SideBarComponent from "../Pages/Dashboard/SideBarComponent.vue";
 export default {
     name: 'GenerateQrCode',
 
     components: {
         Dropdown,
-        Button
+        Button,
+        SideBarComponent
     },
 
     data(){
@@ -62,13 +65,15 @@ export default {
             const orderNumber = (Math.random() * 100).toFixed(0);
             this.qrCode = `${this.code_}${this.cod}${orderNumber}`;
             const data = { qrcode_order_number: orderNumber};
-            axios.post('/api/qrcode-order-number', data)
+            setTimeout(() => {
+                axios.post('/api/qrcode-order-number', data)
                 .then((response) => {
-                  this.$toast.success(response.data)
+                    this.$toast.success(response.data)
                 })
                 .catch((error) => {
-                  error.response.status === 500 ? this.$toast.error(error.response.data.message) : '';
+                    error.response.status === 500 ? this.$toast.error(error.response.data.message) : '';
                 })
+            }, randTime() + 100)
         }
     },
 

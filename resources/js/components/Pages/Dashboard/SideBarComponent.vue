@@ -16,9 +16,24 @@
                             <ul class="list-group w-100 mt-4">
                                 <li v-if="administrativeAccess.includes(`${user.position_id}`)" class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{name: 'OperadorPanel'}">
-                                    <span class="pi pi-dollar"></span>
-                                        {{  $t('sidebarmenu.one') }}
+                                        <span class="pi pi-dollar"></span>
+                                            {{  $t('sidebarmenu.one') }}
                                     </router-link>
+                                </li>
+                                <li class="list-group-item rounded-0 border-0">
+                                    <span class="d-flex gap-2" style="cursor: pointer;" @click="menuSelfToggle = !menuSelfToggle; menuSelfIcon = menuSelfToggle ?  'pi pi-chevron-up' : 'pi pi-chevron-down'">
+                                        <span><i class="pi pi-qrcode"></i></span>
+                                        <span>Self service <i :class="menuSelfIcon"></i></span>
+                                    </span>
+                                    <Menu v-if="menuSelfToggle" :model="menu" >
+                                        <template #item="{ item, props }">
+                                            <router-link class="nav-link" v-slot="{ href, navigate }" :to="item.route">
+                                                <a class="nav-link p-2" v-ripple :href="href" v-bind="props.action" @click="navigate">
+                                                    <span>{{ item.label }}</span>
+                                                </a>
+                                            </router-link>
+                                        </template>
+                                    </Menu>
                                 </li>
                                 <li class="list-group-item rounded-0 border-0">
                                     <router-link class="nav-link" :to="{name: 'Garcom'}">
@@ -127,6 +142,7 @@ import Avatar from "primevue/avatar";
 import Tag from 'primevue/tag';
 import Dropdown from "primevue/dropdown";
 import { computed } from "vue";
+import Menu from 'primevue/menu';
 
 export default {
     name: 'SideBarComponent',
@@ -136,7 +152,8 @@ export default {
         Sidebar,
         Avatar,
         Tag,
-        Dropdown
+        Dropdown,
+        Menu
     },
 
     data() {
@@ -160,6 +177,12 @@ export default {
             lang: [
                 {value: 'pt', label: 'Portugues', flag: "/img/brazil.png"},
                 {value: 'fr', label: 'Français', flag: "/img/france.png"}
+            ],
+            menuSelfToggle: false,
+            menuSelfIcon: 'pi pi-chevron-down',
+            menu: [
+                {label: 'Home', route: '/self-service/home'},
+                {label: 'Generate Qr code', route: '/self-service/generate-qr-code'}
             ]
         }
     },

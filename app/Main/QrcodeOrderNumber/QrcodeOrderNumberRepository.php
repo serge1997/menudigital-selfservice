@@ -17,7 +17,7 @@ class QrcodeOrderNumberRepository implements QrCodeOrderNumberRepositoryInterfac
             $this->beforeSave($request->qrcode_order_number);
             return QrcodeOrderNumber::create($request->validated());
         }
-        throw new Exception(__('message.permission'));
+        throw new Exception(__('messages.permission'));
     }
 
     public function beforeSave($qrcodeOrderNumber)

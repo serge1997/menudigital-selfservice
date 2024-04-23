@@ -242,7 +242,16 @@ const routes = [
     {
         path: '/self-service/home',
         name: 'SelfServiceIndex',
-        component: SelfServiceIndex
+        beforeEnter: (to, from, next) => {
+            window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
+            axios.get('/api/user').then((response) => {
+               if (administrativeAccess){
+                   administrativeAccess.includes(`${response.data.position_id}`) ? next() : next('/home');
+               }
+           })
+        },
+        component: SelfServiceIndex,
+        meta: {requiresAuth: true}
     }
 ]
 
