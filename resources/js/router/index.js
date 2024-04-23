@@ -237,11 +237,6 @@ const routes = [
     {
         path: '/self-service/generate-qr-code',
         name: 'GenerateQrCode',
-        component: GenerateQrCode
-    },
-    {
-        path: '/self-service/home',
-        name: 'SelfServiceIndex',
         beforeEnter: (to, from, next) => {
             window.axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`
             axios.get('/api/user').then((response) => {
@@ -250,8 +245,13 @@ const routes = [
                }
            })
         },
+        meta: {requiresAuth: true},
+        component: GenerateQrCode
+    },
+    {
+        path: '/self-service/home',
+        name: 'SelfServiceIndex',
         component: SelfServiceIndex,
-        meta: {requiresAuth: true}
     }
 ]
 
