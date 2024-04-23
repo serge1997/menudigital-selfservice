@@ -140,7 +140,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::post('rest-info', 'create');
         Route::get('rest-info', 'index');
         Route::post('rest-logo', 'createLogo');
-        Route::put('rest-info', 'update');
+        Route::put('rest-info', 'updateAction');
     });
 
     //supplier
