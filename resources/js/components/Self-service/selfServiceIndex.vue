@@ -18,9 +18,9 @@
         </div>
         <div class="row p-0">
             <div class="col-md-6 border shadow d-flex flex-column justify-content-between align-items-center gap-3">
-                <div class="w-50 p-1" v-for="rest in restaurant">
-                    <img class="w-25 sidebar-logo" :src="'/img/logo/'+ rest.res_logo" alt="">
-                    <h6 class="rest-name mt-2">Casino bar</h6>
+                <div class="w-50 p-1" v-if="restaurant">
+                    <img class="w-25 sidebar-logo" :src="'/img/logo/'+ restaurant.res_logo" alt="">
+                    <h6 class="rest-name mt-2">{{ restaurant.rest_name }}</h6>
                 </div>
                 <div class="w-100 d-flex flex-column gap-3 align-items-center">
                     <Button @click="this.$router.push({name: 'Menu'})" class="w-50" label="Start ordering" />

@@ -61,7 +61,8 @@
                         </div>
                         <div class="col-md-12 d-flex flex-column justify-content-between">
                             <small class="m-auto p-1" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
-                            <small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                            <small class="m-auto p-3" v-if="item.is_lowstock"></small>
+                            <!---<small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>-->
                             <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
@@ -82,7 +83,8 @@
                         </div>
                         <div class="col-md-12 d-flex flex-column justify-content-between">
                             <small class="m-auto p-1" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
-                            <small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>
+                            <small class="m-auto p-3" v-if="item.is_lowstock"></small>
+                            <!---<small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>-->
                             <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
                             <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
