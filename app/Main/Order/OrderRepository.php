@@ -35,16 +35,12 @@ class OrderRepository implements OrderRepositoryInterface
 
     public array $Order_item_ids = [];
     public array $Order_item_quantitys = [];
-    protected UserRepositoryInterface $userRepositoryInterface;
-    protected TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface;
 
     public function __construct(
-        UserRepositoryInterface $userRepositoryInterface,
-        TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface
-    ){
-        $this->userRepositoryInterface = $userRepositoryInterface;
-        $this->technicalFicheRepositoryInterface = $technicalFicheRepositoryInterface;
-    }
+        protected UserRepositoryInterface $userRepositoryInterface,
+        protected TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface,
+        protected PrinterRepositoryInterface $printerRepositoryInterface
+    ){}
 
     public function getOrders(): Collection
     {
@@ -225,6 +221,7 @@ class OrderRepository implements OrderRepositoryInterface
                     $this->Order_item_ids[]       = $itemPedido->item_id;
                     $this->Order_item_quantitys[] = $itemPedido->quantity;
                 }
+                //$this->printerRepositoryInterface->printCustomerBill($this->getOrderItens($order->id));
                 StockServiceRepository::StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
                 StockServiceRepository::ControleItemLowStockRuptured($this->Order_item_ids);
                 DB::table('carts')->where('tableNumber', $request->ped_tableNumber)

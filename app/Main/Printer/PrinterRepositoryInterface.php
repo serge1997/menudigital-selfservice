@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Collection;
 
 interface PrinterRepositoryInterface
 {
-    public function printCustomerBill(Collection $orderItens);
+    public function printCustomerBill($orderItens);
 }

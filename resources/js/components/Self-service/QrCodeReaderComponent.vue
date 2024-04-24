@@ -56,6 +56,9 @@ export default {
         },
         mounteQrCodeScanner(){
             let self = this;
+            if ( ! self.checkAlwreadySend ) {
+                self.checkAlwreadySend = true;
+            }
             this.setDom(function() {
                 function onScanSuccess(decodeText, decodeResult) {
                     let customer = document.getElementById('customer-name').value;

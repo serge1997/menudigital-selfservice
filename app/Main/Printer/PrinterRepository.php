@@ -11,7 +11,7 @@ use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 class PrinterRepository implements PrinterRepositoryInterface
 {
 
-    public function printCustomerBill(Collection $orderItens)
+    public function printCustomerBill($orderItens)
     {
         $connector = new CupsPrintConnector("");
         $printer = new Printer($connector);
@@ -22,7 +22,17 @@ class PrinterRepository implements PrinterRepositoryInterface
         $printer->feed();
 
         foreach ($orderItens as $key => $item) {
-            $printer->textRaw($item['item_name']);
+            //var_dump($item['item_name']); die;
+            $printer->textRaw($item['item_name'] . '......'. $item['item_quantidade'] . '......'. $item['item_total']. "\n");
         }
+        $printer->feed();
+        $printer->textRaw("Thank you !\n");
+        $printer->textRaw("\nTotal: ". array_sum($orderItens['item_total']). "\n");
+
+        $printer->feed();
+        $printer->feed();
+        $printer->setTextSize(1, 1);
+        $printer->textRaw(Restaurant::retrive()->rest_streetName. ', '. Restaurant::retrieve()->rest_StreetNumber . "\n");
+        $printer->textRaw(Restaurant::retrive()->rest_name. "\n"); //put rest contact.
     }
 }
