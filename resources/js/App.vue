@@ -5,10 +5,12 @@
 </template>
 
 <script>
+import { Localisation } from './components/core/Localisation';
 export default {
     name: 'App',
 
     mounted(){
+        (new Localisation())
         //  localStorage.removeItem('token')
         //  localStorage.removeItem('stockAccess');
         //  localStorage.removeItem('managerAccess');
