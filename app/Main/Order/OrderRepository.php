@@ -27,6 +27,7 @@ use DateTime;
 use App\Http\Resources\PedidoResource;
 use Carbon\Carbon;
 use App\Main\Printer\PrinterRepositoryInterface;
+use App\Main\QrcodeOrderNumber\QrcodeOrderNumberRepositoryInterface;
 
 
 class OrderRepository implements OrderRepositoryInterface
@@ -39,7 +40,8 @@ class OrderRepository implements OrderRepositoryInterface
     public function __construct(
         protected UserRepositoryInterface $userRepositoryInterface,
         protected TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface,
-        protected PrinterRepositoryInterface $printerRepositoryInterface
+        protected PrinterRepositoryInterface $printerRepositoryInterface,
+        protected QrcodeOrderNumberRepositoryInterface $qrcodeOrderNumberRepositoryInterface
     ){}
 
     public function getOrders(): Collection
@@ -189,49 +191,53 @@ class OrderRepository implements OrderRepositoryInterface
     public function createOrder($request)
     {
         $menuitem = null;
-        StockServiceRepository::SetItemSaldoZeroException($request->ped_tableNumber, $menuitem);
-        $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
-            ->get();
-            if (
-                $this->can_manage($request) ||
-                $this->can_take_order($request) ||
-                $this->can_cashier($request)
-            ):
-                $order = new Pedido();
-                $order->ped_tableNumber  = $request->ped_tableNumber;
-                $order->ped_customerName = $request->ped_customerName;
-                $order->user_id          = $this->autth($request);
-                $order->ped_emissao      = Util::Today();
-                $order->status_id        = 6;
-                $order->qrcode_order_number = $request->qrcode_order_number;
-                $order->ped_customer_quantity = $request->ped_customer_quantity;
-                $order->save();
+        if ( $this->qrcodeOrderNumberRepositoryInterface->hasQrCodeNumber($request->qrcode_order_number)){
+            $this->qrcodeOrderNumberRepositoryInterface->beforeCreateQrCodeOrder($request->qrcode_order_number);
+            StockServiceRepository::SetItemSaldoZeroException($request->ped_tableNumber, $menuitem);
+            $orderItem = Cart::where('tableNumber', $request->ped_tableNumber)
+                ->get();
+                if (
+                    $this->can_manage($request) ||
+                    $this->can_take_order($request) ||
+                    $this->can_cashier($request)
+                ):
+                    $order = new Pedido();
+                    $order->ped_tableNumber  = $request->ped_tableNumber;
+                    $order->ped_customerName = $request->ped_customerName;
+                    $order->user_id          = $this->autth($request);
+                    $order->ped_emissao      = Util::Today();
+                    $order->status_id        = 6;
+                    $order->qrcode_order_number = $request->qrcode_order_number;
+                    $order->ped_customer_quantity = $request->ped_customer_quantity;
+                    $order->save();
 
-                foreach($orderItem as $itemPedido) {
-                    $itens = new ItensPedido();
-                    $itens->item_emissao    = Util::Today();
-                    $itens->item_pedido     = $order->id;
-                    $itens->item_quantidade = $itemPedido->quantity;
-                    $itens->item_id         = $itemPedido->item_id;
-                    $itens->item_price      = $itemPedido->unit_price;
-                    $itens->item_total      = $itemPedido->total;
-                    $itens->item_comments   = $itemPedido->comments;
-                    $itens->item_option     = $itemPedido->options;
-                    $itens->save();
-                    $this->Order_item_ids[]       = $itemPedido->item_id;
-                    $this->Order_item_quantitys[] = $itemPedido->quantity;
-                }
-                //$this->printerRepositoryInterface->printCustomerBill($this->getOrderItens($order->id));
-                StockServiceRepository::StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
-                StockServiceRepository::ControleItemLowStockRuptured($this->Order_item_ids);
-                DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
-                    ->delete();
-                return ;
-            endif;
-        Cart::where('tableNumber', $request->ped_tableNumber)
-            ->delete();
-        throw new Exception(__('messages.permission'));
-
+                    foreach($orderItem as $itemPedido) {
+                        $itens = new ItensPedido();
+                        $itens->item_emissao    = Util::Today();
+                        $itens->item_pedido     = $order->id;
+                        $itens->item_quantidade = $itemPedido->quantity;
+                        $itens->item_id         = $itemPedido->item_id;
+                        $itens->item_price      = $itemPedido->unit_price;
+                        $itens->item_total      = $itemPedido->total;
+                        $itens->item_comments   = $itemPedido->comments;
+                        $itens->item_option     = $itemPedido->options;
+                        $itens->save();
+                        $this->Order_item_ids[]       = $itemPedido->item_id;
+                        $this->Order_item_quantitys[] = $itemPedido->quantity;
+                    }
+                    //$this->printerRepositoryInterface->printCustomerBill($this->getOrderItens($order->id));
+                    StockServiceRepository::StockOutProduct($this->Order_item_ids, $this->Order_item_quantitys);
+                    StockServiceRepository::ControleItemLowStockRuptured($this->Order_item_ids);
+                    DB::table('carts')->where('tableNumber', $request->ped_tableNumber)
+                        ->delete();
+                    return ;
+                endif;
+            Cart::where('tableNumber', $request->ped_tableNumber)
+                ->delete();
+            throw new Exception(__('messages.permission'));
+            exit();
+        }
+        throw new Exception('Qr code inconnu');
     }
 
     public function getOrderTransfert($id): Collection
