@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { Localisation } from './components/core/Localisation';
+import { Localisation } from './core/Localisation';
 export default {
     name: 'App',
 

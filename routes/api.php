@@ -263,6 +263,6 @@ Route::middleware('auth:sanctum')->group(function() {
 });
 
 Route::controller(IpController::class)->group(function() {
-    Route::put('ip/{ip}', 'checkCurrentIp');
+    Route::post('ip', 'checkCurrentIp');
 });
 
