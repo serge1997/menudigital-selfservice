@@ -11,6 +11,7 @@
                 <div class="col-lg-7 col-md-10 p-0 d-flex flex-column align-items-center justify-content-center">
                     <h3 class="text-capitalize fw-light">restaurant gestion integration service.</h3>
                     <h3 class="text-capitalize fw-light text-wrap">Cashier, stock, personal, inventory, technical fiche, meal cost</h3>
+                    <small style="color: #fffb;">@Self service module</small>
                 </div>
                 <div class="col-lg-5 col-md-10 bg-white text-secondary shadow rounded-2 p-3" :class="{ loginAnim: logAnim}">
                     <h5 class="text-center text-dark w-100 fw-medium p-3">Entra com suas credencias</h5>
