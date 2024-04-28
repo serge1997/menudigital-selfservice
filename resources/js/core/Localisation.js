@@ -26,13 +26,18 @@ export class Localisation {
     }
 
     redirectIfNoLocation(error){
+        const isRedirected = false;
         if ( error.code ) {
             localStorage.removeItem('token');
             localStorage.removeItem('stockAccess');
             localStorage.removeItem('managerAccess');
             localStorage.removeItem('administrativeAccess');
             localStorage.removeItem('table');
-            location.reload()
+            isRedirected = ! isRedirected;
+            if (isRedirected) {
+                isRedirected = ! isRedirected;
+                location.reload();
+            };
         }
     }
 
