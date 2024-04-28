@@ -24,4 +24,15 @@ class QrcodeOrderNumberController extends Controller
                 ->json($e->getMessage(), 500);
         }
     }
+
+    public function listAllAction()
+    {
+        try{
+            return response()
+                ->json($this->qrCodeOrderNumberRepositoryInterface->listAll());
+        }catch(Exception $e){
+            return response()
+                ->json($e->getMessage());
+        }
+    }
 }

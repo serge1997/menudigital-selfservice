@@ -253,6 +253,7 @@ Route::middleware('auth:sanctum')->group(function() {
 
     Route::controller(QrcodeOrderNumberController::class)->group( function() {
         Route::post('qrcode-order-number', 'createAction');
+        Route::get('qrcode-order-number', 'listAllAction');
     });
 });
 

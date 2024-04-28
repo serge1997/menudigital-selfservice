@@ -21,6 +21,11 @@ class QrcodeOrderNumberRepository implements QrCodeOrderNumberRepositoryInterfac
         throw new Exception(__('messages.permission'));
     }
 
+    public function listAll()
+    {
+        return QrcodeOrderNumber::all();
+    }
+
     public function beforeSave($qrcodeOrderNumber)
     {
         if (  \App\Models\QrcodeOrderNumber::where('qrcode_order_number', $qrcodeOrderNumber)->exists()) {

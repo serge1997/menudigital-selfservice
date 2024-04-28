@@ -12,6 +12,7 @@ import 'primevue/resources/themes/saga-blue/theme.css';
 import 'primeicons/primeicons.css'
 import i18next from "i18next";
 import I18NextVue from "i18next-vue";
+import Tooltip from 'primevue/tooltip';
 
 console.log("Hello world from app.js")
 
@@ -514,4 +515,6 @@ i18next.init({
 
 createApp(App).use(router).use(VueAxios, axios).use(Toaster, {
     position: 'top'
-}).use(VueSweetalert2).use(PrimeVue).use(I18NextVue, {i18next}).mount('#app')
+}).use(VueSweetalert2).use(PrimeVue).use(I18NextVue, {i18next})
+.directive('tooltip', Tooltip)
+.mount('#app')
