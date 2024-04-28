@@ -23,7 +23,7 @@ class LoginRepository implements LoginRepositoryInterface
 
         $request->session()->put('auth-vue', $user->id);
         $data['token'] = $user->createToken('browser')->plainTextToken;
-        $data['tokenExpireTime'] = Carbon::now()->addMinutes(60)->isoFormat('Y-MM-DD H:mm');
+        $data['tokenExpireTime'] = Carbon::now()->addMinutes(60)->isoFormat('Y-MM-DD HH:mm');
         $data['stockAccess'] = Position::stock()->pluck('id');
         $data['managerAccess'] = Position::manager()->pluck('id');
         $data['administrativeAccess'] = Position::administrative()->pluck('id');
