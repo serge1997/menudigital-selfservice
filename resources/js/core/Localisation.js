@@ -26,7 +26,6 @@ export class Localisation {
     }
 
     redirectIfNoLocation(error){
-        const isRedirected = false;
         if ( error.code ) {
             localStorage.removeItem('token');
             localStorage.removeItem('stockAccess');
@@ -34,11 +33,7 @@ export class Localisation {
             localStorage.removeItem('administrativeAccess');
             localStorage.removeItem('table');
             localStorage.removeItem('tokenExpireTime');
-            isRedirected = ! isRedirected;
-            if (isRedirected) {
-                isRedirected = ! isRedirected;
-                location.reload();
-            };
+            if (localStorage.getItem('token')) axios.post('/api/logout');
         }
     }
 
