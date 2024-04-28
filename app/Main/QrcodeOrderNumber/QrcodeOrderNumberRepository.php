@@ -3,7 +3,6 @@ namespace App\Main\QrcodeOrderNumber;
 
 use App\Models\QrcodeOrderNumber;
 use App\Traits\Permission;
-use App\Main\QrcodeOrderNumber\Exception\QrCodeOrderNumberException;
 use App\Models\OrderStatus;
 use Exception;
 use App\Models\Pedido;
@@ -17,14 +16,14 @@ class QrcodeOrderNumberRepository implements QrCodeOrderNumberRepositoryInterfac
     {
         if ( $this->can_manage($request) ) {
             $this->beforeSave($request->qrcode_order_number);
-            return QrcodeOrderNumber::create($request->validated());
+            return  \App\Models\QrcodeOrderNumber::create($request->validated());
         }
         throw new Exception(__('messages.permission'));
     }
 
     public function beforeSave($qrcodeOrderNumber)
     {
-        if ( QrcodeOrderNumber::where('qrcode_order_number', $qrcodeOrderNumber)->exists()) {
+        if (  \App\Models\QrcodeOrderNumber::where('qrcode_order_number', $qrcodeOrderNumber)->exists()) {
             throw new Exception("Qr code decode text {$qrcodeOrderNumber} already exists. Try again !");
         }
     }
@@ -44,6 +43,6 @@ class QrcodeOrderNumberRepository implements QrCodeOrderNumberRepositoryInterfac
 
     public function hasQrCodeNumber($qrCodeNumber) : bool
     {
-        return QrcodeOrderNumber::where('qrcode_order_number', $qrCodeNumber)->exists();
+        return \App\Models\QrcodeOrderNumber::where('qrcode_order_number', $qrCodeNumber)->exists();
     }
 }

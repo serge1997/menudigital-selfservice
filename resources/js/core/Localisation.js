@@ -33,6 +33,7 @@ export class Localisation {
             localStorage.removeItem('managerAccess');
             localStorage.removeItem('administrativeAccess');
             localStorage.removeItem('table');
+            localStorage.removeItem('tokenExpireTime');
             isRedirected = ! isRedirected;
             if (isRedirected) {
                 isRedirected = ! isRedirected;

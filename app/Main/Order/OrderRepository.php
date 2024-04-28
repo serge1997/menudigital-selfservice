@@ -27,7 +27,7 @@ use DateTime;
 use App\Http\Resources\PedidoResource;
 use Carbon\Carbon;
 use App\Main\Printer\PrinterRepositoryInterface;
-use App\Main\QrcodeOrderNumber\QrcodeOrderNumberRepositoryInterface;
+use App\Main\QrcodeOrderNumber\QrCodeOrderNumberRepositoryInterface;
 
 
 class OrderRepository implements OrderRepositoryInterface

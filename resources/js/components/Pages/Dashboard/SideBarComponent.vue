@@ -207,6 +207,7 @@ export default {
                 localStorage.removeItem('managerAccess');
                 localStorage.removeItem('administrativeAccess');
                 localStorage.removeItem('table');
+                localStorage.removeItem('tokenExpireTime');
                 this.$router.push('/');
             }).catch((error) => {
                 console.log(error);

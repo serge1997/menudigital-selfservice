@@ -30,6 +30,7 @@ class LoginController extends Controller
             $data = $this->loginRepositoryInterface->login($request);
             return response()->json([
                 'token'        => $data['token'],
+                'tokenExpireTime' => $data['tokenExpireTime'],
                 'stockAccess'  => $data['stockAccess'],
                 'managerAccess' => $data['managerAccess'],
                 'administrativeAccess' => $data['administrativeAccess']

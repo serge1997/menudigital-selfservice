@@ -6,11 +6,18 @@
 
 <script>
 import { Localisation } from './core/Localisation';
+import { TokenLive } from './core/TokenLive';
 export default {
     name: 'App',
 
+    data(){
+        return {
+        }
+    },
     mounted(){
         (new Localisation())
+        new TokenLive()
+        //localStorage.removeItem('tokenExpireTime');
         //  localStorage.removeItem('token')
         //  localStorage.removeItem('stockAccess');
         //  localStorage.removeItem('managerAccess');

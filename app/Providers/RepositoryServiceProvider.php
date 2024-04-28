@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Main\QrcodeOrderNumber\QrcodeOrderNumberRepository;
-use App\Main\QrcodeOrderNumber\QrCodeOrderNumberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use App\Main\MealType\MealTypeRepositoryInterface;
 use App\Main\MealType\MealTypeRepository;
@@ -49,6 +47,8 @@ use App\Main\Language\LanguageRepositoryInterface;
 use App\Main\Language\LanguageRepository;
 use App\Main\Printer\PrinterRepositoryInterface;
 use App\Main\Printer\PrinterRepository;
+use App\Main\QrcodeOrderNumber\QrcodeOrderNumberRepository;
+use App\Main\QrcodeOrderNumber\QrCodeOrderNumberRepositoryInterface;
 
 
 class RepositoryServiceProvider extends ServiceProvider

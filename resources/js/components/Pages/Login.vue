@@ -81,6 +81,7 @@ export default {
                 localStorage.setItem('stockAccess', response.data.stockAccess);
                 localStorage.setItem('managerAccess', response.data.managerAccess);
                 localStorage.setItem('administrativeAccess', response.data.administrativeAccess)
+                localStorage.setItem('tokenExpireTime', response.data.tokenExpireTime);
                 this.$toast.success("Seja Bem vindo!");
                 setTimeout(() => {location.href = `${this.domain}dashboard/operador`}, this.randTime())
             }).catch((errors) => {
