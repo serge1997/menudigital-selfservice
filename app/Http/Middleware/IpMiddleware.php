@@ -25,7 +25,8 @@ class IpMiddleware
         $longitude = $currentUserLocal[1] ?? Restaurant::retrive()->longitude;
         $haversineDistance = IpController::getHaversineDistance(Restaurant::retrive()->latitude, Restaurant::retrive()->longitude, $latitude, $longitude);
         if ( $haversineDistance > Restaurant::RESTAURANT_AREA ) {
-            #return response()->json("Your position area is out $haversineDistance", 401);
+            session()->forget('ip');
+            return response()->json("Your position area is out $haversineDistance", 401);
         }
         return $next($request);
     }
