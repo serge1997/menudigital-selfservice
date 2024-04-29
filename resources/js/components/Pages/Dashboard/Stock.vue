@@ -243,7 +243,7 @@ export default {
                     icon: 'success'
                 })
             }).catch((errors) => {
-                this.visibleEditProductModal = false
+                this.errMsg = errors.response.data.errors
                 errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : '';
                 console.log(errors)
             })

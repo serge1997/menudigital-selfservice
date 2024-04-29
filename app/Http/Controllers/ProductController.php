@@ -55,7 +55,7 @@ class ProductController extends Controller
         return response()->json(Product::where('id', $id)->first());
     }
 
-    public function update(Request $request)
+    public function update(StoreProductRequest $request)
     {
         try{
             if ($request->isMethod('put')){

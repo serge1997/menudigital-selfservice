@@ -21,13 +21,23 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'prod_name' => ['required', 'max:40'],
-            'prod_supplierID' => ['required'],
-            'prod_unmed' => ['required'],
-            'prod_contain' => ['required'],
-            'min_quantity' => ['required']
-        ];
+        if ($this->isMethod('POST')){
+            return [
+                'prod_name' => ['required', 'max:40'],
+                'prod_supplierID' => ['required'],
+                'prod_unmed' => ['required'],
+                'prod_contain' => ['required'],
+                'min_quantity' => ['required']
+            ];
+        }
+        if ( $this->isMethod('PUT')) {
+            return [
+                'prod_name' => ['required', 'max:40'],
+                'prod_supplierID' => ['required'],
+                'prod_contain' => ['required'],
+                'min_quantity' => ['required']
+            ];
+        }
     }
 
     public function messages(): array

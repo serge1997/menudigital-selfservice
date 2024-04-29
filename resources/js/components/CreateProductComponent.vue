@@ -12,7 +12,6 @@
                 <div class="w-100 d-flex flex-column gap-2">
                     <label for="prod-description">{{$t('forms.description')}}</label>
                     <InputText type="text" id="prod-desc" v-model="product.prod_desc" aria-describedby="item name" placeholder="product description"/>
-                    <small class="text-danger" v-if="errMsg" v-for="item_name in errMsg.item_name" id="prod-desc-err"  v-text="item_name"></small>
                 </div>
             </div>
             <div class="d-flex mt-3">
