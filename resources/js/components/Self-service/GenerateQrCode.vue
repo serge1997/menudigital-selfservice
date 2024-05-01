@@ -53,6 +53,7 @@ import Dropdown from "primevue/dropdown";
 import Button from "primevue/button";
 import { randTime } from "@/rand.js";
 import SideBarComponent from "../Pages/Dashboard/SideBarComponent.vue";
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 export default {
     name: 'GenerateQrCode',
 

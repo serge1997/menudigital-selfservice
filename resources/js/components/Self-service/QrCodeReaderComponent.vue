@@ -23,6 +23,7 @@
 <script>
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 export default {
     name: 'GenerateQrCode',
 
@@ -97,6 +98,18 @@ export default {
 
     mounted() {
         this.mounteQrCodeScanner();
+        setTimeout(() => {
+            let hiddenElements = document.querySelector('span#html5-qrcode-anchor-scan-type-change')
+            hiddenElements.classList.add('d-none')
+            let qr = document.querySelectorAll('button.html5-qrcode-element');
+            console.log(qr)
+            qr.forEach((el) => {
+                el.classList.add('btn')
+                el.classList.add('border')
+                el.style.background = '#e2e8f0'
+                el.innerHTML = "scanner pour commandez"
+            })
+        }, 2000)
     }
 }
 </script>

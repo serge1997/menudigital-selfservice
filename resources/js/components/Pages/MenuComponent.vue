@@ -91,6 +91,8 @@ import SearchComponent from '../SearchComponent.vue';
 import Dialog from 'primevue/dialog';
 import Button from "primevue/button";
 import Tag from "primevue/tag";
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
+import { forEach } from 'lodash';
 
 export default {
     name: 'Menu',
@@ -251,12 +253,31 @@ export default {
         this.dNone = null;
         let menuItemsBox = document.getElementById('menu-items');
         menuItemsBox.style.display = "none";
+      },
+
+      cardBox() {
+
+        setTimeout(() => {
+            let hiddenElements = document.querySelector('span#html5-qrcode-anchor-scan-type-change')
+            hiddenElements.classList.add('d-none')
+            let qr = document.querySelectorAll('button.html5-qrcode-element');
+            console.log(qr)
+            qr.forEach((el) => {
+                el.classList.add('btn')
+                el.classList.add('border')
+                el.style.background = '#e2e8f0'
+            })
+        }, 2000)
+
       }
     },
 
     mounted() {
         this.getMenuType()
         this.mounteQrCodeAddScanner();
+        this.cardBox();
+        //qr.classList.add('btn');
+        //qr.classList.add('btn')
         //this.getMenuItems()
         //this.checkCart()
         //localStorage.removeItem('userRole')

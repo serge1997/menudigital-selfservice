@@ -84,6 +84,7 @@
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import MenuComponent from './../Pages/MenuComponent.vue';
+import { Html5Qrcode, Html5QrcodeScanner } from 'html5-qrcode';
 
 export default {
     name: 'selfServiceIndex',
@@ -165,6 +166,11 @@ export default {
         }).catch((errors) => {
             console.log(errors)
         })
+
+        setTimeout(() => {
+            let hiddenElements = document.querySelector('span#html5-qrcode-anchor-scan-type-change')
+            hiddenElements.classList.add('d-none')
+        }, 2000)
     }
 }
 </script>
@@ -181,9 +187,10 @@ export default {
     text-align: center;
 }
 
-#html5-qrcode-button-camera-start {
-    padding: 6px;
-    background-color: blueviolet;
+.html5-qrcode-element > button {
+    color: 'red';
+    border: '1px solid red';
+    background-color: blue;
 }
 .isDisplayed {
     display: none;

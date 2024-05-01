@@ -402,7 +402,7 @@ export default {
 
     mounted() {
         this.getMenuType()
-        this.stockCureentlyCheck()
+        this.stockCureentlyCheck();
     }
 }
 
