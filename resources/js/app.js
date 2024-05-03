@@ -271,6 +271,16 @@ const locales = {
                 one: 'Criar escala',
                 two: 'Limpar escala'
             }
+        },
+        setting: {
+            titles:{
+                coloborator: "Gestão dos colaboradores",
+                menu: "Gestão do menu",
+                general: "Configuração"
+            },
+            colaborator: "Editar permissões de acesso aos funcionnalidades. Editar informações dos colaboradores...",
+            menu: "Gerenciamento do menu. Visão geral, Controle dos ações de pedido de pedido, editar o menu... ",
+            general: "Gerenciamento das informações do estabelecimento, os porcentagens dos custos, logo..."
         }
     },
     fr: {
@@ -499,6 +509,16 @@ const locales = {
                 one: 'Enregistrer planning',
                 two: 'Supprimer planning'
             }
+        },
+        setting: {
+            titles:{
+                coloborator: "Gestion du personnel",
+                menu: "Gestion du menu",
+                general: "Configuration"
+            },
+            colaborator: "Gestion du personnel. modifier les permissions d'accès aux fonctionnalitées. Edititer information des colaborateurs...",
+            menu: "Gestion et management du menu. Vision general, Controle d'action de commande, editer le menu... ",
+            general: "Managament des informations sur l'établissement, les pourcentages pour les calculs des coûts, logo..."
         }
     },
 }

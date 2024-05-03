@@ -25,12 +25,11 @@
                                 stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg>
                         </div>
-                        <h6 class="px-2">Employe management</h6>
+                        <h6 class="px-2">{{ $t('setting.titles.coloborator') }}</h6>
                     </div>
                     <div class="col-md-11">
                         <small>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                            {{ $t('setting.colaborator') }}
                         </small>
                     </div>
                 </div>
@@ -46,11 +45,10 @@
                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-clipboard"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
                             </svg>
                         </div>
-                        <h6 class="px-2">Ajuste menu</h6>
+                        <h6 class="px-2">{{ $t('setting.titles.menu') }}</h6>
                     </div>
                     <small>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                       {{ $t('setting.menu') }}
                     </small>
                 </div>
                 <div class="col-6 mt-2">
@@ -65,11 +63,10 @@
                                 stroke-linecap="round" stroke-linejoin="round" class="feather feather-archive"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line>
                             </svg>
                         </div>
-                        <h6 class="px-2">General information Configuration</h6>
+                        <h6 class="px-2">{{ $t('setting.titles.general') }}</h6>
                     </div>
                     <small>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                       {{ $t('setting.general') }}
                     </small>
                     <div class="col-6 d-flex justify-content-start mt-2 align-items-center">
                         <Button label="General configuration" data-bs-toggle="modal" data-bs-target="#ModalRestaurantinfo"></Button>
