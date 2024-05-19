@@ -23,9 +23,9 @@
                     <h6 class="rest-name mt-2">{{ restaurant.rest_name }}</h6>
                 </div>
                 <div class="w-100 d-flex flex-column gap-3 align-items-center">
-                    <Button @click="this.$router.push({name: 'Menu'})" class="w-50" label="Start ordering" />
-                    <Button data-bs-toggle="modal" data-bs-target="#AddMenu" text class="w-50 border-primary" label="Add" />
-                    <Button data-bs-toggle="modal" data-bs-target="#qrcodeReaderModal" text class="w-50 border-primary" label="See order" />
+                    <Button style="background-color: #1e293b;" text @click="this.$router.push({name: 'Menu'})" class="w-50 text-white" label="Start ordering" />
+                    <Button style="background-color: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1;" data-bs-toggle="modal" data-bs-target="#AddMenu" text class="w-50" label="Add" />
+                    <Button style="background-color: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1;" data-bs-toggle="modal" data-bs-target="#qrcodeReaderModal" text class="w-50" label="See order" />
                 </div>
                 <div class="w-100"></div>
             </div>
