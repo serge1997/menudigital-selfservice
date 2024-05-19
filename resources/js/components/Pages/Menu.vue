@@ -38,7 +38,7 @@
         </div>
         <div class="row d-flex justify-content-center shadow-sm">
             <div class="row d-flex justify-content-center p-3">
-                <div class="col-lg-2 col-md-2 d-flex justify-content-center menu-type-card p-2" v-for="mtype in MenuType" :key="mtype.id_type">
+                <div class="col-lg-2 col-md-4 d-flex justify-content-center menu-type-card p-2" v-for="mtype in MenuType" :key="mtype.id_type">
                     <button class="btn w-50 border-0 d-flex flex-column align-items-center justify-content-center text-capitalize fw-medium" @click.prevent="getItemOfType(mtype.id_type)">
                         <img style="width: 60%;" class="rounded-circle border type-btn" :src="'/img/type/'+ mtype.foto_type" alt="">
                         {{ mtype.desc_type }}
@@ -53,11 +53,11 @@
             </div>
         </div>
         <div class="row p-4">
-            <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-10 mb-4 m-auto">
+            <div v-if="!itemOfType" v-for="item in MenuItems" :key="item.id" class="col-lg-3 col-md-6 mb-4 m-auto">
                 <div class="card rounded-0 border-0 p-0 w-75 m-auto">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
-                        <div class="col-md-12">
-                            <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
+                        <div class="w-100 d-flex justify-content-center">
+                            <img class="w-50 m-auto rounded-0 img-thumbnail border-0" :src="`/img/menu/${item.item_image}`" alt="">
                         </div>
                         <div class="col-md-12 d-flex flex-column justify-content-between">
                             <small class="m-auto p-1" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
@@ -65,11 +65,11 @@
                             <!---<small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>-->
                             <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
-                            <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
+                            <small class="text-center fw-bold m-auto rounded-4 py-1 px-2 border border price">R$ {{ item.item_price }} </small>
                             <div class="text-white d-flex justify-content-end mt-1">
-                                <Button icon="pi pi-eye" text style="background-color: #e2e3e5;" @click="ShowItem(item.id)" />
-                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus"  @click="addToCart(item.id)"/>
-                                <Button v-else icon="pi pi-cart-plus" @click="addToCart(item.id)" disabled />
+                                <Button  icon="pi pi-eye" text style="background-color: #e2e8f0; color: #64748b;" @click="ShowItem(item.id)" />
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus" class="border-0" style="background-color: #333;"  @click="addToCart(item.id)"/>
+                                <Button v-else class="border-0" icon="pi pi-cart-plus" style="background-color: #333;" @click="addToCart(item.id)" disabled />
                             </div>
                         </div>
                     </div>
@@ -78,8 +78,8 @@
             <div v-else v-for="item in itemOfType" class="col-lg-3 col-md-10 mb-4 m-auto">
                 <div class="card rounded-0 border-0 p-0 w-75 m-auto">
                     <div class="card-body border shadow-sm d-flex flex-column p-0">
-                        <div class="col-md-12">
-                            <img class="w-100 rounded-0 card-img-top" src="/img/banner.jpg" alt="">
+                        <div class="w-100 d-flex justify-content-center">
+                            <img class="w-50 m-auto rounded-0 img-thumbnail border-0" :src="`/img/menu/${item.item_image}`" alt="">
                         </div>
                         <div class="col-md-12 d-flex flex-column justify-content-between">
                             <small class="m-auto p-1" v-if="item.item_rupture"><Tag value="Indisponivel" severity="danger" /></small>
@@ -87,9 +87,11 @@
                             <!---<small class="m-auto p-1" v-if="item.is_lowstock"><Tag value="Lowstock" severity="warning" /></small>-->
                             <small class="m-auto p-3" v-if="!item.is_lowstock && !item.item_rupture"></small>
                             <h6 class="text-center">{{ item.item_name }}</h6>
-                            <small class="text-center fw-medium m-auto rounded-4 py-1 px-2 price">R$ {{ item.item_price }} </small>
-                            <div class="order-btn-box text-white d-flex justify-content-end mt-1">
-                                <Button icon="pi pi-eye" @click="ShowItem(item.id)" />
+                            <small class="text-center fw-bold m-auto rounded-4 py-1 px-2 border border price">R$ {{ item.item_price }} </small>
+                            <div class="text-white d-flex justify-content-end mt-1">
+                                <Button  icon="pi pi-eye" text style="background-color: #e2e8f0; color: #64748b;" @click="ShowItem(item.id)" />
+                                <Button v-if="!item.item_rupture" icon="pi pi-cart-plus" class="border-0" style="background-color: #333;"  @click="addToCart(item.id)"/>
+                                <Button v-else class="border-0" icon="pi pi-cart-plus" style="background-color: #333;" @click="addToCart(item.id)" disabled />
                             </div>
                         </div>
                     </div>
@@ -123,24 +125,24 @@
             <Accordion class="p-accordion" :activeIndex="0">
                 <AccordionTab v-for="item in cartItems" class="p-accordion-header" :header="item.item_name" style="color: #fff">
                     <div class="row d-flex justify-content-evenly">
-                        <div class="col-lg-2 col-md-12 item-img d-flex justify-content-start">
+                        <div class="col-lg-2 col-md-6 item-img d-flex justify-content-start">
                             <img alt="item menu image" class="img-thumbnail w-75" src="img/banner.jpg">
                         </div>
-                        <div class="col-lg-6 col-md-12 d-flex justify-content-center align-items-center">
-                            <div class="w-75">
-                                <Button class="w-100" @click="AddQuantity(item.cart_id)" icon="pi pi-plus" />
+                        <div class="col-lg-6 col-md-6 d-flex justify-content-center align-items-center">
+                            <div class="w-25">
+                                <Button class="w-100 border-0" style="background-color: #e2e8f0; color: #334155" @click="AddQuantity(item.cart_id)" icon="pi pi-plus" />
                             </div>
-                            <div class="w-75 d-flex flex-column">
-                                <InputText class="text-center w-100" type="text" :value="item.quantity"/>
+                            <div class="w-50 d-flex flex-column">
+                                <InputText class="text-center w-100 border-0" type="text" :value="item.quantity"/>
                             </div>
-                            <div class="w-75">
-                                <Button class="w-100" @click="ReduceQuantity(item.cart_id)" icon="pi pi-minus" />
+                            <div class="w-25">
+                                <Button class="w-100 border-0" style="background-color: #e2e8f0; color: #334155" @click="ReduceQuantity(item.cart_id)" icon="pi pi-minus" />
                             </div>
                             <div class="w-50 d-flex justify-content-center bg-white">
                                 <span class="fw-medium">{{ item.total}} <small>R$</small></span>
                             </div>
                             <div class="d-flex flex-column justify-content-center">
-                                <Button @click="DeleteFromCart(item.cart_id)" severity="danger" icon="pi pi-times"/>
+                                <Button text @click="DeleteFromCart(item.cart_id)" severity="danger" icon="pi pi-trash"/>
                             </div>
                         </div>
                     </div>

@@ -40,7 +40,7 @@ export default {
     width: 25%;
     padding: 8px;
     border-radius: 50%;
-    background-color: #f6afaf;
+    background-color: #e2e8f0;
     border: 1px solid #e63958;
     transition: all .4s ease-in;
 }
@@ -84,7 +84,7 @@ export default {
 }
 
 .price {
-    background-color: #bfdbfe ;
+    color: #475569;
     font-size: 0.8em;
     width: 95px;
 }
