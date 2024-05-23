@@ -11,4 +11,5 @@ interface ProductRepositoryInterface
     public function getAll(): Collection;
     public function findById($id): Product;
     public function expenseProduct($request); //despesa de produto
+    public function searchProduct($request);
 }

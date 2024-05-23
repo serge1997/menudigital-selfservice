@@ -35,9 +35,8 @@ class ProductRepository implements ProductRepositoryInterface
     public function getAll(): Collection
     {
         return new Collection(
-            Product::where('is_delete', false)
-                ->orderBy('prod_name')
-                    ->get()
+            Product::orderBy('prod_name')
+                ->get()
         );
     }
 
@@ -69,5 +68,10 @@ class ProductRepository implements ProductRepositoryInterface
         }
         throw new Exception(__('messages.permission'));
 
+    }
+    public function searchProduct($request)
+    {
+        return Product::where('prod_name', 'like', "%{$request->search}%")
+            ->get();
     }
 }

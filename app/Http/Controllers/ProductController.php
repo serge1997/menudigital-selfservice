@@ -102,4 +102,15 @@ class ProductController extends Controller
             return response()->json("Product cant be deleted");
         }
     }
+
+    public function searchProductAction(Request $request)
+    {
+        try{
+            return response()
+                ->json($this->productRepositoryInterface->searchProduct($request));
+        }catch(Exception $e){
+            return response()
+                ->json($e->getMessage(), 500);
+        }
+    }
 }

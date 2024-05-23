@@ -1,5 +1,5 @@
 export class ApiModule {
-    #baseURL = `${location.origin}/api`;
+    #baseURL = `${location.origin}/api/`;
     constructor(){}
 
     async get(url) {
