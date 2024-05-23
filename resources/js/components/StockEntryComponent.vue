@@ -158,23 +158,25 @@ export default{
 
             return new Promise(resolve => {
                 setTimeout(() => {
-                    axios.post('/api/purchase-requisition/filter-item', this.stockEntry).then((response) => {
-                        this.requisitionProduct = response.data
-                        this.products = response.data;
-                        let div = document.querySelector('.swal2-container');
-                        div.remove()
-                        resolve(true);
-                        for (let req of response.data){
-                            if (req.requisition_id !== null){
-                                this.stockEntry.requisition_id = req.requisition_id;
-                                break;
+                    axios.post('/api/purchase-requisition/filter-item', this.stockEntry)
+                        .then(async(response) => {
+                            this.requisitionProduct = response.data
+                            const result = await response.data
+                            this.products = await result.filter(product => product.is_delete !== 1);
+                            let div = document.querySelector('.swal2-container');
+                            div.remove()
+                            resolve(true);
+                            for (let req of response.data){
+                                if (req.requisition_id !== null){
+                                    this.stockEntry.requisition_id = req.requisition_id;
+                                    break;
+                                }
                             }
-                        }
-                    })
-                    .catch(errors => console.log(errors))
-                    .finally(() => {  })
-                }, 2000)
-            })
+                        })
+                        .catch(errors => console.log(errors))
+                        .finally(() => {  })
+                    }, 2000)
+                })
 
         },
         loadProductSupplier(productID){

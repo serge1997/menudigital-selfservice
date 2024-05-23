@@ -19,7 +19,7 @@
             <div class="w-100 d-flex justify-content-center" v-for="(field, index) in incrementInput">
                 <div class="d-flex flex-column w-50">
                     <label for="product">Product {{ index === 0 ? index + 1:index}}</label>
-                    <Dropdown id="product" v-model="fiche.productID[index]" option-value="id" :options="products" optionLabel="prod_name" placeholder="Select a product" class="md:w-14rem" />
+                    <Dropdown id="product" v-model="fiche.productID[index]" option-value="id" :options="products" optionLabel="prod_name" placeholder="Select a product" class="md:w-14rem"/>
                     <small v-if="errMsg" v-for="msg in errMsg.productID" class="text-danger p-1"> {{ msg }} </small>
                 </div>
                 <div class="w-50 p-4">
@@ -42,6 +42,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
 import Dialog from "primevue/dialog";
+import { Api } from './../core/bootstrap.js';
 
 export default{
     name: "TechnicalSheetComponent",
@@ -98,8 +99,13 @@ export default{
         },
 
         async loadProducts(){
-          let productResponse = await axios.get('/api/products');
-          this.products = await productResponse.data
+           Api.get('products')
+            .then(async(response) => {
+                const result = await response.data
+                this.products = await result.filter(product => product.is_delete !== 1)
+            });
+
+          //this.products = await productResponse.data
         },
         async loadSuppliers(){
           let supplierResult = await axios.get('/api/supplier');

@@ -12,7 +12,7 @@
                     <div>
                         <Button @click="this.$router.push({name: 'Stock'})" :label="`${$t('purchase.toolbar.one')}`" icon="pi pi-database" text/>
                         <expense-component></expense-component>
-                        <Button @click="visibleNewPurchaseModal= true" :label="`${$t('purchase.toolbar.two')}`" icon="pi pi-plus"/>
+                        <Button @click="visibleNewPurchaseModal= true" :label="`${$t('purchase.toolbar.three')}`" icon="pi pi-plus"/>
                     </div>
                 </template>
             </Toolbar>
@@ -237,6 +237,7 @@ export default {
       async loadProducts(){
         let productResponse = await axios.get('/api/products');
         this.products = await productResponse.data
+            .filter(product => product.is_delete !== 1);
       },
       async loadSuppliers(){
         let supplierResult = await axios.get('/api/supplier');
