@@ -2,7 +2,7 @@
     <div class="container-fluid p-0">
         <div class="col-md-12">
             <div class="modal fade" id="AddMenu" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl">
+                <div class="modal-dialog modal-fullscreen">
                     <div class="modal-content rounded-0">
                     <div class="modal-header">
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -155,7 +155,7 @@ export default {
         setTimeout(() => {
             reader_div.style.display = "block";
             table.classList.add('isDisplayed');
-        }, 200)
+        }, 3000)
 
       }
     },
@@ -169,7 +169,9 @@ export default {
 
         setTimeout(() => {
             let hiddenElements = document.querySelector('span#html5-qrcode-anchor-scan-type-change')
+            let reader = document.querySelector('#customer-qr-reader > span#html5-qrcode-anchor-scan-type-change')
             hiddenElements.classList.add('d-none')
+            reader.classList.add('d-none')
         }, 2000)
     }
 }

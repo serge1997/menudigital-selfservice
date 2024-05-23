@@ -3,20 +3,20 @@
         <div class="w-100" id="add-card-container">
             <input type="hidden" :value="id" id="order-id">
             <transition>
-                <div id="post-new-item-card" v-if="newOrderItem.iteminfo" class="row m-auto shadow-sm d-flex justify-content-between align-items-center">
-                    <div class="item-img col-lg-3 col-md-6 m-auto d-flex justify-content-center">
+                <div id="post-new-item-card" v-if="newOrderItem.iteminfo" class="row m-auto border d-flex justify-content-between align-items-center">
+                    <div class="item-img col-lg-3 col-md-10">
                         <img class="w-50 img-thumbnail border-0" :src="`/img/menu/${newOrderItem.iteminfo.item_image}`" alt="">
                     </div>
-                    <div class="col-lg-4 col-md-10 d-flex flex-column align-items-center m-auto">
-                        <h6 class="text-center">{{ newOrderItem.iteminfo.item_name }}</h6>
-                        <h6 class="text-center fw-bold m-auto rounded-4 py-1 px-2 border border price">R${{ newOrderItem.iteminfo.item_price }}</h6>
+                    <div class="col-lg-4 col-md-10 d-flex flex-column align-items-center">
+                        <h6>{{ newOrderItem.iteminfo.item_name }}</h6>
+                        <h6>R${{ newOrderItem.iteminfo.item_price }}</h6>
                     </div>
                     <div class="col-lg-5 col-md-10 m-auto d-flex justify-content-center">
                         <Button class="border-0" style="background-color: #e2e8f0; color: #334155" icon="pi pi-minus" @click="addItemToOrder.quantity--"/>
                         <input style="width: 50px; border: 1px solid #e2e8f0"lass="form-control rounded-0" type="text" v-model="addItemToOrder.quantity">
                         <input type="hidden" :value="newOrderItem.iteminfo.id" id="item-id">
                         <Button class="border-0" style="background-color: #e2e8f0; color: #334155" icon="pi pi-plus" @click="addItemToOrder.quantity++"/>
-                        <button style="color: #334155; background-color: #e2e8f0;"  @click="showScanerBox" class="btn rounded-0 text-uppercase">
+                        <button style="color: #334155; background-color: #e2e8f0;" @click="postNewOrderItem" class="btn rounded-0 text-uppercase">
                             <i class="pi pi-send"></i>
                         </button>
                     </div>
