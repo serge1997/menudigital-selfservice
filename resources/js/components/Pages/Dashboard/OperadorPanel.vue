@@ -22,7 +22,7 @@
                                 <Tag severity="success" :value ="`${$t('operator.table')} ${tab.table}`"/>
                             </div>
                         </button>
-                       <button v-for="busy in busyTables" class="col-lg-3 col-md-4 btn border-0">
+                       <button v-for="busy in busyTables" class="col-lg-3 col-md-2 btn border-0">
                             <div class="col-sm-10 d-flex flex-column border p-2">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <img class="col-sm-5 img-thumbnail border-0" src="/img/busy.png" />
