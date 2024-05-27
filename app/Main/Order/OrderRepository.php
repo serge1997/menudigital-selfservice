@@ -530,17 +530,26 @@ class OrderRepository implements OrderRepositoryInterface
 
     public function findOrderByQrCodeNumber($qrcode_order_number, $item_id)
     {
-        $order = Pedido::where([
-            ['qrcode_order_number', $qrcode_order_number],
-            ['status_id', OrderStatus::ANDAMENTO],
-            ['ped_emissao', Carbon::now()->isoFormat('Y-MM-DD')]
-        ])->first();
-
-        if ($order->qrcode_order_number) {
-            return ItensPedido::where([
-                ['item_pedido', $order->id],
+        if (
+            Pedido::where([
+                ['qrcode_order_number', $qrcode_order_number],
+                ['status_id', OrderStatus::ANDAMENTO],
+                //['ped_emissao', Carbon::now()->isoFormat('Y-MM-DD')]
+            ])->exists()
+        )
+        {
+            $order = Pedido::where([
+                ['qrcode_order_number', $qrcode_order_number],
+                ['status_id', OrderStatus::ANDAMENTO],
+                //['ped_emissao', Carbon::now()->isoFormat('Y-MM-DD')]
             ])->first();
+
+            if ($order->qrcode_order_number) {
+                return ItensPedido::where([
+                    ['item_pedido', $order->id],
+                ])->first();
+            }
         }
-        throw new Exception("Aucune commande lancé avec ce Qr code");
+        throw new Exception("Aucune commande en cours avec ce Qr code");
     }
 }

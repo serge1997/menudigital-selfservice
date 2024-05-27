@@ -16,7 +16,7 @@
                         <input style="width: 50px; border: 1px solid #e2e8f0"lass="form-control rounded-0" type="text" v-model="addItemToOrder.quantity">
                         <input type="hidden" :value="newOrderItem.iteminfo.id" id="item-id">
                         <Button class="border-0" style="background-color: #e2e8f0; color: #334155" icon="pi pi-plus" @click="addItemToOrder.quantity++"/>
-                        <button style="color: #334155; background-color: #e2e8f0;" @click="postNewOrderItem" class="btn rounded-0 text-uppercase">
+                        <button style="color: #334155; background-color: #e2e8f0;" @click="showScanerBox" class="btn rounded-0 text-uppercase">
                             <i class="pi pi-send"></i>
                         </button>
                     </div>
