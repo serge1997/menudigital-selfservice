@@ -124,7 +124,7 @@ Route::middleware('auth:sanctum')->group(function() {
         Route::get('products', 'listAllProducts');
         Route::get('product/{id}', 'showProductToEdit');
         Route::put('product', 'update');
-        Route::delete('product/{id}', 'delete');
+        Route::delete('product', 'deleteAction');
         Route::get('products-search', 'searchProductAction');
     });
 

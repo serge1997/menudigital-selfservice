@@ -74,4 +74,16 @@ class ProductRepository implements ProductRepositoryInterface
         return Product::where('prod_name', 'like', "%{$request->search}%")
             ->get();
     }
+
+    public function delete($request)
+    {
+        if ($this->can_manage($request) || $this->can_create_product($request)){
+            return Product::where('id', $request->product_id)
+                ->update([
+                    'is_delete' => true
+                ]);
+        }
+        throw new Exception(__('messages.permission'));
+
+    }
 }

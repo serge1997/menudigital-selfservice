@@ -254,16 +254,17 @@ export default {
                 html: '' +
                     '<p>Quer apagar esse produto ?</p>' + '' +
                     '<small>Após apagar esse produto não irá ser mais disponivel<br>para qualquer serviço</small><br>' +
-                    '<input class="disbled" type="checkbox"/> Desactiva item do menu relacionnada ?',
+                    '<input type="checkbox"/> Desactiva item do menu relacionnada ?',
                 icon: "question",
                 showCancelButton: true
             }).then((result) => {
                 if (result.isConfirmed){
-                    axios.delete(`/api/product/${id}`).then((response) => {
+                    axios.delete(`/api/product`, {params: {product_id: id}}).then((response) => {
                         this.$swal.fire({
                             text: response.data,
                             icon: 'success'
                         })
+                        return this.get_stock_stat()
                     }).catch((errors) =>{
                         errors.response.status === 500 ? this.$swal.fire({text: errors.response.data, icon: 'error'}) : '';
                         console.log(errors)

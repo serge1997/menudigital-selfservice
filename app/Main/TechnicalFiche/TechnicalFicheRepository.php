@@ -205,4 +205,9 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
         endif;
         throw new Exception(__('messages.permission'));
     }
+
+    public function itemHasOneProduct($item_id):bool
+    {
+        return Technicalfiche::where('item_id', $item_id)->count() === 1;
+    }
 }

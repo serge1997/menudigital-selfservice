@@ -82,24 +82,15 @@ class ProductController extends Controller
         }
     }
 
-    public function delete($id, Request $request)
+    public function deleteAction(Request $request)
     {
         try {
-            if ($request->isMethod('delete')){
-                $auth = $request->session()->get('auth-vue');
-                foreach (UserInstance::get_user_roles($auth) as $delete):
-                    if ($delete->role_id === Role::MANAGER || $delete->role_id === Role::CAN_CREATE_PRODUCT):
-                        Product::where('id', $id)
-                            ->update([
-                                'is_delete' => true
-                            ]);
-                        return response()->json("Product deleted successfully");
-                    endif;
-                endforeach;
-                return response()->json("You dont have permission", 500);
-            }
+            $message = __('messages.delete');
+            $this->productRepositoryInterface->delete($request);
+            return response()
+                ->json($message);
         }catch(Exception $e){
-            return response()->json("Product cant be deleted");
+            return response()->json("{$e->getMessage()}", 500);
         }
     }
 
