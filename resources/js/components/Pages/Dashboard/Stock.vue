@@ -254,7 +254,7 @@ export default {
                 html: '' +
                     '<p>Quer apagar esse produto ?</p>' + '' +
                     '<small>Após apagar esse produto não irá ser mais disponivel<br>para qualquer serviço</small><br>' +
-                    '<input type="checkbox"/> Desactiva item do menu relacionnada ?',
+                    '<input class="disbled" type="checkbox"/> Desactiva item do menu relacionnada ?',
                 icon: "question",
                 showCancelButton: true
             }).then((result) => {
