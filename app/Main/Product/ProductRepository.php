@@ -9,7 +9,7 @@ use App\Models\Saldo;
 use App\Traits\AuthSession;
 use App\Traits\Permission;
 use Exception;
-use App\Main\TechnicalFiche\TechnicalFicheRepositoryInterface;
+use App\Main\TechnicalFiche\TechnicalFicheRepository;
 
 class ProductRepository implements ProductRepositoryInterface
 {
@@ -76,14 +76,14 @@ class ProductRepository implements ProductRepositoryInterface
             ->get();
     }
 
-    public function delete($request, TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface)
+    public function delete($request, TechnicalFicheRepository $technicalFicheRepository)
     {
         if ($this->can_manage($request) || $this->can_create_product($request)){
             return Product::where('id', $request->product_id)
                 ->update([
                     'is_delete' => true
                 ]);
-            if ($technicalFicheRepositoryInterface->itemHasOneProduct('')){
+            if ($technicalFicheRepository->itemHasOneProduct('')){
 
             }
         }

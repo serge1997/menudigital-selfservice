@@ -13,6 +13,7 @@ use App\Http\Services\Product\ProductRepositoty;
 use App\Main\Product\ProductRepositoryInterface;
 use Exception;
 use App\Http\Requests\StoreProductRequest;
+use App\Main\TechnicalFiche\TechnicalFicheRepositoryInterface;
 
 class ProductController extends Controller
 {
@@ -20,7 +21,10 @@ class ProductController extends Controller
     protected $suppliers;
     protected ProductRepositoryInterface $productRepositoryInterface;
 
-    public function __construct(ProductRepositoryInterface $productRepositoryInterface)
+    public function __construct(
+        ProductRepositoryInterface $productRepositoryInterface,
+        private readonly TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface
+    )
     {
         $this->products = new Product();
         $this->suppliers = new Supplier();
@@ -86,7 +90,7 @@ class ProductController extends Controller
     {
         try {
             $message = __('messages.delete');
-            $this->productRepositoryInterface->delete($request);
+            $this->productRepositoryInterface->delete($request, $this->technicalFicheRepositoryInterface);
             return response()
                 ->json($message);
         }catch(Exception $e){
