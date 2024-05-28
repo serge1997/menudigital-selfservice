@@ -3,6 +3,7 @@ namespace App\Main\Product;
 
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Collection;
+use App\Main\TechnicalFiche\TechnicalFicheRepositoryInterface;
 
 interface ProductRepositoryInterface
 {
@@ -12,5 +13,5 @@ interface ProductRepositoryInterface
     public function findById($id): Product;
     public function expenseProduct($request); //despesa de produto
     public function searchProduct($request);
-    public function delete($request);
+    public function delete($request, TechnicalFicheRepositoryInterface $technicalFicheRepositoryInterface);
 }

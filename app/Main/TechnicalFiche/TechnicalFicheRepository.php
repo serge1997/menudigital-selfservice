@@ -14,6 +14,7 @@ use App\Traits\Permission;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\MealMarge\MealMarge;
 use App\Http\Services\MealMarge\CalculeMarge;
+use Carbon\Carbon;
 
 class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
 {
@@ -210,4 +211,13 @@ class TechnicalFicheRepository implements TechnicalFicheRepositoryInterface
     {
         return Technicalfiche::where('item_id', $item_id)->count() === 1;
     }
+
+    public function inactiveMenuItemFiche($item_id): void
+    {
+        Technicalfiche::where('item_id', $item_id)
+            ->update([
+                'deleted_at' => Carbon::now()->isoFormat('Y-DD-MM')
+            ]);
+    }
+
 }

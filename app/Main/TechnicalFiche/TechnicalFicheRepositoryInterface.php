@@ -17,4 +17,5 @@ interface TechnicalFicheRepositoryInterface
     public function editProductQuantity($request): void;
     public function findFicheByItemId($id): Collection;
     public function itemHasOneProduct($item_id):bool;
+    public function inactiveMenuItemFiche($item_id): void;
 }
